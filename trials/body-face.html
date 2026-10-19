@@ -536,7 +536,7 @@ kbd {
 .more[open] summary::after { transform: translateY(-30%) rotate(225deg); }
 .more-body { padding-top: var(--space-2); }
 
-/* ---------- Specimen (the preview takes its faces from these four variables) ---------- */
+/* ---------- Specimen: faces come from --t-*, sizes and spacing from the scale (set in JS) ---------- */
 .spec {
   --t-head: var(--font-sans);
   --t-head-w: 400;
@@ -547,13 +547,81 @@ kbd {
   font-family: var(--t-body);
   font-weight: var(--t-body-w);
   font-stretch: var(--t-body-wd);
+  color: var(--fg-muted);
 }
-.spec .sh { font-family: var(--t-head); font-weight: var(--t-head-w); font-stretch: 100%; }
-.spec .sm, .spec code, .spec kbd { font-family: var(--t-mono); font-weight: 400; font-stretch: 100%; }
+.spec code, .spec kbd, .spec .sm { font-family: var(--t-mono); font-weight: 400; font-stretch: 100%; }
 .spec code { font-size: 0.88em; color: var(--fg); }
+.spec strong { font-weight: 400; color: var(--strong-ink, inherit); }
 .spec .chrome { font-family: var(--font-sans); font-weight: 400; font-stretch: 100%; }
+.spec .r-eyebrow { font-family: var(--eyebrow-fam); font-weight: var(--eyebrow-w); font-stretch: var(--eyebrow-wd); font-size: var(--eyebrow-size); line-height: var(--eyebrow-lh); letter-spacing: var(--eyebrow-tr); color: var(--eyebrow-ink); }
+.spec .r-display { font-family: var(--display-fam); font-weight: var(--display-w); font-stretch: var(--display-wd); font-size: var(--display-size); line-height: var(--display-lh); letter-spacing: var(--display-tr); color: var(--display-ink); }
+.spec .r-title { font-family: var(--title-fam); font-weight: var(--title-w); font-stretch: var(--title-wd); font-size: var(--title-size); line-height: var(--title-lh); letter-spacing: var(--title-tr); color: var(--title-ink); }
+.spec .r-section { font-family: var(--section-fam); font-weight: var(--section-w); font-stretch: var(--section-wd); font-size: var(--section-size); line-height: var(--section-lh); letter-spacing: var(--section-tr); color: var(--section-ink); }
+.spec .r-sub { font-family: var(--sub-fam); font-weight: var(--sub-w); font-stretch: var(--sub-wd); font-size: var(--sub-size); line-height: var(--sub-lh); letter-spacing: var(--sub-tr); color: var(--sub-ink); }
+.spec .r-dek { font-family: var(--dek-fam); font-weight: var(--dek-w); font-stretch: var(--dek-wd); font-size: var(--dek-size); line-height: var(--dek-lh); letter-spacing: var(--dek-tr); color: var(--dek-ink); }
+.spec .r-reading { font-family: var(--reading-fam); font-weight: var(--reading-w); font-stretch: var(--reading-wd); font-size: var(--reading-size); line-height: var(--reading-lh); letter-spacing: var(--reading-tr); color: var(--reading-ink); }
+.spec .r-body { font-family: var(--body-fam); font-weight: var(--body-w); font-stretch: var(--body-wd); font-size: var(--body-size); line-height: var(--body-lh); letter-spacing: var(--body-tr); color: var(--body-ink); }
+.spec .r-lockup { font-family: var(--lockup-fam); font-weight: var(--lockup-w); font-stretch: var(--lockup-wd); font-size: var(--lockup-size); line-height: var(--lockup-lh); letter-spacing: var(--lockup-tr); color: var(--lockup-ink); }
+.spec .r-lockup-desc { font-family: var(--lockup-desc-fam); font-weight: var(--lockup-desc-w); font-stretch: var(--lockup-desc-wd); font-size: var(--lockup-desc-size); line-height: var(--lockup-desc-lh); letter-spacing: var(--lockup-desc-tr); color: var(--lockup-desc-ink); }
+.spec .r-small { font-family: var(--small-fam); font-weight: var(--small-w); font-stretch: var(--small-wd); font-size: var(--small-size); line-height: var(--small-lh); letter-spacing: var(--small-tr); color: var(--small-ink); }
+.spec .r-caption { font-family: var(--caption-fam); font-weight: var(--caption-w); font-stretch: var(--caption-wd); font-size: var(--caption-size); line-height: var(--caption-lh); letter-spacing: var(--caption-tr); color: var(--caption-ink); }
+.spec .r-display, .spec .r-title, .spec .r-section, .spec .r-sub { margin: 0; text-wrap: balance; }
+.spec .r-reading, .spec .r-dek { max-width: var(--measure-reading); }
+
+/* Text flows: every gap is a scale variable, so one markup lays out three ways. */
+.flow { --g-p: var(--g-p-reading); }
+.flow-ui { --g-p: var(--g-p-body); }
+.flow > * { margin: 0; }
+.flow > * + * { margin-top: var(--g-p); }
+.flow > .r-title { margin-top: var(--g-eyebrow); }
+.flow > .r-title + * { margin-top: var(--g-title); }
+.flow > .r-dek + * { margin-top: var(--g-header); }
+.flow > .sp-block, .flow > .sp-block + * { margin-top: var(--g-block); }
+.flow > .r-section { margin-top: var(--g-above-section); }
+.flow > .r-section + * { margin-top: var(--g-below-section); }
+.flow > .r-sub { margin-top: var(--g-above-sub); }
+.flow > .r-sub + * { margin-top: var(--g-below-sub); }
+.flow > :first-child { margin-top: 0; }
+.sp-list { padding-left: 1.25em; }
+.sp-list li + li { margin-top: var(--g-li); }
+.sp-list li::marker { color: var(--fg-subtle); }
+.sp-code {
+  overflow-x: auto;
+  max-width: min(100%, 40rem);
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-family: var(--t-mono);
+  font-size: var(--caption-size);
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+.spec .sp-code code { font-size: inherit; color: inherit; }
+
+.sp-hero > * { margin: 0; }
+.sp-hero > .r-display { margin-top: var(--g-hero-eyebrow); }
+.sp-hero > .r-dek { margin-top: var(--g-hero-sub); }
+.sp-hero > .sp-actions { margin-top: var(--g-hero-actions); }
+.sp-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.sp-actions .btn { font-family: var(--t-body); font-stretch: var(--t-body-wd); }
+
+.sp-rows { display: grid; }
+.sp-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-3) var(--space-6); padding-block: var(--g-row-pad); box-shadow: var(--row-rule); }
+.sp-lockup { display: grid; gap: var(--g-lockup); min-width: 0; }
+.table-scroll { overflow-x: auto; }
+.sp-table { width: 100%; min-width: 28rem; border-collapse: collapse; font-size: var(--small-size); line-height: var(--small-lh); letter-spacing: var(--small-tr); }
+.sp-table th { text-align: left; padding: var(--space-2) var(--space-3); color: var(--fg-subtle); font-size: var(--caption-size); line-height: var(--caption-lh); }
+.sp-table td { padding: var(--space-3); box-shadow: inset 0 1px 0 var(--line); color: var(--fg-subtle); }
+.sp-table td:first-child, .sp-table th:first-child { padding-left: 0; }
+.sp-table td:first-child { color: var(--fg); }
+.sp-table .r { text-align: right; }
+.sp-table .sm { font-size: var(--caption-size); font-variant-numeric: tabular-nums; }
+.s-ok { color: var(--success); }
+.s-bad { color: var(--danger); }
 
 .window { container-type: inline-size; overflow: hidden; }
+.window-bar, .window-info { font-family: var(--font-sans); font-weight: 400; font-stretch: 100%; }
 .window-bar {
   display: flex;
   flex-wrap: wrap;
@@ -562,51 +630,50 @@ kbd {
   gap: var(--space-2) var(--space-4);
   padding: var(--space-3) var(--space-4);
   box-shadow: inset 0 -1px 0 var(--line);
-  font-family: var(--font-sans);
-  font-weight: 400;
-  font-stretch: 100%;
 }
-.window-label { min-width: 0; font-family: var(--font-mono); font-size: var(--type-caption-size); line-height: var(--type-caption-leading); color: var(--fg-subtle); }
-.window-label b { color: var(--fg); }
+.bar-group { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.window-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-2);
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+.window-info-text { display: grid; gap: 2px; min-width: 0; max-width: 64ch; }
+.window-info-text b { color: var(--fg); }
 .ab { display: flex; align-items: center; gap: var(--space-2); }
-.window-body { display: grid; gap: var(--space-12); padding: var(--space-8) var(--space-6); }
-@container (min-width: 40rem) { .window-body { padding: var(--space-12); } }
-
-.s-article { display: grid; gap: var(--space-4); }
-.s-article p { max-width: var(--measure); color: var(--fg-muted); }
-.s-article .s-crumb { color: var(--fg-subtle); }
-.s-article .t-h3 { margin-top: var(--space-4); }
-
-.s-ui { display: grid; gap: var(--space-6); }
-.s-ui-head { display: grid; gap: var(--space-1); }
-.s-rows { display: grid; }
-.s-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-3) var(--space-6); padding-block: var(--space-4); box-shadow: inset 0 1px 0 var(--line); }
-.s-row-text { display: grid; gap: 2px; min-width: 0; }
-.s-row-text .s-label { color: var(--fg); }
-.s-row-field { grid-template-columns: minmax(0, 1fr); }
-.s-row-field .input { max-width: 24rem; }
-@container (max-width: 30rem) { .s-row { grid-template-columns: minmax(0, 1fr); } }
-.table-scroll { overflow-x: auto; }
-.s-table { width: 100%; min-width: 28rem; border-collapse: collapse; font-size: var(--type-small-size); line-height: var(--type-small-leading); }
-.s-table caption { text-align: left; padding-bottom: var(--space-3); color: var(--fg); font-size: var(--type-body-size); }
-.s-table th { text-align: left; padding: var(--space-2) var(--space-3); color: var(--fg-subtle); font-size: var(--type-caption-size); }
-.s-table td { padding: var(--space-3); box-shadow: inset 0 1px 0 var(--line); color: var(--fg-subtle); }
-.s-table td:first-child, .s-table th:first-child { padding-left: 0; }
-.s-table td:first-child { color: var(--fg); }
-.s-table .r { text-align: right; }
-.s-table .sm { font-size: var(--type-caption-size); font-variant-numeric: tabular-nums; }
-.s-ok { color: var(--success); }
-.s-bad { color: var(--danger); }
-.s-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.window-body { display: grid; gap: var(--g-sec-sm); padding: var(--space-8) var(--space-6); }
+@container (min-width: 40rem) { .window-body { gap: var(--g-sec-md); padding: var(--space-12); } }
+@container (min-width: 56rem) { .window-body { gap: var(--g-sec-lg); } }
+@container (max-width: 30rem) { .sp-row { grid-template-columns: minmax(0, 1fr); } }
 
 .ladder { margin-top: var(--space-16); }
 .ladder-head { display: grid; gap: var(--space-1); margin-bottom: var(--space-6); }
 .ladder li { display: grid; gap: var(--space-1); padding-block: var(--space-4); box-shadow: inset 0 1px 0 var(--line); }
 .ladder .meta { font-family: var(--font-mono); font-weight: 400; font-stretch: 100%; font-size: var(--type-caption-size); line-height: var(--type-caption-leading); color: var(--fg-subtle); font-variant-numeric: tabular-nums; }
 .ladder .meta b { color: var(--fg-muted); }
-.ladder .say { min-width: 0; color: var(--fg); }
-.ladder .say.body { color: var(--fg-muted); }
+.ladder .say { min-width: 0; }
 @media (min-width: 40rem) { .ladder li { grid-template-columns: 13rem minmax(0, 1fr); gap: var(--space-6); align-items: baseline; } }
+
+/* ---------- Side by side ---------- */
+.duo-head { display: grid; gap: var(--space-2); margin-bottom: var(--space-8); max-width: 48rem; }
+.duo { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--grid-gap); align-items: start; }
+@media (min-width: 72rem) { .duo { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pane { container-type: inline-size; overflow: hidden; }
+.pane-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+.pane-body { padding: var(--space-8) var(--space-6); }
+@container (min-width: 36rem) { .pane-body { padding: var(--space-12) var(--space-8); } }
 
 /* ---------- Compare ---------- */
 .cmp-wrap { container-type: inline-size; }
@@ -699,6 +766,7 @@ kbd {
       <a class="mark" href="#top">litt.md <span>Type trial</span></a>
       <nav class="nav" aria-label="Sections">
         <a href="#pairing">Pairing</a>
+        <a href="#duo">Side by side</a>
         <a href="#compare">Compare</a>
         <a href="#picks">Picks</a>
       </nav>
@@ -718,11 +786,12 @@ kbd {
       <div class="hero-copy">
         <p class="readout">litt.md v0.5 · body face trial</p>
         <h1 class="t-display" id="hero-title">Hanken Grotesk for headlines. <span>Inter for everything underneath.</span></h1>
-        <p class="t-reading lede">Inter is the lead body face. Check it in litt.md's own type scale under Hanken Grotesk headings, at 400 or lighter, then hold it against 16 other candidates. Width and ink are measured in your browser against Hanken Grotesk at 400.</p>
+        <p class="t-reading lede">Inter is the lead body face. Try it under Hanken Grotesk headings in three scales: today's, the research proposal of 40 / 30 / 22, and one size throughout, after emilkowal.ski. Then hold Inter against 16 other faces, measured in your browser against Hanken Grotesk at 400.</p>
       </div>
       <dl class="hero-spec">
         <div><dt>Today</dt><dd>Hanken Grotesk 400 for every line, Geist Mono for code, keys and data</dd></div>
         <div><dt>Proposed</dt><dd>Hanken Grotesk for display and h1–h4, Inter for reading, body, small and captions</dd></div>
+        <div><dt>Scales</dt><dd>Today, Report 40 / 30 / 22, and One size 16 with hierarchy from space and ink</dd></div>
         <div><dt>Candidates</dt><dd>17 sans and 6 mono faces, all from Google Fonts</dd></div>
         <div><dt>Baseline</dt><dd>Hanken Grotesk at 400 is width 1.00× and ink 100</dd></div>
       </dl>
@@ -736,7 +805,7 @@ kbd {
         <div class="side-sticky">
           <div class="side-head">
             <h2 class="t-h4" id="pairing-title">Pairing</h2>
-            <p class="t-small subtle">Pick a body face and a weight. The preview and the scale update as you go.</p>
+            <p class="t-small subtle">Pick a body face and a weight, and switch the scale above the preview. Everything updates as you go.</p>
           </div>
           <div class="stack panel">
             <div class="field">
@@ -808,86 +877,78 @@ kbd {
       <div class="main spec" id="spec">
         <div class="window raised" role="region" aria-label="Preview">
           <div class="window-bar">
-            <p class="window-label" id="win-label"></p>
+            <div class="bar-group">
+              <fieldset class="seg" id="scale-group">
+                <legend class="visually-hidden">Scale</legend>
+                <label><input type="radio" name="scale" id="scale-today" value="today"><span>Today</span></label>
+                <label><input type="radio" name="scale" id="scale-report" value="report"><span>Report</span></label>
+                <label><input type="radio" name="scale" id="scale-one" value="one"><span>One size</span></label>
+              </fieldset>
+              <span class="keys key-hint" aria-hidden="true"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></span>
+            </div>
             <div class="ab">
               <button type="button" class="btn btn-ghost btn-sm" id="ab" aria-pressed="false">Show current</button>
               <kbd class="key-hint" aria-hidden="true">A</kbd>
             </div>
           </div>
-          <div class="window-body">
-            <article class="s-article">
-              <p class="t-small s-crumb">Foundations / Type</p>
-              <h3 class="t-h1 sh">One weight, and the hierarchy still holds</h3>
-              <p class="t-reading">Get hierarchy from scale first, then color, then tracking. Never from weight. When a label needs to stand out at the same size, make it <code>--fg</code> and let its neighbours fall back to <code>--fg-subtle</code>.</p>
-              <p class="t-reading">The structure is exact and quiet: an 8px grid, hairlines, tight type and cool neutrals. The one place it gets bold is light and material. Glass floats, a soft light falls from the top, edges catch it, and a trace of grain sits over everything.</p>
-              <h4 class="t-h3 sh">Restrained headlines</h4>
-              <p class="t-reading">Display stops at 40 pixels. The hero gets its presence from space, light and the product, so the jump from a 40px headline to 15px body is enough on its own. The full scale is in the <a href="#scale">ladder below</a>.</p>
-            </article>
-
-            <section class="s-ui" aria-label="Interface sample">
-              <div class="s-ui-head">
-                <h4 class="t-h4 sh">Workspace settings</h4>
-                <p class="t-small subtle">Changes apply to everyone in Litt Studio.</p>
-              </div>
-              <div class="s-rows">
-                <div class="s-row">
-                  <div class="s-row-text"><span class="t-body s-label">Appearance</span><span class="t-small subtle">Follows your system until you pick a theme.</span></div>
-                  <fieldset class="seg" aria-label="Appearance, sample">
-                    <legend class="visually-hidden">Appearance, sample</legend>
-                    <label><input type="radio" name="s-theme" id="s-theme-auto" checked><span>System</span></label>
-                    <label><input type="radio" name="s-theme" id="s-theme-light"><span>Light</span></label>
-                    <label><input type="radio" name="s-theme" id="s-theme-dark"><span>Dark</span></label>
-                  </fieldset>
-                </div>
-                <div class="s-row">
-                  <div class="s-row-text"><span class="t-body s-label" id="s-digest-label">Weekly digest</span><span class="t-small subtle">A summary of changes, every Monday at 9:00.</span></div>
-                  <button type="button" class="switch" role="switch" aria-checked="true" aria-labelledby="s-digest-label" id="s-digest"></button>
-                </div>
-                <div class="s-row">
-                  <div class="s-row-text"><span class="t-body s-label">Command menu</span><span class="t-small subtle">Search pages, people and settings from anywhere.</span></div>
-                  <span class="keys"><kbd>⌘</kbd><kbd>K</kbd></span>
-                </div>
-                <div class="s-row s-row-field">
-                  <label class="s-row-text" for="s-name"><span class="t-body s-label">Workspace name</span><span class="t-small subtle">Shown in the header and in invites.</span></label>
-                  <input class="input" id="s-name" type="text" value="Litt Studio">
-                </div>
-              </div>
-              <div class="table-scroll">
-                <table class="s-table">
-                  <caption>Recent deploys</caption>
-                  <thead><tr><th scope="col">Name</th><th scope="col">Status</th><th scope="col" class="r">Size</th><th scope="col" class="r">Built</th></tr></thead>
-                  <tbody>
-                    <tr><td>gallery</td><td class="s-ok">Ready</td><td class="r sm">1.24 MB</td><td class="r sm">12:04</td></tr>
-                    <tr><td>tokens-sync</td><td>Building</td><td class="r sm">0.38 MB</td><td class="r sm">11:52</td></tr>
-                    <tr><td>docs-llms</td><td class="s-ok">Ready</td><td class="r sm">0.61 MB</td><td class="r sm">09:17</td></tr>
-                    <tr><td>registry</td><td class="s-bad">Failed</td><td class="r sm">2.07 MB</td><td class="r sm">08:40</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="s-actions">
-                <button type="button" class="btn btn-secondary">Save changes</button>
-                <button type="button" class="btn btn-ghost">Discard</button>
-              </div>
-            </section>
+          <div class="window-info">
+            <div class="window-info-text">
+              <p class="t-small muted" id="scale-note"></p>
+              <p class="readout" id="scale-readout"></p>
+              <p class="readout" id="win-label"></p>
+            </div>
+            <span class="visually-hidden" id="sv-label">Your verdict on this scale</span>
+            <div class="seg" role="group" aria-labelledby="sv-label" id="sv-group">
+              <button type="button" data-v="love" aria-pressed="false">Love</button>
+              <button type="button" data-v="maybe" aria-pressed="false">Maybe</button>
+              <button type="button" data-v="no" aria-pressed="false">No</button>
+            </div>
           </div>
+          <div class="window-body" id="spec-body"></div>
         </div>
 
         <div class="ladder" id="scale">
           <div class="ladder-head chrome">
-            <h3 class="t-h4 chrome">Scale</h3>
-            <p class="t-small subtle chrome">Display to h4 use the headline face. Reading to caption use the body face.</p>
+            <h3 class="t-h4 chrome" id="ladder-title">Scale</h3>
+            <p class="t-small subtle chrome" id="ladder-note"></p>
           </div>
-          <ul>
-            <li><span class="meta"><b>display</b> 40 / 1.1 / −0.025em</span><span class="say sh t-display">Technical precision, lit from above.</span></li>
-            <li><span class="meta"><b>h1</b> 32 / 1.15 / −0.022em</span><span class="say sh t-h1">Precise, lit, airy, calm, exact.</span></li>
-            <li><span class="meta"><b>h2</b> 28 / 1.2 / −0.02em</span><span class="say sh t-h2">Light and material carry the boldness.</span></li>
-            <li><span class="meta"><b>h3</b> 24 / 1.25 / −0.018em</span><span class="say sh t-h3">One idea per section.</span></li>
-            <li><span class="meta"><b>h4</b> 20 / 1.3 / −0.012em</span><span class="say sh t-h4">Section label, left column</span></li>
-            <li><span class="meta"><b>reading</b> 17 / 1.65 / −0.006em</span><span class="say body t-reading">Long-form text sits at 17 pixels on a 65 character measure, so a paragraph reads in one easy sweep.</span></li>
-            <li><span class="meta"><b>body</b> 15 / 1.55 / −0.003em</span><span class="say body t-body">Settings, lists and dialogs: the text people read while they work.</span></li>
-            <li><span class="meta"><b>small</b> 13 / 1.5 / 0</span><span class="say body t-small">Supporting text, table cells, helper text and navigation.</span></li>
-            <li><span class="meta"><b>caption</b> 12 / 1.4 / 0.01em</span><span class="say body t-caption">Updated 19 Oct 2026 at 12:04 by Nick</span></li>
-          </ul>
+          <ul id="ladder"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Side by side -->
+  <section class="section" id="duo" aria-labelledby="duo-title">
+    <div class="wrap">
+      <div class="duo-head">
+        <h2 class="t-h4" id="duo-title">Side by side</h2>
+        <p class="t-small subtle">The same article in two scales, with the faces and weights set in Pairing. Pick any scale for either side.</p>
+      </div>
+      <div class="duo">
+        <div class="pane raised" role="region" aria-labelledby="pane-l-title">
+          <div class="pane-bar">
+            <p class="readout" id="pane-l-title"></p>
+            <fieldset class="seg">
+              <legend class="visually-hidden">Scale on the left</legend>
+              <label><input type="radio" name="pane-l" id="pane-l-today" value="today"><span>Today</span></label>
+              <label><input type="radio" name="pane-l" id="pane-l-report" value="report"><span>Report</span></label>
+              <label><input type="radio" name="pane-l" id="pane-l-one" value="one"><span>One size</span></label>
+            </fieldset>
+          </div>
+          <div class="pane-body spec" id="pane-l"></div>
+        </div>
+        <div class="pane raised" role="region" aria-labelledby="pane-r-title">
+          <div class="pane-bar">
+            <p class="readout" id="pane-r-title"></p>
+            <fieldset class="seg">
+              <legend class="visually-hidden">Scale on the right</legend>
+              <label><input type="radio" name="pane-r" id="pane-r-today" value="today"><span>Today</span></label>
+              <label><input type="radio" name="pane-r" id="pane-r-report" value="report"><span>Report</span></label>
+              <label><input type="radio" name="pane-r" id="pane-r-one" value="one"><span>One size</span></label>
+            </fieldset>
+          </div>
+          <div class="pane-body spec" id="pane-r"></div>
         </div>
       </div>
     </div>
@@ -1039,6 +1100,195 @@ kbd {
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 
+  /* ---------- Scales: every size, line height, tracking and gap the preview uses ---------- */
+  function R(size, lh, tr, fam, ink) { return { size: size, lh: lh, tr: tr, fam: fam, ink: ink }; }
+  var VARIANTS = {
+    today: {
+      label: "Today", sub: "litt.md v0.5",
+      note: "The current tokens. litt.md has no spacing rule for text yet, so flows use a flat 16px gap and 32px above headings.",
+      roles: {
+        eyebrow: R(13, 19.5, 0, "body", "subtle"),
+        display: R(40, 44, -0.025, "head", "fg"),
+        title: R(32, 36.8, -0.022, "head", "fg"),
+        section: R(28, 33.6, -0.02, "head", "fg"),
+        sub: R(24, 30, -0.018, "head", "fg"),
+        dek: R(17, 28.05, -0.006, "body", "muted"),
+        reading: R(17, 28.05, -0.006, "body", "muted"),
+        body: R(15, 23.25, -0.003, "body", "muted"),
+        lockup: R(15, 23.25, -0.003, "body", "fg"),
+        "lockup-desc": R(13, 19.5, 0, "body", "subtle"),
+        small: R(13, 19.5, 0, "body", "subtle"),
+        caption: R(12, 16.8, 0.01, "body", "subtle")
+      },
+      ladder: [["display", "display"], ["h1", "title"], ["h2", "section"], ["h3", "sub"], ["h4", R(20, 26, -0.012, "head", "fg")], ["reading", "reading"], ["body", "body"], ["small", "small"], ["caption", "caption"]],
+      gaps: { eyebrow: 16, title: 16, header: 16, "p-reading": 16, "p-body": 16, "above-section": 32, "below-section": 16, "above-sub": 32, "below-sub": 16, li: 8, block: 16, lockup: 2, "row-pad": 16, "hero-eyebrow": 24, "hero-sub": 24, "hero-actions": 24 },
+      sections: [64, 96, 128], rowRule: true, measure: "65ch", strong: false
+    },
+    report: {
+      label: "Report", sub: "40 / 30 / 22",
+      note: "From the research: three heading sizes about 1.33× apart, whole-pixel line heights, and a spacing ladder where the space above a heading is far bigger than the space below.",
+      roles: {
+        eyebrow: R(13, 20, 0, "body", "subtle"),
+        display: R(40, 44, -0.025, "head", "fg"),
+        title: R(40, 44, -0.025, "head", "fg"),
+        section: R(30, 36, -0.02, "head", "fg"),
+        sub: R(22, 28, -0.015, "head", "fg"),
+        dek: R(17, 28, -0.006, "body", "muted"),
+        reading: R(17, 28, -0.006, "body", "muted"),
+        body: R(15, 24, -0.006, "body", "muted"),
+        lockup: R(15, 24, -0.006, "body", "fg"),
+        "lockup-desc": R(15, 24, -0.006, "body", "subtle"),
+        small: R(13, 20, 0, "body", "subtle"),
+        caption: R(12, 16, 0.01, "body", "subtle")
+      },
+      ladder: [["display", "display"], ["h1", "title"], ["h2", "section"], ["h3", "sub"], ["reading", "reading"], ["body", "body"], ["small", "small"], ["caption", "caption"]],
+      gaps: { eyebrow: 8, title: 16, header: 48, "p-reading": 24, "p-body": 16, "above-section": 64, "below-section": 16, "above-sub": 48, "below-sub": 8, li: 8, block: 32, lockup: 4, "row-pad": 16, "hero-eyebrow": 8, "hero-sub": 16, "hero-actions": 32 },
+      sections: [96, 128, 160], rowRule: true, measure: "54ch", strong: true
+    },
+    one: {
+      label: "One size", sub: "16, after emilkowal.ski",
+      note: "Everything at 16px in the body face, as on Emil Kowalski's site, with rank from space and ink alone. Emil also steps headings to weight 500–600; at 400 they rely on fg over fg-muted text.",
+      roles: {
+        eyebrow: R(14, 20, 0, "body", "subtle"),
+        display: R(16, 24, 0, "body", "fg"),
+        title: R(16, 24, 0, "body", "fg"),
+        section: R(16, 24, 0, "body", "fg"),
+        sub: R(16, 24, 0, "body", "fg"),
+        dek: R(16, 26, 0, "body", "muted"),
+        reading: R(16, 26, 0, "body", "muted"),
+        body: R(16, 24, 0, "body", "muted"),
+        lockup: R(16, 24, 0, "body", "fg"),
+        "lockup-desc": R(16, 24, 0, "body", "muted"),
+        small: R(14, 20, 0, "body", "subtle"),
+        caption: R(12, 16, 0, "body", "subtle")
+      },
+      ladder: [["display", "display"], ["h1", "title"], ["h2", "section"], ["h3", "sub"], ["reading", "reading"], ["body", "body"], ["small", "small"], ["caption", "caption"]],
+      gaps: { eyebrow: 8, title: 0, header: 32, "p-reading": 26, "p-body": 16, "above-section": 56, "below-section": 20, "above-sub": 40, "below-sub": 16, li: 8, block: 40, lockup: 0, "row-pad": 20, "hero-eyebrow": 0, "hero-sub": 0, "hero-actions": 24 },
+      sections: [96, 128, 128], rowRule: false, measure: "40.25rem", strong: true
+    }
+  };
+  var HEADING_ROLES = { display: true, title: true, section: true, sub: true };
+  var INK = { fg: "var(--fg)", muted: "var(--fg-muted)", subtle: "var(--fg-subtle)" };
+
+  function setRole(el, key, r) {
+    var p = "--" + key + "-";
+    var head = r.fam === "head";
+    el.style.setProperty(p + "size", r.size + "px");
+    el.style.setProperty(p + "lh", r.lh + "px");
+    el.style.setProperty(p + "tr", r.tr + "em");
+    el.style.setProperty(p + "fam", head ? "var(--t-head)" : "var(--t-body)");
+    el.style.setProperty(p + "w", head || HEADING_ROLES[key] ? "var(--t-head-w)" : "var(--t-body-w)");
+    el.style.setProperty(p + "wd", head ? "100%" : "var(--t-body-wd)");
+    el.style.setProperty(p + "ink", INK[r.ink]);
+  }
+  function applyScale(el, id) {
+    var v = VARIANTS[id];
+    Object.keys(v.roles).forEach(function (k) { setRole(el, k, v.roles[k]); });
+    Object.keys(v.gaps).forEach(function (k) { el.style.setProperty("--g-" + k, v.gaps[k] + "px"); });
+    el.style.setProperty("--g-sec-sm", v.sections[0] + "px");
+    el.style.setProperty("--g-sec-md", v.sections[1] + "px");
+    el.style.setProperty("--g-sec-lg", v.sections[2] + "px");
+    el.style.setProperty("--row-rule", v.rowRule ? "inset 0 1px 0 var(--line)" : "none");
+    el.style.setProperty("--measure-reading", v.measure);
+    el.style.setProperty("--strong-ink", v.strong ? "var(--fg)" : "inherit");
+    el.dataset.scale = id;
+  }
+  function trText(t) { return t === 0 ? "0" : (t < 0 ? "−" : "+") + Math.abs(t) + "em"; }
+  function lhText(n) { return String(Math.round(n * 100) / 100); }
+  function sectionText(v) {
+    var a = v.sections;
+    return a[0] === a[2] ? String(a[0]) : a[1] === a[2] ? a[0] + " / " + a[1] : a.join(" / ");
+  }
+  function scaleReadout(v) {
+    var g = v.gaps;
+    var sizes = [];
+    v.ladder.forEach(function (step) {
+      if (!/^(display|h\d)$/.test(step[0])) return;
+      var r = typeof step[1] === "string" ? v.roles[step[1]] : step[1];
+      if (sizes.indexOf(r.size) < 0) sizes.push(r.size);
+    });
+    var head = sizes.length === 1 && sizes[0] === v.roles.reading.size ? "at text size" : sizes.join(" / ");
+    return "Headings " + head + " · paragraphs " + g["p-reading"] + " · h2 " + g["above-section"] + " above, " + g["below-section"] + " below · h3 " + g["above-sub"] + " above, " + g["below-sub"] + " below · sections " + sectionText(v) + " · measure " + v.measure.replace("40.25rem", "644px");
+  }
+  function verdictWord(v) { return v === "love" ? "Love" : v === "maybe" ? "Maybe" : "No"; }
+
+  var LADDER_TEXT = {
+    display: "Technical precision, lit from above.",
+    h1: "Hierarchy at one weight",
+    h2: "Space does the work bold does elsewhere",
+    h3: "Lists and lockups",
+    h4: "Section label, left column",
+    reading: "Long-form text sits on a measured line, so a paragraph reads in one easy sweep.",
+    body: "Settings, lists and dialogs: the text people read while they work.",
+    small: "Supporting text, table cells, helper text and navigation.",
+    caption: "Updated 19 Oct 2026 at 12:04 by Nick"
+  };
+  var ROLE_CLASS = { display: "r-display", title: "r-title", section: "r-section", sub: "r-sub", reading: "r-reading", body: "r-body", small: "r-small", caption: "r-caption" };
+
+  function heroHTML() {
+    return '<section class="sp-hero" aria-label="Hero sample">' +
+      '<p class="r-eyebrow">Litt Studio · Design system</p>' +
+      '<h3 class="r-display">Technical precision, lit from above.</h3>' +
+      '<p class="r-dek">One type pair, one weight, and a spacing ladder that does the work bold does elsewhere.</p>' +
+      '<div class="sp-actions"><button type="button" class="btn btn-secondary">Read the foundations</button><button type="button" class="btn btn-ghost">See components</button></div>' +
+      '</section>';
+  }
+  function articleHTML() {
+    return '<article class="flow">' +
+      '<p class="r-eyebrow">Foundations / Type</p>' +
+      '<h3 class="r-title">Hierarchy at one weight</h3>' +
+      '<p class="r-dek">litt.md sets every line at 400, so rank has to come from size, ink and the space around each line.</p>' +
+      '<p class="r-reading">Get hierarchy from scale first, then color, then tracking. Never from weight. When a label needs to stand out at the same size, make it <code>--fg</code> and let its neighbours fall back to <code>--fg-subtle</code>.</p>' +
+      '<p class="r-reading">The structure is exact and quiet: an 8px grid, hairlines, tight type and cool neutrals. The one place it gets bold is light and material.</p>' +
+      '<h4 class="r-section">Space does the work bold does elsewhere</h4>' +
+      '<p class="r-reading">A heading belongs to the text that follows it, so it sits closer to that text than to the paragraph above. The space above a heading is two to four times the space below it.</p>' +
+      '<p class="r-reading">Paragraphs keep a steady gap of their own: <strong>smaller than the gap above any heading, and larger than the gap below one</strong>. Each relationship gets its own distance.</p>' +
+      '<h5 class="r-sub">Lists and lockups</h5>' +
+      '<p class="r-reading">Below the smallest heading, a title and its description share one size. The title is fg and the description steps back.</p>' +
+      '<ul class="r-reading sp-list"><li>Line heights land on whole pixels on the 4px grid.</li><li>Sections get more room than any heading, so the page breathes.</li><li>Emphasis steps up to fg at the same weight.</li></ul>' +
+      '<pre class="sp-block sp-code"><code>.litt-flow &gt; * + * { margin-top: var(--flow-paragraph); }</code></pre>' +
+      '<p class="r-reading">Code, figures and tables take a wider gap on both sides, so they read as objects in the flow rather than as paragraphs.</p>' +
+      '<h4 class="r-section">Inter carries the text</h4>' +
+      '<p class="r-reading">Inter sets reading, body, small and caption text. Its optical size axis spaces small text more openly and tightens it at larger sizes, so it needs little extra tracking.</p>' +
+      '<p class="r-caption">Updated 19 Oct 2026 · 4 min read</p>' +
+      '</article>';
+  }
+  function rowHTML(title, desc, control) {
+    return '<div class="sp-row"><div class="sp-lockup"><span class="r-lockup">' + title + '</span><span class="r-lockup-desc">' + desc + '</span></div>' + control + '</div>';
+  }
+  function uiHTML() {
+    return '<section class="flow flow-ui" aria-label="Interface sample">' +
+      '<h4 class="r-section">Workspace settings</h4>' +
+      '<p class="r-body">Changes apply to everyone in Litt Studio.</p>' +
+      '<h5 class="r-sub">Notifications</h5>' +
+      '<div class="sp-rows">' +
+        rowHTML("Weekly digest", "A summary of changes, every Monday at 9:00.", '<button type="button" class="switch" role="switch" aria-checked="true" aria-label="Weekly digest" data-switch></button>') +
+        rowHTML("Mentions", "When someone mentions you in a comment or a review.", '<button type="button" class="switch" role="switch" aria-checked="false" aria-label="Mentions" data-switch></button>') +
+        rowHTML("Command menu", "Search pages, people and settings from anywhere.", '<span class="keys"><kbd>⌘</kbd><kbd>K</kbd></span>') +
+      '</div>' +
+      '<h5 class="r-sub">Recent deploys</h5>' +
+      '<div class="sp-block table-scroll"><table class="sp-table">' +
+        '<thead><tr><th scope="col">Name</th><th scope="col">Status</th><th scope="col" class="r">Size</th><th scope="col" class="r">Built</th></tr></thead><tbody>' +
+        '<tr><td>gallery</td><td class="s-ok">Ready</td><td class="r sm">1.24 MB</td><td class="r sm">12:04</td></tr>' +
+        '<tr><td>tokens-sync</td><td>Building</td><td class="r sm">0.38 MB</td><td class="r sm">11:52</td></tr>' +
+        '<tr><td>docs-llms</td><td class="s-ok">Ready</td><td class="r sm">0.61 MB</td><td class="r sm">09:17</td></tr>' +
+        '<tr><td>registry</td><td class="s-bad">Failed</td><td class="r sm">2.07 MB</td><td class="r sm">08:40</td></tr>' +
+      '</tbody></table></div>' +
+      '<div class="sp-block sp-actions"><button type="button" class="btn btn-secondary">Save changes</button><button type="button" class="btn btn-ghost">Discard</button></div>' +
+      '</section>';
+  }
+  function ladderHTML(id, headName, bodyName) {
+    var v = VARIANTS[id];
+    return v.ladder.map(function (step) {
+      var label = step[0];
+      var r = typeof step[1] === "string" ? v.roles[step[1]] : step[1];
+      var cls = typeof step[1] === "string" ? ROLE_CLASS[step[1]] : null;
+      var style = cls ? "" : ' style="font-family: var(--t-head); font-weight: var(--t-head-w); font-size: ' + r.size + 'px; line-height: ' + r.lh + 'px; letter-spacing: ' + r.tr + 'em; color: var(--fg);"';
+      var fam = r.fam === "head" ? headName : bodyName;
+      return '<li><span class="meta"><b>' + label + '</b> ' + r.size + " / " + lhText(r.lh) + " / " + trText(r.tr) + " · " + esc(fam) + '</span><span class="say' + (cls ? " " + cls : "") + '"' + style + ">" + LADDER_TEXT[label] + "</span></li>";
+    }).join("");
+  }
+
   /* ---------- Per-viewer state (browser storage, best effort) ---------- */
   var KEY = "litt-type-trial:v2";
   var OLD_KEY = "litt-type-trial:v1";
@@ -1046,7 +1296,7 @@ kbd {
   function readJSON(k) { try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
   function writeJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-  var DEFAULTS = { body: "inter", head: "hanken-grotesk", mono: "geist-mono", bw: 400, hw: 400, wd: 100, role: "sans", size: "reading", sort: "ink", sample: SAMPLE, theme: "auto" };
+  var DEFAULTS = { body: "inter", head: "hanken-grotesk", mono: "geist-mono", bw: 400, hw: 400, wd: 100, role: "sans", size: "reading", sort: "ink", sample: SAMPLE, theme: "auto", scale: "report", paneL: "report", paneR: "one" };
   var saved = readJSON(KEY);
   if (!saved) {
     var old = readJSON(OLD_KEY) || {};
@@ -1066,6 +1316,7 @@ kbd {
   if (["ink", "width", "picks", "az"].indexOf(state.sort) < 0) state.sort = "ink";
   if (["auto", "light", "dark"].indexOf(state.theme) < 0) state.theme = "auto";
   if (typeof state.sample !== "string") state.sample = SAMPLE;
+  ["scale", "paneL", "paneR"].forEach(function (k) { if (!VARIANTS[state[k]]) state[k] = DEFAULTS[k]; });
   state.ab = false;
   function saveState() {
     var out = {};
@@ -1075,6 +1326,7 @@ kbd {
 
   /* ---------- Picks (the page's db when it is there, this browser otherwise) ---------- */
   var verdicts = {};
+  var scaleVerdicts = {};
   var decision = null;
   var mode = "local";
   var db = null;
@@ -1082,6 +1334,7 @@ kbd {
   if (localPicks && typeof localPicks === "object") {
     if (localPicks.verdicts && typeof localPicks.verdicts === "object") verdicts = localPicks.verdicts;
     if (localPicks.decision && typeof localPicks.decision === "object") decision = localPicks.decision;
+    if (localPicks.scales && typeof localPicks.scales === "object") scaleVerdicts = localPicks.scales;
   }
 
   /* ---------- Theme ---------- */
@@ -1198,17 +1451,32 @@ kbd {
 
   /* ---------- Pairing ---------- */
   var spec = $("spec");
+  var specBody = $("spec-body");
+  specBody.innerHTML = heroHTML() + articleHTML() + uiHTML();
+  $("pane-l").innerHTML = articleHTML();
+  $("pane-r").innerHTML = articleHTML();
+  function applyFaces(el, cur) {
+    var body = byId[state.body], head = byId[state.head], mono = byId[state.mono];
+    var sb = cur ? BASE.sans : body, sh = cur ? BASE.sans : head, sm = cur ? BASE.mono : mono;
+    el.style.setProperty("--t-body", stack(sb));
+    el.style.setProperty("--t-body-w", String(cur ? 400 : ew(body, state.bw)));
+    el.style.setProperty("--t-body-wd", (cur ? 100 : ewd(body, state.wd)) + "%");
+    el.style.setProperty("--t-head", stack(sh));
+    el.style.setProperty("--t-head-w", String(cur ? 400 : ew(head, state.hw)));
+    el.style.setProperty("--t-mono", stack(sm));
+  }
   function currentPairing() {
     var body = byId[state.body], head = byId[state.head], mono = byId[state.mono];
     return {
       headline: head.id, headlineName: head.name, headlineWeight: ew(head, state.hw),
       body: body.id, bodyName: body.name, bodyWeight: ew(body, state.bw), bodyWidth: ewd(body, state.wd),
-      mono: mono.id, monoName: mono.name
+      mono: mono.id, monoName: mono.name,
+      scale: state.scale, scaleLabel: VARIANTS[state.scale].label + " · " + VARIANTS[state.scale].sub
     };
   }
   function samePairing(a, b) {
     return !!a && !!b && a.headline === b.headline && a.body === b.body && a.mono === b.mono &&
-      a.headlineWeight === b.headlineWeight && a.bodyWeight === b.bodyWeight && a.bodyWidth === b.bodyWidth;
+      a.headlineWeight === b.headlineWeight && a.bodyWeight === b.bodyWeight && a.bodyWidth === b.bodyWidth && a.scale === b.scale;
   }
   function setPct(input) {
     var min = Number(input.min), max = Number(input.max);
@@ -1219,20 +1487,37 @@ kbd {
     var body = byId[state.body], head = byId[state.head], mono = byId[state.mono];
     var bw = ew(body, state.bw), hw = ew(head, state.hw), wd = ewd(body, state.wd);
     var cur = state.ab;
-    var sb = cur ? BASE.sans : body, sh = cur ? BASE.sans : head, sm = cur ? BASE.mono : mono;
-    spec.style.setProperty("--t-body", stack(sb));
-    spec.style.setProperty("--t-body-w", String(cur ? 400 : bw));
-    spec.style.setProperty("--t-body-wd", (cur ? 100 : wd) + "%");
-    spec.style.setProperty("--t-head", stack(sh));
-    spec.style.setProperty("--t-head-w", String(cur ? 400 : hw));
-    spec.style.setProperty("--t-mono", stack(sm));
+    var vid = cur ? "today" : state.scale;
+    var v = VARIANTS[vid];
+    applyFaces(spec, cur);
+    applyScale(spec, vid);
+    var headName = cur ? BASE.sans.name : head.name;
+    var bodyName = cur ? BASE.sans.name : body.name;
+    if ($("ladder").dataset.key !== vid + "|" + headName + "|" + bodyName) {
+      $("ladder").innerHTML = ladderHTML(vid, headName, bodyName);
+      $("ladder").dataset.key = vid + "|" + headName + "|" + bodyName;
+    }
+    $("ladder-title").textContent = "Scale: " + v.label;
+    var oneFamily = v.roles.title.fam === "body";
+    $("ladder-note").textContent = oneFamily
+      ? "Every heading uses the body face at text size. Rank comes from the space around it and from ink."
+      : "Display to h" + (vid === "today" ? "4" : "3") + " use the headline face. Reading to caption use the body face.";
 
+    $("scale-" + state.scale).checked = true;
+    $("scale-note").textContent = cur ? "Showing litt.md today: today's scale, with Hanken Grotesk for every line." : v.note;
+    $("scale-readout").textContent = scaleReadout(v);
     var label = $("win-label");
     if (cur) {
-      label.innerHTML = "Current setup: <b>" + esc(BASE.sans.name) + " 400</b> for everything · " + esc(BASE.mono.name);
+      label.innerHTML = "<b>" + esc(BASE.sans.name) + " 400</b> for everything · " + esc(BASE.mono.name);
     } else {
-      label.innerHTML = esc(head.name) + " " + hw + " headlines · <b>" + esc(body.name) + " " + bw + (wd !== 100 ? " at " + wd + "%" : "") + "</b> body · " + esc(mono.name);
+      label.innerHTML = esc(oneFamily ? body.name : head.name) + " " + hw + " headlines · <b>" + esc(body.name) + " " + bw + (wd !== 100 ? " at " + wd + "%" : "") + "</b> body · " + esc(mono.name);
     }
+    var sv = (scaleVerdicts[state.scale] || {}).verdict || "";
+    $("sv-label").textContent = "Your verdict on the " + VARIANTS[state.scale].label + " scale";
+    Array.prototype.forEach.call($("sv-group").querySelectorAll("button"), function (b) {
+      b.setAttribute("aria-pressed", String(sv === b.dataset.v));
+      b.disabled = mode === "readonly";
+    });
     var ab = $("ab");
     ab.setAttribute("aria-pressed", String(cur));
     ab.textContent = cur ? "Showing current" : "Show current";
@@ -1275,6 +1560,17 @@ kbd {
     save.disabled = mode === "readonly" || isSaved;
     save.textContent = isSaved ? "This pairing is saved" : "Use this pairing";
     saveState();
+  }
+
+  function renderDuo() {
+    [["l", state.paneL], ["r", state.paneR]].forEach(function (pane) {
+      var el = $("pane-" + pane[0]);
+      var v = VARIANTS[pane[1]];
+      applyFaces(el, false);
+      applyScale(el, pane[1]);
+      $("pane-" + pane[0] + "-title").textContent = v.label + " · " + v.sub;
+      $("pane-" + pane[0] + "-" + pane[1]).checked = true;
+    });
   }
 
   /* ---------- Compare ---------- */
@@ -1436,6 +1732,21 @@ kbd {
     lines.push("--weight: " + p.headlineWeight + ";" + (p.bodyWeight !== p.headlineWeight ? "  /* headlines */" : ""));
     if (p.bodyWeight !== p.headlineWeight) lines.push("--weight-body: " + p.bodyWeight + ";");
     if (p.bodyWidth !== 100) lines.push("--width-body: " + p.bodyWidth + "%;  /* font-stretch */");
+    var v = VARIANTS[p.scale];
+    if (v) {
+      lines.push("");
+      lines.push("/* Scale: " + v.label + " · " + v.sub + (v.roles.title.fam === "body" ? ". Headings use the body face." : "") + " */");
+      v.ladder.forEach(function (step) {
+        var r = typeof step[1] === "string" ? v.roles[step[1]] : step[1];
+        var n = "--type-" + step[0];
+        lines.push(n + "-size: " + r.size + "px; " + n + "-leading: " + lhText(r.lh) + "px; " + n + "-tracking: " + (r.tr === 0 ? "0" : r.tr + "em") + ";");
+      });
+      var g = v.gaps;
+      lines.push("--flow-paragraph: " + g["p-reading"] + "px; --flow-paragraph-ui: " + g["p-body"] + "px; --flow-lockup: " + g.lockup + "px; --flow-block: " + g.block + "px;");
+      lines.push("--flow-above-h2: " + g["above-section"] + "px; --flow-below-h2: " + g["below-section"] + "px; --flow-above-h3: " + g["above-sub"] + "px; --flow-below-h3: " + g["below-sub"] + "px;");
+      lines.push("--measure: " + v.measure + ";");
+      lines.push("--section-y: " + v.sections[0] + "px;  /* " + v.sections[1] + "px from 640, " + v.sections[2] + "px from 1024 */");
+    }
     lines.push("");
     lines.push("/* Google Fonts */");
     lines.push(fontsURL(p));
@@ -1474,9 +1785,12 @@ kbd {
       ["Body", byId[show.body], show.bodyWeight + (show.bodyWidth !== 100 ? " · " + show.bodyWidth + "%" : "")],
       ["Mono", byId[show.mono], "400"]
     ];
-    $("decision-faces").innerHTML = faces.map(function (row) {
+    var rowsHTML = faces.map(function (row) {
       return '<div><dt>' + row[0] + '</dt><dd style="font-family: ' + esc(stack(row[1])) + '; font-weight: ' + (row[0] === "Mono" ? 400 : parseInt(row[2], 10)) + ';">' + esc(row[1].name) + '</dd><span class="w">' + esc(row[2]) + "</span></div>";
-    }).join("");
+    });
+    var sv = VARIANTS[show.scale];
+    rowsHTML.push('<div><dt>Scale</dt><dd>' + (sv ? esc(sv.label) : "Not chosen yet") + '</dd><span class="w">' + (sv ? esc(sv.sub) : "") + "</span></div>");
+    $("decision-faces").innerHTML = rowsHTML.join("");
     $("snippet").textContent = cssFor(show);
 
     ["love", "maybe", "no"].forEach(function (k) {
@@ -1485,10 +1799,15 @@ kbd {
       }).sort(function (a, b) {
         return String(verdicts[b].updatedAt || "").localeCompare(String(verdicts[a].updatedAt || ""));
       });
-      $("n-" + k).textContent = String(items.length);
+      var scales = Object.keys(scaleVerdicts).filter(function (id) {
+        return VARIANTS[id] && scaleVerdicts[id] && scaleVerdicts[id].verdict === k;
+      });
+      $("n-" + k).textContent = String(items.length + scales.length);
       var ul = $("picks-" + k);
-      if (!items.length) { ul.innerHTML = '<li class="empty">None yet</li>'; return; }
-      ul.innerHTML = items.map(function (id) {
+      if (!items.length && !scales.length) { ul.innerHTML = '<li class="empty">None yet</li>'; return; }
+      ul.innerHTML = scales.map(function (id) {
+        return '<li><span class="pick-name">' + esc(VARIANTS[id].label) + ' scale</span><span class="pick-meta">scale · ' + esc(VARIANTS[id].sub) + "</span></li>";
+      }).join("") + items.map(function (id) {
         var f = byId[id], v = verdicts[id];
         var meta = (f.role === "mono" ? "mono" : "body") + " · " + (Number(v.weight) || 400) + (v.width && v.width !== 100 ? " · " + v.width + "%" : "");
         return '<li><span class="pick-name" style="font-family: ' + esc(stack(f)) + ';">' + esc(f.name) + '</span><span class="pick-meta">' + esc(meta) + "</span>" +
@@ -1504,6 +1823,7 @@ kbd {
   function renderAll() {
     renderPairing();
     renderPairingMetrics();
+    renderDuo();
     renderCompare();
     renderPicks();
   }
@@ -1522,7 +1842,7 @@ kbd {
   function persist(path, body, doneMsg) {
     if (mode === "readonly") return;
     if (mode !== "db") {
-      writeJSON(PICKS_KEY, { verdicts: verdicts, decision: decision });
+      writeJSON(PICKS_KEY, { verdicts: verdicts, decision: decision, scales: scaleVerdicts });
       setStatus(doneMsg || "Saved in this browser.");
       return;
     }
@@ -1599,6 +1919,16 @@ kbd {
     renderCompare();
     renderPicks();
   }
+  function toggleScaleVerdict(id, v) {
+    if (mode === "readonly") return;
+    var cur = (scaleVerdicts[id] || {}).verdict || null;
+    var next = cur === v ? null : v;
+    if (next) scaleVerdicts[id] = { scale: id, label: VARIANTS[id].label, verdict: next, updatedAt: new Date().toISOString() };
+    else delete scaleVerdicts[id];
+    persist("scales/" + id, next ? scaleVerdicts[id] : null, next ? VARIANTS[id].label + " scale: " + verdictWord(next) + ". Saved." : "Saved.");
+    renderPairing();
+    renderPicks();
+  }
   function toggleVerdict(id, v) {
     var cur = (verdicts[id] || {}).verdict || null;
     writeVerdict(id, { verdict: cur === v ? null : v });
@@ -1621,6 +1951,7 @@ kbd {
       db = d;
       mode = "db";
       verdicts = {};
+      scaleVerdicts = {};
       decision = null;
       return c.use("user").then(function (u) {
         if (!u || typeof u.can !== "function") return null;
@@ -1634,6 +1965,13 @@ kbd {
           verdicts = nextV;
           renderPairing();
           renderCompare();
+          renderPicks();
+        }, onSnapError);
+        db.collection("scales").onSnapshot(function (snap) {
+          var nextS = {};
+          snap.docs.forEach(function (doc) { if (doc.exists) nextS[doc.id] = doc.data(); });
+          scaleVerdicts = nextS;
+          renderPairing();
           renderPicks();
         }, onSnapError);
         db.doc("pairing/current").onSnapshot(function (snap) {
@@ -1682,17 +2020,41 @@ kbd {
       raf = 0;
       renderPairing();
       renderPairingMetrics();
+      renderDuo();
       renderCompare();
       renderPicks();
     });
   }
+  function setScale(id) {
+    if (!VARIANTS[id]) return;
+    state.scale = id;
+    state.ab = false;
+    renderPairing();
+    renderPicks();
+  }
+  document.querySelectorAll('input[name="scale"]').forEach(function (r) {
+    r.addEventListener("change", function () { setScale(r.value); });
+  });
+  ["l", "r"].forEach(function (side) {
+    document.querySelectorAll('input[name="pane-' + side + '"]').forEach(function (r) {
+      r.addEventListener("change", function () {
+        if (side === "l") state.paneL = r.value; else state.paneR = r.value;
+        renderDuo();
+        saveState();
+      });
+    });
+  });
+  $("sv-group").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-v]");
+    if (b && !b.disabled) toggleScaleVerdict(state.scale, b.dataset.v);
+  });
   $("f-bw").addEventListener("input", function (e) { state.bw = Number(e.target.value); liveUpdate(); });
   $("f-bw").addEventListener("change", function () { computeMetrics("sans"); });
   $("f-wd").addEventListener("input", function (e) { state.wd = Number(e.target.value); liveUpdate(); });
   $("f-wd").addEventListener("change", function () { computeMetrics("sans"); });
   $("f-hw").addEventListener("input", function (e) { state.hw = Number(e.target.value); liveUpdate(); });
-  $("f-head").addEventListener("change", function (e) { state.head = e.target.value; renderPairing(); renderPicks(); });
-  $("f-mono").addEventListener("change", function (e) { state.mono = e.target.value; renderPairing(); renderCompare(); renderPicks(); });
+  $("f-head").addEventListener("change", function (e) { state.head = e.target.value; renderPairing(); renderDuo(); renderPicks(); });
+  $("f-mono").addEventListener("change", function (e) { state.mono = e.target.value; renderPairing(); renderDuo(); renderCompare(); renderPicks(); });
 
   $("ab").addEventListener("click", function () { state.ab = !state.ab; renderPairing(); });
   document.addEventListener("keydown", function (e) {
@@ -1700,6 +2062,9 @@ kbd {
     var t = e.target;
     if (t && t.closest && t.closest("input, textarea, select, [contenteditable]")) return;
     if (e.key === "a" || e.key === "A") { state.ab = !state.ab; renderPairing(); }
+    else if (e.key === "1") setScale("today");
+    else if (e.key === "2") setScale("report");
+    else if (e.key === "3") setScale("one");
     else if (e.key === "]") step(1);
     else if (e.key === "[") step(-1);
   });
@@ -1734,7 +2099,7 @@ kbd {
     if (vb && !vb.disabled) { toggleVerdict(id, vb.dataset.v); return; }
     var pb = e.target.closest('[data-act="preview"]');
     if (pb && !pb.disabled) {
-      if (byId[id].role === "mono") { state.mono = id; renderPairing(); renderCompare(); renderPicks(); }
+      if (byId[id].role === "mono") { state.mono = id; renderPairing(); renderDuo(); renderCompare(); renderPicks(); }
       else setBody(id);
       setStatus(byId[id].name + " is in the preview.");
     }
@@ -1777,9 +2142,9 @@ kbd {
     } catch (err) { fallback(); }
   });
 
-  $("s-digest").addEventListener("click", function (e) {
-    var b = e.currentTarget;
-    b.setAttribute("aria-checked", String(b.getAttribute("aria-checked") !== "true"));
+  specBody.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-switch]");
+    if (b) b.setAttribute("aria-checked", String(b.getAttribute("aria-checked") !== "true"));
   });
 
   renderAll();

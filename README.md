@@ -9,6 +9,12 @@ Type trials for litt.md. Each trial is a single HTML page, published as a Claude
 Follows litt.md PR 19. Proposed setup: Hanken Grotesk for display and h1–h4, Inter for reading, body, small and captions. Inter is checked at weight 400 or below and compared with 16 other body faces.
 
 - **Pairing**: pick a body face, a body weight (300–400) and a width, for faces that have a width axis. The preview shows litt.md's real type scale, a settings panel and a table. Press `A` to switch back to the current setup, and `[` / `]` to step through faces.
+- **Scales**: the preview switches between three scales with `1`, `2` and `3`.
+  - **Today**: litt.md v0.5.
+  - **Report**: 40 / 30 / 22 with whole-pixel line heights and the spacing ladder from `reports/Product typography hierarchy and spacing.md`.
+  - **One size**: everything 16px with hierarchy from space and ink, after `references/emilkowal.ski.md`.
+
+  Each scale can be marked Love / Maybe / No (`scales/<id>`). A side-by-side section shows the same article in any two scales.
 - **Compare**: 17 sans and 6 mono faces at one size and weight. Width, ink and x-height are measured in the browser against Hanken Grotesk 400 (or Geist Mono 400 for monos).
 - **Picks**: Love / Maybe / No verdicts with notes, plus a saved pairing. These are stored in the artifact's database (`verdicts/<face-id>`, `pairing/current`). The page also gives a CSS snippet for `tokens.css` and the Google Fonts link.
 
