@@ -6,6 +6,8 @@
       <button type="button" data-version="report" aria-pressed="false"><kbd>2</kbd>Report</button>
       <button type="button" data-version="one" aria-pressed="false"><kbd>3</kbd>One size</button>
       <button type="button" data-version="quartz" aria-pressed="false"><kbd>4</kbd>Quartz</button>
+      <button type="button" data-version="portfolio" aria-pressed="false"><kbd>5</kbd>Portfolio</button>
+      <button type="button" data-version="portfolio400" aria-pressed="false"><kbd>6</kbd>Portfolio 400</button>
     </div>
     <span class="tl-sep" aria-hidden="true"></span>
     <div class="tl-group" role="group" aria-labelledby="tl-verdict-label" id="tl-verdict">
@@ -38,9 +40,17 @@
     quartz: {
       label: "Quartz",
       note: "After Quartz on design.how. Hanken headings at 40 / 32 / 24 / 20, Inter text at 16 / 14 / 13 / 12 with tight line heights, and weight by size: body 340, small 380, titles and labels 400."
+    },
+    portfolio: {
+      label: "Portfolio",
+      note: "Your litt.design settings in Inter. Nearly everything at 14px with an 18px title, headings and titles at 500, labels at 600, grey body text, tight lockups and wide gaps. Breaks P9 on purpose."
+    },
+    portfolio400: {
+      label: "Portfolio 400",
+      note: "The same layout inside P9. Headings, titles and labels at 400, body text lighter at 350, so the weight step survives without going above 400."
     }
   };
-  var ORDER = ["today", "report", "one", "quartz"];
+  var ORDER = ["today", "report", "one", "quartz", "portfolio", "portfolio400"];
   var KEY = "litt-typelab:version";
   var HIDE_KEY = "litt-typelab:hidden";
   var PICKS_KEY = "litt-typelab:verdicts";
@@ -147,7 +157,7 @@
     if (e.metaKey || e.ctrlKey || e.altKey || e.repeat || e.defaultPrevented) return;
     var t = e.target;
     if (t && t.closest && t.closest("input, textarea, select, [contenteditable], [role='dialog'], [role='menu'], [role='listbox']")) return;
-    var i = ["1", "2", "3", "4"].indexOf(e.key);
+    var i = ["1", "2", "3", "4", "5", "6"].indexOf(e.key);
     if (i >= 0) { setVersion(ORDER[i]); return; }
     if (e.key === "h" || e.key === "H") setHidden(!hidden);
   });

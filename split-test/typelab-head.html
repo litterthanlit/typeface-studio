@@ -3,14 +3,14 @@
   (function () {
     var v = "today";
     try { v = localStorage.getItem("litt-typelab:version") || v; } catch (e) {}
-    if (["today", "report", "one", "quartz"].indexOf(v) < 0) v = "today";
+    if (["today", "report", "one", "quartz", "portfolio", "portfolio400"].indexOf(v) < 0) v = "today";
     document.documentElement.setAttribute("data-typelab", v);
   })();
 </script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap">
 <style>
 /* ==========================================================================
-   litt.md type lab: four type versions of the real gallery.
+   litt.md type lab: six type versions of the real gallery.
    Each version overrides litt.md's type tokens (the gallery's text-* utilities
    read them) and a few gaps in the shared page layout. These rules are not in
    a cascade layer, so they win over Tailwind's utilities. "today" changes
@@ -99,6 +99,46 @@ html[data-typelab="quartz"] {
 html[data-typelab="quartz"] body { font-weight: 340; }
 html[data-typelab="quartz"] .text-small { font-weight: 380; }
 html[data-typelab="quartz"] :is(.text-caption, .text-fg, button, label, th, [role="tab"], [role="menuitem"], [role="option"], .font-mono) { font-weight: 400; }
+
+/* ---------- Portfolio and Portfolio 400: after litt.design ----------
+   Nearly everything at 14px, an 18px title, tight lockups and two inks
+   (near-black and grey). The two versions differ only in weight. */
+html[data-typelab^="portfolio"] {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --type-display-size: 1.125rem;  --type-display-leading: 28.8px; --type-display-tracking: -0.015em;
+  --type-h1-size: 1.125rem;       --type-h1-leading: 28.8px;      --type-h1-tracking: -0.015em;
+  --type-h2-size: 0.875rem;       --type-h2-leading: 22.4px;      --type-h2-tracking: -0.006em;
+  --type-h3-size: 0.875rem;       --type-h3-leading: 22.4px;      --type-h3-tracking: -0.006em;
+  --type-h4-size: 0.875rem;       --type-h4-leading: 22.4px;      --type-h4-tracking: -0.006em;
+  --type-reading-size: 0.875rem;  --type-reading-leading: 22.4px; --type-reading-tracking: -0.006em;
+  --type-body-size: 0.875rem;     --type-body-leading: 22.4px;    --type-body-tracking: -0.006em;
+  --type-small-size: 0.8125rem;   --type-small-leading: 20.8px;   --type-small-tracking: -0.004em;
+  --type-caption-size: 0.75rem;   --type-caption-leading: 16.8px; --type-caption-tracking: -0.005em;
+  --control-text-sm: 0.8125rem;
+  --control-text-md: 0.875rem;
+  --fg-muted: #64686f;
+  --tl-page-gap: 48px;
+  --tl-header-gap: 16px;
+  --tl-title-below: 16px;
+  --tl-sec-gap: 16px;
+  --tl-head-below: 4px;
+  --tl-lockup: 2px;
+}
+/* Two inks, as on the portfolio: body text takes the grey of fg-subtle. */
+@media (prefers-color-scheme: dark) { html[data-typelab^="portfolio"]:not([data-theme="light"]) { --fg-muted: #8a8f98; } }
+html[data-typelab^="portfolio"][data-theme="dark"] { --fg-muted: #8a8f98; }
+
+/* Portfolio: the weights as they are on litt.design. Headings and titles 500, labels 600. */
+html[data-typelab="portfolio"] { --weight: 500; }
+html[data-typelab="portfolio"] :is(.text-body, .text-small, .text-reading).text-fg { font-weight: 500; }
+html[data-typelab="portfolio"] :is(button, [role="tab"]) { font-weight: 500; }
+html[data-typelab="portfolio"] :is(.text-caption, th):not(.font-mono) { font-weight: 600; }
+
+/* Portfolio 400: the same layout inside P9. Body lighter, so 400 titles still step up. */
+html[data-typelab="portfolio400"] { --weight: 400; }
+html[data-typelab="portfolio400"] body { font-weight: 350; }
+html[data-typelab="portfolio400"] .text-small { font-weight: 370; }
+html[data-typelab="portfolio400"] :is(.text-caption, .text-fg, button, label, th, [role="tab"], [role="menuitem"], [role="option"], .font-mono, h1, h2, h3, h4, strong, b) { font-weight: 400; }
 
 /* ---------- Shared by every version except today ---------- */
 html:is([data-typelab="report"], [data-typelab="quartz"]) :is(.text-display, .text-h1, .text-h2, .text-h3, .text-h4) { font-family: var(--tl-head); }

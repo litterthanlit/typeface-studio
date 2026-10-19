@@ -20,7 +20,7 @@ const galleryHead = head
 
 const page = [
   "<title>litt.md Type Split Test</title>",
-  '<meta name="description" content="The litt.md components gallery in four type versions: today, the research proposal, one size after emilkowal.ski, and Quartz.">',
+  '<meta name="description" content="The litt.md components gallery in six type versions: today, the research proposal, one size after emilkowal.ski, Quartz, and two after litt.design.">',
   galleryHead.trim(),
   readFileSync(join(here, "typelab-head.html"), "utf8").trim(),
   body.trim(),
