@@ -1,9 +1,9 @@
 <title>litt.md Type Trial</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Try a new body face under Hanken Grotesk headlines, at 400 or lighter, with width and ink measured against the current setup.">
+<meta name="description" content="Inter for body under Hanken Grotesk headlines, checked in litt.md's scale and measured against 16 other body faces.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300..400&family=Onest:wght@300..400&family=Albert+Sans:wght@300..400&family=Host+Grotesk:wght@300..400&family=Funnel+Sans:wght@300..400&family=Public+Sans:wght@300..400&family=Schibsted+Grotesk:wght@400&family=Source+Sans+3:wght@300..400&family=IBM+Plex+Sans:wght@300..400&family=Instrument+Sans:wdth,wght@75..100,400&family=Mona+Sans:wdth,wght@75..100,300..400&family=Red+Hat+Text:wght@300..400&family=Figtree:wght@300..400&family=DM+Sans:opsz,wght@9..40,300..400&family=Manrope:wght@300..400&family=Atkinson+Hyperlegible+Next:wght@300..400&family=Geist+Mono:wght@400&family=JetBrains+Mono:wght@400&family=Fragment+Mono&family=IBM+Plex+Mono:wght@400&family=DM+Mono:wght@400&family=Red+Hat+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300..400&family=Inter:opsz,wght@14..32,300..400&family=Onest:wght@300..400&family=Albert+Sans:wght@300..400&family=Host+Grotesk:wght@300..400&family=Funnel+Sans:wght@300..400&family=Public+Sans:wght@300..400&family=Schibsted+Grotesk:wght@400&family=Source+Sans+3:wght@300..400&family=IBM+Plex+Sans:wght@300..400&family=Instrument+Sans:wdth,wght@75..100,400&family=Mona+Sans:wdth,wght@75..100,300..400&family=Red+Hat+Text:wght@300..400&family=Figtree:wght@300..400&family=DM+Sans:opsz,wght@9..40,300..400&family=Manrope:wght@300..400&family=Atkinson+Hyperlegible+Next:wght@300..400&family=Geist+Mono:wght@400&family=JetBrains+Mono:wght@400&family=Fragment+Mono&family=IBM+Plex+Mono:wght@400&family=DM+Mono:wght@400&family=Red+Hat+Mono:wght@400&display=swap">
 <style>
 /* Layout: litt.md's asymmetric split. Section labels and controls stick in columns 1–3,
    the work runs in 4–12. One light source from the top of the hero; glass only on the header.
@@ -717,13 +717,13 @@ kbd {
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <p class="readout">litt.md v0.5 · body face trial</p>
-        <h1 class="t-display" id="hero-title">Hanken Grotesk keeps the headlines. <span>Find the face that reads lighter underneath.</span></h1>
-        <p class="t-reading lede">Every candidate is set in litt.md's own type scale, under Hanken Grotesk headings, at 400 or lighter. Width and ink are measured in your browser against Hanken Grotesk at 400, so you can see which faces read narrower and lighter before you choose.</p>
+        <h1 class="t-display" id="hero-title">Hanken Grotesk for headlines. <span>Inter for everything underneath.</span></h1>
+        <p class="t-reading lede">Inter is the lead body face. Check it in litt.md's own type scale under Hanken Grotesk headings, at 400 or lighter, then hold it against 16 other candidates. Width and ink are measured in your browser against Hanken Grotesk at 400.</p>
       </div>
       <dl class="hero-spec">
         <div><dt>Today</dt><dd>Hanken Grotesk 400 for every line, Geist Mono for code, keys and data</dd></div>
-        <div><dt>On trial</dt><dd>A body face for reading, UI text and captions, from 300 to 400</dd></div>
-        <div><dt>Candidates</dt><dd>16 sans and 6 mono faces, all from Google Fonts</dd></div>
+        <div><dt>Proposed</dt><dd>Hanken Grotesk for display and h1–h4, Inter for reading, body, small and captions</dd></div>
+        <div><dt>Candidates</dt><dd>17 sans and 6 mono faces, all from Google Fonts</dd></div>
         <div><dt>Baseline</dt><dd>Hanken Grotesk at 400 is width 1.00× and ink 100</dd></div>
       </dl>
     </div>
@@ -905,7 +905,7 @@ kbd {
           <div class="stack">
             <fieldset class="seg seg-block" id="role-group">
               <legend class="visually-hidden">Faces</legend>
-              <label><input type="radio" name="role" id="role-sans" value="sans"><span>Sans · 16</span></label>
+              <label><input type="radio" name="role" id="role-sans" value="sans"><span>Sans · 17</span></label>
               <label><input type="radio" name="role" id="role-mono" value="mono"><span>Mono · 6</span></label>
             </fieldset>
             <div class="field">
@@ -1001,6 +1001,7 @@ kbd {
 
   var SANS = [
     { id: "hanken-grotesk", name: "Hanken Grotesk", kind: "Current", by: "Hanken Design Co.", min: 300, note: "The current face. It sets every line of litt.md today, headlines included." },
+    { id: "inter", name: "Inter", kind: "Proposed", by: "Rasmus Andersson", min: 300, opsz: [14, 32], note: "Drawn for screens, with a tall x-height. Its optical size axis spaces small text more openly and tightens it at headline sizes." },
     { id: "onest", name: "Onest", kind: "Grotesk", by: "Dmitri Voloshin", min: 300, note: "Drawn for screens, with open counters and plain, even shapes." },
     { id: "albert-sans", name: "Albert Sans", kind: "Grotesk", by: "Andreas Rasmussen", min: 300, note: "A geometric grotesk with Scandinavian roots and round, open bowls." },
     { id: "host-grotesk", name: "Host Grotesk", kind: "Grotesk", by: "Element Type", min: 300, note: "A recent neo-grotesk from Element Type, quiet and evenly spaced." },
@@ -1013,7 +1014,7 @@ kbd {
     { id: "source-sans-3", name: "Source Sans 3", kind: "Humanist", by: "Adobe", min: 300, note: "Adobe's first open-source family. Humanist and narrow, made for long text in interfaces." },
     { id: "red-hat-text", name: "Red Hat Text", kind: "Geometric", by: "MCKL", min: 300, note: "The text cut of Red Hat's family, spaced a little wider for small sizes." },
     { id: "figtree", name: "Figtree", kind: "Geometric", by: "Erik Kennedy", min: 300, note: "A clean geometric face, friendly without going round." },
-    { id: "dm-sans", name: "DM Sans", kind: "Geometric", by: "Colophon", min: 300, note: "Low-contrast geometric with an optical size axis, so small text gets sturdier shapes." },
+    { id: "dm-sans", name: "DM Sans", kind: "Geometric", by: "Colophon", min: 300, opsz: [9, 40], note: "Low-contrast geometric with an optical size axis, so small text gets sturdier shapes." },
     { id: "manrope", name: "Manrope", kind: "Geometric", by: "Mikhail Sharanda", min: 300, note: "A semi-condensed geometric face with a technical feel." },
     { id: "atkinson-next", name: "Atkinson Hyperlegible Next", kind: "Legibility", by: "Braille Institute", min: 300, note: "Drawn so no letter is easy to mistake for another." }
   ];
@@ -1039,13 +1040,19 @@ kbd {
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 
   /* ---------- Per-viewer state (browser storage, best effort) ---------- */
-  var KEY = "litt-type-trial:v1";
+  var KEY = "litt-type-trial:v2";
+  var OLD_KEY = "litt-type-trial:v1";
   var PICKS_KEY = "litt-type-trial:picks:v1";
   function readJSON(k) { try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
   function writeJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-  var DEFAULTS = { body: "red-hat-text", head: "hanken-grotesk", mono: "geist-mono", bw: 400, hw: 400, wd: 100, role: "sans", size: "reading", sort: "ink", sample: SAMPLE, theme: "auto" };
-  var saved = readJSON(KEY) || {};
+  var DEFAULTS = { body: "inter", head: "hanken-grotesk", mono: "geist-mono", bw: 400, hw: 400, wd: 100, role: "sans", size: "reading", sort: "ink", sample: SAMPLE, theme: "auto" };
+  var saved = readJSON(KEY);
+  if (!saved) {
+    var old = readJSON(OLD_KEY) || {};
+    saved = {};
+    ["theme", "role", "size", "sort", "sample"].forEach(function (k) { if (old[k] !== undefined) saved[k] = old[k]; });
+  }
   var state = {};
   Object.keys(DEFAULTS).forEach(function (k) { state[k] = saved[k] !== undefined ? saved[k] : DEFAULTS[k]; });
   if (!byId[state.body] || byId[state.body].role !== "sans") state.body = DEFAULTS.body;
@@ -1286,7 +1293,7 @@ kbd {
       li.innerHTML =
         '<div class="cmp-head">' +
           '<div class="cmp-title"><span class="cmp-name" style="font-family: ' + esc(stack(f)) + ';">' + esc(f.name) + '</span></div>' +
-          '<p class="cmp-meta">' + esc(f.kind === "Current" ? "In litt.md now" : f.kind) + " · " + esc(f.by) + '</p>' +
+          '<p class="cmp-meta">' + esc(f.kind === "Current" ? "In litt.md now" : f.kind === "Proposed" ? "Proposed body" : f.kind) + " · " + esc(f.by) + '</p>' +
           '<p class="cmp-axes"></p>' +
           '<div class="cmp-tags"></div>' +
         '</div>' +
@@ -1356,6 +1363,7 @@ kbd {
 
       var tags = [];
       if (f.kind === "Current") tags.push('<span class="tag">Current</span>');
+      if (f.kind === "Proposed") tags.push('<span class="tag">Proposed</span>');
       if (f.q14) tags.push('<span class="tag">Q14</span>');
       if (f.id === inPreview) tags.push('<span class="tag tag-strong">In preview</span>');
       if (v) tags.push('<span class="tag tag-strong">' + (v === "love" ? "Love" : v === "maybe" ? "Maybe" : "No") + "</span>");
@@ -1449,6 +1457,7 @@ kbd {
       if (n.f.id === "fragment-mono") return "family=" + fam;
       var ws = Object.keys(n.w).map(Number).sort(function (a, b) { return a - b; });
       if (n.f.wdth && n.wd !== 100) return "family=" + fam + ":wdth,wght@" + ws.map(function (w) { return n.wd + "," + w; }).join(";");
+      if (n.f.opsz) return "family=" + fam + ":opsz,wght@" + ws.map(function (w) { return n.f.opsz[0] + ".." + n.f.opsz[1] + "," + w; }).join(";");
       return "family=" + fam + ":wght@" + ws.join(";");
     });
     return "https://fonts.googleapis.com/css2?" + parts.join("&") + "&display=swap";
