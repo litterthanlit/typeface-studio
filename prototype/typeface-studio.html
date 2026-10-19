@@ -1,0 +1,3044 @@
+<title>Typeface Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an instrument, not a page. A slim top bar over a full-bleed workspace;
+   overview pages get an editorial header set in the user's own typeface. */
+:root {
+  --bg: #f3f4f6;
+  --surface: #ffffff;
+  --surface-2: #eceef2;
+  --ink: #13151a;
+  --muted: #59606c;
+  --faint: #8a909b;
+  --line: #e1e4e9;
+  --line-strong: #c8ccd4;
+  --accent: #2a46ff;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(42, 70, 255, 0.1);
+  --danger: #c0352b;
+  --ok: #17784c;
+  --warn: #946200;
+  --canvas: #fafafb;
+  --glyph-tint: rgba(19, 21, 26, 0.075);
+  --metric: #dcdfe5;
+  --metric-label: #979da8;
+  --glass: rgba(255, 255, 255, 0.72);
+  --shadow-sm: 0 1px 2px rgba(15, 18, 26, 0.06);
+  --shadow: 0 1px 2px rgba(15, 18, 26, 0.05), 0 12px 32px -12px rgba(15, 18, 26, 0.2);
+  --f-ui: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c0d10; --surface: #15171c; --surface-2: #1c1f26; --ink: #eceef2; --muted: #a3a9b4; --faint: #6d737e;
+    --line: #262a32; --line-strong: #383d47; --accent: #7f8fff; --accent-ink: #0c0d10; --accent-soft: rgba(127, 143, 255, 0.15);
+    --danger: #ff7d73; --ok: #4cc38a; --warn: #e2b340; --canvas: #101216; --glyph-tint: rgba(236, 238, 242, 0.085);
+    --metric: #2a2e37; --metric-label: #5e646f; --glass: rgba(21, 23, 28, 0.72);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4); --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c0d10; --surface: #15171c; --surface-2: #1c1f26; --ink: #eceef2; --muted: #a3a9b4; --faint: #6d737e;
+  --line: #262a32; --line-strong: #383d47; --accent: #7f8fff; --accent-ink: #0c0d10; --accent-soft: rgba(127, 143, 255, 0.15);
+  --danger: #ff7d73; --ok: #4cc38a; --warn: #e2b340; --canvas: #101216; --glyph-tint: rgba(236, 238, 242, 0.085);
+  --metric: #2a2e37; --metric-label: #5e646f; --glass: rgba(21, 23, 28, 0.72);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4); --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.45 var(--f-ui); -webkit-font-smoothing: antialiased; }
+*, *::before, *::after { box-sizing: border-box; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
+.mono { font-family: var(--f-mono); }
+.tnum { font-variant-numeric: tabular-nums; }
+.uf { font-weight: 400; font-synthesis: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+#root { height: 100%; }
+.app { height: 100%; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; }
+
+/* ---------- top bar ---------- */
+.topbar {
+  display: flex; align-items: center; gap: 12px; height: 56px;
+  padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+  background: var(--surface); border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 13px; letter-spacing: -0.01em; white-space: nowrap; }
+.brand-mark { width: 24px; height: 24px; border-radius: 7px; background: var(--ink); color: var(--bg); display: grid; place-items: center; }
+.brand-text { color: var(--muted); font-weight: 500; }
+.project-btn {
+  display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 260px; height: 34px; padding: 0 10px;
+  border: 1px solid transparent; border-radius: 8px; background: transparent; transition: background 0.15s, border-color 0.15s;
+}
+.project-btn:hover { background: var(--surface-2); }
+.project-btn .name { font-size: 17px; line-height: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.project-btn svg { flex: none; color: var(--faint); }
+.sep { width: 1px; height: 20px; background: var(--line); flex: none; }
+.tabs { display: flex; gap: 2px; padding: 3px; background: var(--surface-2); border-radius: 10px; }
+.tab {
+  display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 0; border-radius: 7px;
+  background: transparent; color: var(--muted); font-weight: 500; font-size: 13px; transition: background 0.15s, color 0.15s;
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+.spacer { flex: 1; }
+.save-state { display: flex; align-items: center; gap: 8px; font: 12px var(--f-mono); color: var(--faint); white-space: nowrap; }
+.save-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+.save-dot.saved { background: var(--ok); }
+.save-dot.saving { background: var(--accent); animation: pulse 1s var(--ease) infinite; }
+.save-dot.error { background: var(--danger); }
+@keyframes pulse { 50% { opacity: 0.35; } }
+.banner {
+  display: flex; align-items: center; gap: 10px; padding: 8px var(--gutter-r) 8px var(--gutter-l);
+  background: var(--accent-soft); color: var(--ink); font-size: 13px; border-bottom: 1px solid var(--line);
+}
+.banner.error { background: color-mix(in srgb, var(--danger) 12%, transparent); }
+.tabbar { display: none; }
+
+/* ---------- controls ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 34px; padding: 0 14px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink);
+  font-weight: 500; font-size: 13px; white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s, opacity 0.15s;
+}
+.btn:hover { border-color: var(--line-strong); background: var(--surface-2); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.btn-accent { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn-accent:hover { background: color-mix(in srgb, var(--accent) 88%, var(--ink)); border-color: transparent; }
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-ghost:hover { background: var(--surface-2); border-color: transparent; }
+.btn-danger { color: var(--danger); }
+.icon-btn { width: 34px; padding: 0; }
+.btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+.icon-btn.btn-sm { width: 28px; padding: 0; }
+.input {
+  width: 100%; min-width: 0; height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface); color: var(--ink); font-size: 14px; font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input:hover { border-color: var(--line-strong); }
+.input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.input.mono { font-family: var(--f-mono); font-size: 13px; }
+.input[aria-invalid="true"] { border-color: var(--danger); }
+select.input { padding-right: 6px; }
+textarea.input { height: auto; padding: 10px; resize: vertical; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.label { font: 500 11px/1 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+.hint { font-size: 12px; color: var(--muted); }
+.err { font-size: 12px; color: var(--danger); }
+.row { display: flex; gap: 8px; align-items: center; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-weight: 500; font-size: 13px;
+  white-space: nowrap; transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.chip:hover { color: var(--ink); border-color: var(--line-strong); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.chip .count { font: 11px var(--f-mono); opacity: 0.7; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--surface-2); border-radius: 9px; }
+.seg button { height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font-weight: 500; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+.kbd { display: inline-block; min-width: 20px; padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; background: var(--surface); color: var(--muted); font: 500 11px/1.4 var(--f-mono); text-align: center; }
+.switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; }
+.switch input { appearance: none; width: 30px; height: 18px; border-radius: 999px; background: var(--line-strong); position: relative; margin: 0; cursor: pointer; transition: background 0.15s; }
+.switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--surface); box-shadow: var(--shadow-sm); transition: transform 0.18s var(--ease); }
+.switch input:checked { background: var(--accent); }
+.switch input:checked::after { transform: translateX(12px); }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+/* ---------- pages ---------- */
+.main { min-height: 0; overflow: auto; }
+.page { max-width: 1240px; margin: 0 auto; padding: 36px var(--gutter-r) 56px var(--gutter-l); display: grid; gap: 28px; }
+.eyebrow { font: 500 11px/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+.hero { display: grid; gap: 14px; }
+.hero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.display { font-size: clamp(44px, 7vw, 88px); line-height: 0.95; letter-spacing: -0.01em; font-weight: 600; overflow-wrap: anywhere; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font: 12px var(--f-mono); color: var(--muted); }
+.meta b { color: var(--ink); font-weight: 500; }
+.h2 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.toolbar-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+/* glyph grid */
+.ggrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+.tile {
+  position: relative; display: flex; flex-direction: column; aspect-ratio: 1 / 1.18; padding: 0; text-align: left;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--ink);
+  transition: transform 0.18s var(--ease), border-color 0.15s, box-shadow 0.18s var(--ease);
+}
+.tile:hover { transform: translateY(-2px); border-color: var(--line-strong); box-shadow: var(--shadow); }
+.tile svg { flex: 1; min-height: 0; width: 100%; }
+.tile .tile-foot { display: flex; justify-content: space-between; gap: 6px; padding: 6px 9px 7px; border-top: 1px solid var(--line); font: 11px var(--f-mono); color: var(--faint); }
+.tile .tile-foot span:first-child { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile.empty, .tile.missing { background: transparent; border-style: dashed; }
+.tile.missing { color: var(--faint); }
+.tile .ghost { position: absolute; inset: 0 0 30px; display: grid; place-items: center; font-size: 44px; color: var(--line-strong); }
+.tile.missing:hover .ghost::after { content: "+"; position: absolute; right: 10px; top: 6px; font: 500 16px var(--f-mono); color: var(--accent); }
+.baseline-line { stroke: var(--metric); stroke-width: 1; vector-effect: non-scaling-stroke; }
+
+/* ---------- editor ---------- */
+.editor { height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 300px; grid-template-rows: minmax(0, 1fr) auto; }
+.canvas-wrap { position: relative; min-height: 0; overflow: hidden; background: var(--canvas); }
+.canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; user-select: none; -webkit-user-select: none; display: block; }
+.glass { background: var(--glass); -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.toolrail { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; padding: 6px; border-radius: 13px; z-index: 2; }
+.tool { width: 38px; height: 38px; display: grid; place-items: center; border: 0; border-radius: 9px; background: transparent; color: var(--muted); transition: background 0.15s, color 0.15s; }
+.tool:hover { background: var(--surface-2); color: var(--ink); }
+.tool[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.toolrail .rule { height: 1px; margin: 3px 6px; background: var(--line); }
+.glyph-head { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 12px; z-index: 2; max-width: calc(100% - 32px); }
+.glyph-head .gname { display: flex; align-items: baseline; gap: 10px; padding: 0 10px; white-space: nowrap; }
+.glyph-head .gname b { font-weight: 600; font-size: 14px; }
+.glyph-head .gname span { font: 11px var(--f-mono); color: var(--faint); }
+.zoom-pill { position: absolute; right: 14px; bottom: 14px; display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 11px; z-index: 2; }
+.zoom-pill output { min-width: 52px; text-align: center; font: 12px var(--f-mono); color: var(--muted); }
+.sheet-btn { display: none; }
+.inspector { grid-column: 2; grid-row: 1 / span 2; min-height: 0; overflow: auto; background: var(--surface); border-left: 1px solid var(--line); padding: 20px; display: flex; flex-direction: column; gap: 26px; }
+.insp-sec { display: grid; gap: 12px; }
+.insp-sec > header { display: flex; align-items: center; justify-content: space-between; }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.actions .btn { justify-content: flex-start; }
+.keys { display: grid; grid-template-columns: auto 1fr; gap: 7px 12px; font-size: 12px; color: var(--muted); align-items: center; margin: 0; }
+.keys dt { white-space: nowrap; }
+.keys dd { margin: 0; }
+.strip { grid-column: 1; display: flex; align-items: center; gap: 14px; min-width: 0; padding: 10px 16px; background: var(--surface); border-top: 1px solid var(--line); }
+.strip .input { width: 150px; flex: none; }
+.run-scroll { flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; }
+.run-scroll svg { display: block; }
+.run-glyph { fill: var(--ink); cursor: pointer; transition: fill 0.15s; }
+.run-glyph:hover { fill: var(--muted); }
+.run-glyph.hl { fill: var(--accent); }
+.run-missing { fill: none; stroke: var(--line-strong); stroke-dasharray: 20 16; }
+
+/* canvas drawing */
+.c-metric { stroke: var(--metric); stroke-width: 1; shape-rendering: crispEdges; }
+.c-metric.base { stroke: var(--line-strong); }
+.c-label { font: 10px var(--f-mono); fill: var(--metric-label); letter-spacing: 0.04em; }
+.c-label.sb { fill: var(--faint); }
+.c-fill { fill: var(--glyph-tint); }
+.c-fill.solid { fill: var(--ink); }
+.c-stroke { fill: none; stroke: var(--ink); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
+.c-seg { fill: none; stroke: transparent; stroke-width: 12; vector-effect: non-scaling-stroke; pointer-events: stroke; }
+.c-seg:hover { stroke: var(--accent-soft); }
+.c-handle-line { stroke: var(--accent); stroke-width: 1; opacity: 0.65; }
+.c-handle { fill: var(--surface); stroke: var(--accent); stroke-width: 1.25; }
+.c-node { fill: var(--surface); stroke: var(--ink); stroke-width: 1.25; }
+.c-node.sel { fill: var(--accent); stroke: var(--accent); }
+.c-node.start { stroke: var(--accent); }
+.c-hit { fill: transparent; }
+.c-adv { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 4 4; }
+.c-adv-hit { stroke: transparent; stroke-width: 14; cursor: ew-resize; }
+.c-adv-hit:hover + .c-adv, .c-adv.active { stroke: var(--accent); stroke-dasharray: none; }
+.c-pen { fill: none; stroke: var(--accent); stroke-width: 1.25; stroke-dasharray: 5 4; }
+.c-close { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.c-marquee { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1; }
+.c-arrow { fill: var(--accent); }
+
+/* ---------- spacing ---------- */
+.split { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 20px; align-items: start; }
+.pairs { display: grid; gap: 12px; padding: 16px; }
+.pair-list { display: grid; max-height: 460px; overflow: auto; margin: 0 -6px; }
+.pair-row { display: grid; grid-template-columns: 1fr 86px 28px; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 8px; }
+.pair-row:hover { background: var(--surface-2); }
+.pair-row[aria-selected="true"] { background: var(--accent-soft); }
+.pair-row .pair-name { border: 0; background: transparent; text-align: left; padding: 4px 2px; font: 13px var(--f-mono); color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pair-row .input { height: 28px; font-size: 12px; }
+.preview-card { display: grid; gap: 16px; padding: 20px; min-width: 0; }
+.kern-stage { position: relative; border-radius: 10px; background: var(--canvas); border: 1px solid var(--line); overflow: hidden; touch-action: none; }
+.kern-stage svg { display: block; width: 100%; height: 260px; }
+.kern-stage .drag-glyph { cursor: ew-resize; }
+.kern-value { font: 500 40px/1 var(--f-mono); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.proof { font-size: 44px; line-height: 1.15; overflow-wrap: anywhere; font-kerning: normal; }
+.empty-note { padding: 18px; border: 1px dashed var(--line-strong); border-radius: 10px; color: var(--muted); font-size: 13px; }
+.sp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sp-table th { text-align: left; padding: 8px; font: 500 11px var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--surface); }
+.sp-table td { padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.sp-table .input { height: 28px; width: 86px; font-size: 12px; }
+.sp-glyph { display: flex; align-items: center; gap: 10px; }
+.sp-glyph svg { width: 34px; height: 34px; background: var(--canvas); border-radius: 6px; }
+
+/* ---------- tester ---------- */
+.tester-controls { display: flex; flex-wrap: wrap; gap: 18px 24px; align-items: flex-end; padding: 16px 18px; }
+.tester-controls .field { width: 180px; }
+.specimen {
+  width: 100%; min-height: 240px; border: 0; padding: 4px 0; background: transparent; color: var(--ink); resize: vertical;
+  outline: none; font-kerning: normal; overflow-wrap: anywhere;
+}
+.specimen:focus-visible { outline: none; box-shadow: inset 0 -2px 0 var(--accent); }
+.waterfall { display: grid; gap: 4px; }
+.wf-row { display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: baseline; gap: 14px; padding: 6px 0; border-top: 1px solid var(--line); }
+.wf-row span { font: 11px var(--f-mono); color: var(--faint); }
+.wf-row div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-kerning: normal; }
+.status-pill { display: inline-flex; align-items: center; gap: 8px; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--surface-2); font: 12px var(--f-mono); color: var(--muted); }
+
+/* ---------- export ---------- */
+.export-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.form-card { display: grid; gap: 22px; padding: 22px; }
+.export-card { display: grid; gap: 18px; padding: 22px; position: sticky; top: 20px; }
+.file-name { font: 500 15px var(--f-mono); overflow-wrap: anywhere; }
+.diag { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.diag li { display: grid; grid-template-columns: 8px 1fr; gap: 10px; align-items: baseline; font-size: 13px; color: var(--muted); }
+.diag li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--warn); transform: translateY(-1px); }
+.diag li.info::before { background: var(--faint); }
+.diag li.ok::before { background: var(--ok); }
+details.install summary { cursor: pointer; font-weight: 500; }
+details.install ol { margin: 10px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
+.metrics-diagram { width: 100%; height: auto; display: block; }
+
+/* ---------- projects dialog ---------- */
+dialog.drawer {
+  width: min(560px, calc(100vw - 32px)); max-height: min(720px, calc(100% - 32px)); padding: 0; border: 1px solid var(--line);
+  border-radius: 16px; background: var(--surface); color: var(--ink); box-shadow: var(--shadow);
+}
+dialog.drawer::backdrop { background: rgba(10, 12, 16, 0.35); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+dialog.drawer[open] { animation: rise 0.22s var(--ease); }
+@keyframes rise { from { opacity: 0; transform: translateY(8px) scale(0.99); } }
+.drawer-body { display: grid; gap: 22px; padding: 22px; }
+.drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.proj-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.proj-item { display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 10px; }
+.proj-item:hover { background: var(--surface-2); }
+.proj-item[aria-current="true"] { background: var(--accent-soft); }
+.proj-open { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; border: 0; background: transparent; text-align: left; padding: 4px 6px; }
+.proj-open b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.proj-open span { font: 11px var(--f-mono); color: var(--faint); }
+.starts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.start-card { display: grid; gap: 8px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-align: left; transition: border-color 0.15s, transform 0.18s var(--ease), box-shadow 0.18s var(--ease); }
+.start-card:hover { border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow); }
+.start-card svg { height: 58px; width: 100%; }
+.start-card b { font-weight: 600; }
+.start-card span { font-size: 12px; color: var(--muted); }
+
+/* toast */
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 10px; background: var(--ink); color: var(--bg);
+  font-size: 13px; box-shadow: var(--shadow); z-index: 50; animation: rise 0.2s var(--ease);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .split, .export-grid { grid-template-columns: minmax(0, 1fr); }
+  .export-card { position: static; }
+  .editor { grid-template-columns: minmax(0, 1fr); }
+  .inspector { display: none; }
+  .inspector.open {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; max-height: 62%;
+    border: 1px solid var(--line); border-radius: 16px 16px 0 0; box-shadow: var(--shadow);
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+  .sheet-btn { display: inline-flex; position: absolute; left: 14px; bottom: 14px; z-index: 2; }
+}
+@media (max-width: 720px) {
+  .topbar { gap: 8px; }
+  .topbar .tabs, .brand-text, .topbar .sep, .save-state .txt { display: none; }
+  .tabbar {
+    display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); border-top: 1px solid var(--line);
+    padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+  }
+  .tabbar button { display: grid; justify-items: center; gap: 3px; padding: 8px 0 9px; border: 0; background: transparent; color: var(--faint); font-size: 11px; font-weight: 500; }
+  .tabbar button[aria-current="page"] { color: var(--ink); }
+  .page { padding-top: 24px; gap: 22px; }
+  .toolrail { top: auto; bottom: 14px; transform: none; flex-direction: row; padding: 4px; gap: 2px; }
+  .toolrail .rule { width: 1px; height: auto; margin: 6px 3px; }
+  .tool { width: 36px; height: 36px; }
+  .sheet-btn { top: 12px; bottom: auto; }
+  .glyph-head { left: auto; right: 14px; transform: none; }
+  .strip .input { width: 110px; }
+  .starts { grid-template-columns: 1fr; }
+  .tester-controls .field { width: 100%; }
+  .ggrid { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+<div id="root"><p style="padding:24px;font:14px system-ui;color:#59606c">Loading Typeface Studio…</p></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/htm/3.1.1/htm.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
+<script>
+/*@core-begin*/
+// ---------------------------------------------------------------------------
+// Core: framework-free font engine. No DOM access. Ported to src/core in the
+// full app. Coordinates are integer font units, y-up, unitsPerEm = 1000.
+// ---------------------------------------------------------------------------
+const Core = (() => {
+  'use strict';
+
+  // ----- ids ---------------------------------------------------------------
+  const ALPH = '0123456789abcdefghijklmnopqrstuvwxyz';
+  function uid(n = 10) {
+    const a = new Uint8Array(n);
+    if (globalThis.crypto && globalThis.crypto.getRandomValues) globalThis.crypto.getRandomValues(a);
+    else for (let i = 0; i < n; i++) a[i] = (Math.random() * 256) | 0;
+    let s = '';
+    for (const b of a) s += ALPH[b % 36];
+    return s;
+  }
+
+  // ----- glyph names & categories -------------------------------------------
+  const DIGIT_NAMES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+  const CHAR_NAMES = {
+    ' ': 'space', '.': 'period', ',': 'comma', ':': 'colon', ';': 'semicolon', '!': 'exclam',
+    '?': 'question', '-': 'hyphen', "'": 'quotesingle', '"': 'quotedbl', '(': 'parenleft',
+    ')': 'parenright', '/': 'slash', '&': 'ampersand', '@': 'at', '*': 'asterisk', '+': 'plus',
+    '=': 'equal', '#': 'numbersign', '$': 'dollar', '%': 'percent', '_': 'underscore',
+    '[': 'bracketleft', ']': 'bracketright', '{': 'braceleft', '}': 'braceright', '<': 'less',
+    '>': 'greater', '|': 'bar', '~': 'asciitilde', '^': 'asciicircum', '`': 'grave',
+    '\\': 'backslash', '’': 'quoteright', '‘': 'quoteleft', '“': 'quotedblleft',
+    '”': 'quotedblright', '–': 'endash', '—': 'emdash', '…': 'ellipsis',
+    '•': 'bullet',
+  };
+  function nameForCodepoint(cp) {
+    const ch = String.fromCodePoint(cp);
+    if (/^[A-Za-z]$/.test(ch)) return ch;
+    if (cp >= 48 && cp <= 57) return DIGIT_NAMES[cp - 48];
+    if (CHAR_NAMES[ch]) return CHAR_NAMES[ch];
+    const hex = cp.toString(16).toUpperCase();
+    return cp <= 0xffff ? 'uni' + hex.padStart(4, '0') : 'u' + hex.padStart(5, '0');
+  }
+  const GLYPH_NAME_RE = /^(\.notdef|[A-Za-z_][A-Za-z0-9_.]{0,62})$/;
+  function isValidGlyphName(n) { return GLYPH_NAME_RE.test(n); }
+
+  function categoryOfCodepoint(cp) {
+    if (cp === undefined) return 'other';
+    const ch = String.fromCodePoint(cp);
+    if (/\p{Lu}/u.test(ch)) return 'upper';
+    if (/\p{Ll}/u.test(ch)) return 'lower';
+    if (/\p{Nd}/u.test(ch)) return 'figure';
+    if (/[\p{P}\p{S}\p{Zs}]/u.test(ch)) return 'punct';
+    return 'other';
+  }
+  function categoryOf(glyph) { return categoryOfCodepoint(glyph.unicodes[0]); }
+
+  const BASIC_SET = (() => {
+    const cps = [];
+    for (let c = 65; c <= 90; c++) cps.push(c);
+    for (let c = 97; c <= 122; c++) cps.push(c);
+    for (let c = 48; c <= 57; c++) cps.push(c);
+    for (const ch of ".,:;!?-'\"()/&@ ") cps.push(ch.codePointAt(0));
+    return cps;
+  })();
+
+  // ----- model ---------------------------------------------------------------
+  const r = Math.round;
+  const vec = (v) => (v ? { x: r(v.x), y: r(v.y) } : null);
+  function mkNode(x, y, inH = null, outH = null, type = 'corner') {
+    return { id: uid(8), x: r(x), y: r(y), in: vec(inH), out: vec(outH), type };
+  }
+  function mkContour(nodes, closed = true) { return { id: uid(8), closed, nodes }; }
+  function mkGlyph({ name, unicodes = [], advance = 500, contours = [] }) {
+    return { id: uid(10), name, unicodes, advance: r(advance), contours };
+  }
+  function defaultInfo(familyName = 'Untitled Sans') {
+    return {
+      familyName, weight: 400, italic: false, versionMajor: 1, versionMinor: 0, designer: '',
+      unitsPerEm: 1000, ascender: 750, descender: -200, xHeight: 500, capHeight: 700,
+    };
+  }
+  function mkProject(info, glyphList, kerningByName = []) {
+    const glyphs = {};
+    const glyphOrder = [];
+    for (const g of glyphList) { glyphs[g.id] = g; glyphOrder.push(g.id); }
+    const byName = new Map(glyphList.map((g) => [g.name, g]));
+    const kerning = {};
+    for (const [a, b, v] of kerningByName) {
+      const ga = byName.get(a), gb = byName.get(b);
+      if (ga && gb) kerning[ga.id + '|' + gb.id] = v;
+    }
+    const now = new Date().toISOString();
+    return { schemaVersion: 1, id: uid(12), createdAt: now, updatedAt: now, info, glyphs, glyphOrder, kerning };
+  }
+
+  // ----- vector & bezier -----------------------------------------------------
+  const add = (a, b) => ({ x: a.x + b.x, y: a.y + b.y });
+  const sub = (a, b) => ({ x: a.x - b.x, y: a.y - b.y });
+  const mul = (a, k) => ({ x: a.x * k, y: a.y * k });
+  const len = (a) => Math.hypot(a.x, a.y);
+  const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+  function cubicAt(p0, p1, p2, p3, t) {
+    const u = 1 - t;
+    const a = u * u * u, b = 3 * u * u * t, c = 3 * u * t * t, d = t * t * t;
+    return { x: a * p0.x + b * p1.x + c * p2.x + d * p3.x, y: a * p0.y + b * p1.y + c * p2.y + d * p3.y };
+  }
+  function quadAt(p0, p1, p2, t) {
+    const u = 1 - t;
+    return { x: u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x, y: u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y };
+  }
+  function splitCubic(p0, p1, p2, p3, t) {
+    const a = lerp(p0, p1, t), b = lerp(p1, p2, t), c = lerp(p2, p3, t);
+    const d = lerp(a, b, t), e = lerp(b, c, t), m = lerp(d, e, t);
+    return [[p0, a, d, m], [m, e, c, p3]];
+  }
+  function subCubic(p0, p1, p2, p3, t0, t1) {
+    let seg = [p0, p1, p2, p3];
+    if (t1 < 1) seg = splitCubic(...seg, t1)[0];
+    if (t0 > 0) seg = splitCubic(...seg, t0 / t1)[1];
+    return seg;
+  }
+  function cubicExtrema1D(a, b, c, d) {
+    // roots of derivative of the cubic in one axis
+    const A = -a + 3 * b - 3 * c + d, B = 2 * (a - 2 * b + c), C = b - a;
+    const ts = [];
+    if (Math.abs(A) < 1e-9) { if (Math.abs(B) > 1e-9) ts.push(-C / B); }
+    else {
+      const disc = B * B - 4 * A * C;
+      if (disc >= 0) { const s = Math.sqrt(disc); ts.push((-B + s) / (2 * A), (-B - s) / (2 * A)); }
+    }
+    return ts.filter((t) => t > 0 && t < 1);
+  }
+
+  // ----- contours --------------------------------------------------------------
+  function segmentsOf(c) {
+    const out = [];
+    const n = c.nodes.length;
+    if (n < 2) return out;
+    const count = c.closed ? n : n - 1;
+    for (let i = 0; i < count; i++) {
+      const j = (i + 1) % n;
+      const a = c.nodes[i], b = c.nodes[j];
+      const p0 = { x: a.x, y: a.y }, p3 = { x: b.x, y: b.y };
+      if (a.out || b.in) {
+        const p1 = a.out ? { x: a.x + a.out.x, y: a.y + a.out.y } : p0;
+        const p2 = b.in ? { x: b.x + b.in.x, y: b.y + b.in.y } : p3;
+        out.push({ type: 'C', i, j, p0, p1, p2, p3 });
+      } else out.push({ type: 'L', i, j, p0, p3 });
+    }
+    return out;
+  }
+  function segPointAt(s, t) { return s.type === 'L' ? lerp(s.p0, s.p3, t) : cubicAt(s.p0, s.p1, s.p2, s.p3, t); }
+  function nearestOnSegment(s, p) {
+    let best = { t: 0, d: Infinity };
+    const N = 48;
+    for (let k = 0; k <= N; k++) {
+      const t = k / N, q = segPointAt(s, t), d = dist(p, q);
+      if (d < best.d) best = { t, d };
+    }
+    let lo = Math.max(0, best.t - 1 / N), hi = Math.min(1, best.t + 1 / N);
+    for (let it = 0; it < 24; it++) {
+      const t1 = lo + (hi - lo) / 3, t2 = hi - (hi - lo) / 3;
+      if (dist(p, segPointAt(s, t1)) < dist(p, segPointAt(s, t2))) hi = t2; else lo = t1;
+    }
+    const t = (lo + hi) / 2;
+    return { t, d: dist(p, segPointAt(s, t)), pt: segPointAt(s, t) };
+  }
+  function bboxOfContours(contours) {
+    let xMin = Infinity, yMin = Infinity, xMax = -Infinity, yMax = -Infinity;
+    const addPt = (p) => {
+      if (p.x < xMin) xMin = p.x; if (p.x > xMax) xMax = p.x;
+      if (p.y < yMin) yMin = p.y; if (p.y > yMax) yMax = p.y;
+    };
+    for (const c of contours) {
+      for (const n of c.nodes) addPt(n);
+      for (const s of segmentsOf(c)) {
+        if (s.type !== 'C') continue;
+        for (const t of cubicExtrema1D(s.p0.x, s.p1.x, s.p2.x, s.p3.x)) addPt(cubicAt(s.p0, s.p1, s.p2, s.p3, t));
+        for (const t of cubicExtrema1D(s.p0.y, s.p1.y, s.p2.y, s.p3.y)) addPt(cubicAt(s.p0, s.p1, s.p2, s.p3, t));
+      }
+    }
+    if (xMin === Infinity) return null;
+    return { xMin, yMin, xMax, yMax };
+  }
+  function flatten(c, steps = 16) {
+    const pts = [];
+    for (const s of segmentsOf(c)) {
+      pts.push(s.p0);
+      if (s.type === 'C') for (let k = 1; k < steps; k++) pts.push(cubicAt(s.p0, s.p1, s.p2, s.p3, k / steps));
+    }
+    if (!c.closed && c.nodes.length) pts.push(c.nodes[c.nodes.length - 1]);
+    return pts;
+  }
+  function signedArea(pts) {
+    let a = 0;
+    for (let i = 0, n = pts.length; i < n; i++) {
+      const p = pts[i], q = pts[(i + 1) % n];
+      a += p.x * q.y - q.x * p.y;
+    }
+    return a / 2;
+  }
+  function pointInPoly(p, pts) {
+    let inside = false;
+    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+      const a = pts[i], b = pts[j];
+      if ((a.y > p.y) !== (b.y > p.y) && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) inside = !inside;
+    }
+    return inside;
+  }
+  function polyBBox(pts) {
+    let xMin = Infinity, yMin = Infinity, xMax = -Infinity, yMax = -Infinity;
+    for (const p of pts) {
+      if (p.x < xMin) xMin = p.x; if (p.x > xMax) xMax = p.x;
+      if (p.y < yMin) yMin = p.y; if (p.y > yMax) yMax = p.y;
+    }
+    return { xMin, yMin, xMax, yMax };
+  }
+  function segsCross(a, b, c, d) {
+    const o = (p, q, s) => (q.x - p.x) * (s.y - p.y) - (q.y - p.y) * (s.x - p.x);
+    const d1 = o(c, d, a), d2 = o(c, d, b), d3 = o(a, b, c), d4 = o(a, b, d);
+    return ((d1 > 0) !== (d2 > 0)) && ((d3 > 0) !== (d4 > 0)) && d1 !== 0 && d2 !== 0 && d3 !== 0 && d4 !== 0;
+  }
+  function edgesIntersect(A, B) {
+    for (let i = 0; i < A.length; i++) {
+      const a = A[i], b = A[(i + 1) % A.length];
+      const axn = Math.min(a.x, b.x), axx = Math.max(a.x, b.x), ayn = Math.min(a.y, b.y), ayx = Math.max(a.y, b.y);
+      for (let j = 0; j < B.length; j++) {
+        const c = B[j], d = B[(j + 1) % B.length];
+        if (Math.max(c.x, d.x) < axn || Math.min(c.x, d.x) > axx || Math.max(c.y, d.y) < ayn || Math.min(c.y, d.y) > ayx) continue;
+        if (segsCross(a, b, c, d)) return true;
+      }
+    }
+    return false;
+  }
+  function polyContains(A, Abb, aArea, B, Bbb, bArea) {
+    if (!(Abb.xMin <= Bbb.xMin && Abb.yMin <= Bbb.yMin && Abb.xMax >= Bbb.xMax && Abb.yMax >= Bbb.yMax)) return false;
+    if (Math.abs(aArea) <= Math.abs(bArea)) return false;
+    if (edgesIntersect(A, B)) return false;
+    return pointInPoly(B[0], A);
+  }
+  function reverseContour(c) {
+    const sw = (n) => ({ ...n, in: n.out, out: n.in });
+    const nodes = c.closed && c.nodes.length
+      ? [sw(c.nodes[0]), ...c.nodes.slice(1).reverse().map(sw)]
+      : c.nodes.slice().reverse().map(sw);
+    return { ...c, nodes };
+  }
+  /** PostScript/CFF convention: outer contours counter-clockwise (y-up), counters clockwise.
+   *  Only nested contours are treated as holes, so overlapping siblings stay filled. */
+  function normalizeDirections(contours) {
+    const info = contours.map((c) => {
+      if (!c.closed || c.nodes.length < 2) return null;
+      const pts = flatten(c);
+      return { pts, bb: polyBBox(pts), area: signedArea(pts) };
+    });
+    let flipped = 0, degenerate = 0;
+    const out = contours.map((c, i) => {
+      const me = info[i];
+      if (!me) return c;
+      if (Math.abs(me.area) < 1) { degenerate++; return c; }
+      let depth = 0;
+      for (let j = 0; j < contours.length; j++) {
+        const o = info[j];
+        if (j === i || !o) continue;
+        if (polyContains(o.pts, o.bb, o.area, me.pts, me.bb, me.area)) depth++;
+      }
+      const wantCCW = depth % 2 === 0;
+      if ((me.area > 0) !== wantCCW) { flipped++; return reverseContour(c); }
+      return c;
+    });
+    return { contours: out, flipped, degenerate };
+  }
+
+  // Memoized derived data, keyed by the immutable contours array.
+  const normCache = new WeakMap();
+  function normalized(contours) {
+    let v = normCache.get(contours);
+    if (!v) { v = normalizeDirections(contours).contours; normCache.set(contours, v); }
+    return v;
+  }
+  function contoursToD(contours, flipY = true) {
+    const f = flipY ? -1 : 1;
+    let d = '';
+    for (const c of contours) {
+      if (!c.nodes.length) continue;
+      d += 'M' + c.nodes[0].x + ' ' + f * c.nodes[0].y;
+      for (const s of segmentsOf(c)) {
+        if (s.type === 'L') d += 'L' + s.p3.x + ' ' + f * s.p3.y;
+        else d += 'C' + s.p1.x + ' ' + f * s.p1.y + ' ' + s.p2.x + ' ' + f * s.p2.y + ' ' + s.p3.x + ' ' + f * s.p3.y;
+      }
+      if (c.closed) d += 'Z';
+    }
+    return d;
+  }
+  const dCache = new WeakMap();
+  function glyphD(glyph) {
+    let d = dCache.get(glyph.contours);
+    if (d === undefined) { d = contoursToD(normalized(glyph.contours)); dCache.set(glyph.contours, d); }
+    return d;
+  }
+  const bbCache = new WeakMap();
+  function glyphBBox(glyph) {
+    let b = bbCache.get(glyph.contours);
+    if (b === undefined) { b = bboxOfContours(glyph.contours); bbCache.set(glyph.contours, b); }
+    return b;
+  }
+  function sidebearings(glyph) {
+    const bb = glyphBBox(glyph);
+    if (!bb) return { lsb: null, rsb: null };
+    return { lsb: r(bb.xMin), rsb: r(glyph.advance - bb.xMax) };
+  }
+  const isEmpty = (g) => !g.contours.some((c) => c.nodes.length > 1);
+
+  // ----- transforms ------------------------------------------------------------
+  function mapContour(c, fp, fh, freshIds = true) {
+    return {
+      ...c, id: freshIds ? uid(8) : c.id,
+      nodes: c.nodes.map((n) => {
+        const p = fp(n);
+        return { ...n, id: freshIds ? uid(8) : n.id, x: r(p.x), y: r(p.y), in: n.in && vec(fh(n.in)), out: n.out && vec(fh(n.out)) };
+      }),
+    };
+  }
+  const translate = (cs, dx, dy, fresh = false) =>
+    cs.map((c) => mapContour(c, (p) => ({ x: p.x + dx, y: p.y + dy }), (h) => h, fresh));
+  const rotate180 = (cs, cx, cy) =>
+    cs.map((c) => mapContour(c, (p) => ({ x: 2 * cx - p.x, y: 2 * cy - p.y }), (h) => ({ x: -h.x, y: -h.y })));
+  const mirrorX = (cs, ax, fresh = true) =>
+    cs.map((c) => reverseContour(mapContour(c, (p) => ({ x: 2 * ax - p.x, y: p.y }), (h) => ({ x: -h.x, y: h.y }), fresh)));
+  const mirrorY = (cs, ay, fresh = true) =>
+    cs.map((c) => reverseContour(mapContour(c, (p) => ({ x: p.x, y: 2 * ay - p.y }), (h) => ({ x: h.x, y: -h.y }), fresh)));
+
+  // ----- editing ops (pure; return new glyph) ------------------------------------
+  function withContours(glyph, contours) { return { ...glyph, contours }; }
+  function moveNodes(origin, ids, dx, dy) {
+    return withContours(origin, origin.contours.map((c) =>
+      c.nodes.some((n) => ids.has(n.id))
+        ? { ...c, nodes: c.nodes.map((n) => (ids.has(n.id) ? { ...n, x: r(n.x + dx), y: r(n.y + dy) } : n)) }
+        : c));
+  }
+  function updateNode(glyph, id, fn) {
+    return withContours(glyph, glyph.contours.map((c) =>
+      c.nodes.some((n) => n.id === id) ? { ...c, nodes: c.nodes.map((n) => (n.id === id ? fn(n) : n)) } : c));
+  }
+  function setHandle(glyph, id, which, h, breakSmooth = false) {
+    return updateNode(glyph, id, (n) => {
+      const other = which === 'in' ? 'out' : 'in';
+      const next = { ...n, [which]: vec(h) };
+      if (breakSmooth) next.type = 'corner';
+      else if (n.type === 'smooth' && n[other] && len(h) > 0.5) {
+        const l = len(n[other]);
+        next[other] = vec(mul(h, -l / len(h)));
+      }
+      return next;
+    });
+  }
+  function toggleSmooth(glyph, id) {
+    return updateNode(glyph, id, (n) => {
+      if (n.type === 'smooth') return { ...n, type: 'corner' };
+      const next = { ...n, type: 'smooth' };
+      if (n.in && n.out) {
+        // align handles along the averaged tangent
+        const dir = sub(mul(n.out, 1 / (len(n.out) || 1)), mul(n.in, 1 / (len(n.in) || 1)));
+        const l = len(dir) || 1;
+        next.out = vec(mul(dir, len(n.out) / l));
+        next.in = vec(mul(dir, -len(n.in) / l));
+      }
+      return next;
+    });
+  }
+  function deleteNodes(glyph, ids) {
+    const contours = [];
+    for (const c of glyph.contours) {
+      const keep = c.nodes.filter((n) => !ids.has(n.id));
+      if (keep.length === c.nodes.length) contours.push(c);
+      else if (keep.length >= 2) contours.push({ ...c, nodes: keep, closed: c.closed && keep.length >= 3 });
+    }
+    return withContours(glyph, contours);
+  }
+  function deleteContours(glyph, contourIds) { return withContours(glyph, glyph.contours.filter((c) => !contourIds.has(c.id))); }
+  function reverseContours(glyph, contourIds) {
+    return withContours(glyph, glyph.contours.map((c) => (contourIds.has(c.id) ? reverseContour(c) : c)));
+  }
+  function correctDirections(glyph) { return withContours(glyph, normalizeDirections(glyph.contours).contours); }
+  function insertNodeOnSegment(glyph, contourId, segIndex, t) {
+    let newId = null;
+    const contours = glyph.contours.map((c) => {
+      if (c.id !== contourId) return c;
+      const s = segmentsOf(c)[segIndex];
+      if (!s) return c;
+      const nodes = c.nodes.slice();
+      const a = nodes[s.i], b = nodes[s.j];
+      let nn;
+      if (s.type === 'L') nn = mkNode(lerp(s.p0, s.p3, t).x, lerp(s.p0, s.p3, t).y);
+      else {
+        const [L, R] = splitCubic(s.p0, s.p1, s.p2, s.p3, t);
+        const m = L[3];
+        nn = mkNode(m.x, m.y, sub(L[2], m), sub(R[1], m), 'smooth');
+        nodes[s.i] = { ...a, out: vec(sub(L[1], L[0])) };
+        nodes[s.j] = { ...b, in: vec(sub(R[2], R[3])) };
+      }
+      newId = nn.id;
+      nodes.splice(s.i + 1, 0, nn);
+      return { ...c, nodes };
+    });
+    return { glyph: withContours(glyph, contours), nodeId: newId };
+  }
+  function setLsb(glyph, lsb) {
+    const bb = glyphBBox(glyph);
+    if (!bb) return glyph;
+    const dx = r(lsb - bb.xMin);
+    return { ...glyph, contours: translate(glyph.contours, dx, 0), advance: Math.max(0, glyph.advance + dx) };
+  }
+  function setRsb(glyph, rsb) {
+    const bb = glyphBBox(glyph);
+    if (!bb) return glyph;
+    return { ...glyph, advance: Math.max(0, r(bb.xMax + rsb)) };
+  }
+  function mirrorContours(glyph, contourIds, axis) {
+    const sel = glyph.contours.filter((c) => contourIds.has(c.id));
+    const bb = bboxOfContours(sel);
+    if (!bb) return glyph;
+    const mirrored = axis === 'x' ? mirrorX(sel, (bb.xMin + bb.xMax) / 2, false) : mirrorY(sel, (bb.yMin + bb.yMax) / 2, false);
+    const byId = new Map(mirrored.map((c) => [c.id, c]));
+    return withContours(glyph, glyph.contours.map((c) => byId.get(c.id) || c));
+  }
+
+  // ----- template construction DSL ---------------------------------------------
+  const D2R = Math.PI / 180;
+  function arcPts(cx, cy, rx, ry, a0, a1) {
+    const A0 = a0 * D2R, A1 = a1 * D2R;
+    const n = Math.max(1, Math.ceil(Math.abs(A1 - A0) / (Math.PI / 2) - 1e-6));
+    const d = (A1 - A0) / n, al = (4 / 3) * Math.tan(d / 4);
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const t = A0 + d * i;
+      const hx = -rx * Math.sin(t) * al, hy = ry * Math.cos(t) * al;
+      pts.push({ x: cx + rx * Math.cos(t), y: cy + ry * Math.sin(t), in: i > 0 ? { x: -hx, y: -hy } : null, out: i < n ? { x: hx, y: hy } : null });
+    }
+    return pts;
+  }
+  const fromPt = (p, type) => mkNode(p.x, p.y, p.in, p.out, type);
+  const areaOf = (c) => signedArea(flatten(c));
+  const ccw = (c) => (areaOf(c) < 0 ? reverseContour(c) : c);
+  const cw = (c) => (areaOf(c) > 0 ? reverseContour(c) : c);
+  function ellipse(cx, cy, rx, ry) {
+    const p = arcPts(cx, cy, rx, ry, -90, 270);
+    const nodes = p.slice(0, 4).map((q) => fromPt(q, 'smooth'));
+    nodes[0] = mkNode(p[0].x, p[0].y, p[4].in, p[0].out, 'smooth');
+    return mkContour(nodes);
+  }
+  const ring = (cx, cy, rx, ry, tx, ty) => [ccw(ellipse(cx, cy, rx, ry)), cw(ellipse(cx, cy, rx - tx, ry - ty))];
+  function arcBand(cx, cy, rx, ry, tx, ty, a0, a1) {
+    const o = arcPts(cx, cy, rx, ry, a0, a1), i = arcPts(cx, cy, rx - tx, ry - ty, a1, a0);
+    const ends = (arr) => arr.map((p, k) => fromPt(p, k === 0 || k === arr.length - 1 ? 'corner' : 'smooth'));
+    return ccw(mkContour([...ends(o), ...ends(i)]));
+  }
+  const poly = (pts) => ccw(mkContour(pts.map(([x, y]) => mkNode(x, y))));
+  const rect = (x0, y0, x1, y1) => poly([[x0, y0], [x1, y0], [x1, y1], [x0, y1]]);
+  const diag = (x0, y0, x1, y1, w) => poly([[x0 - w / 2, y0], [x0 + w / 2, y0], [x1 + w / 2, y1], [x1 - w / 2, y1]]);
+  function bowl(xL, y0, y1, xR, tx, ty, stemW) {
+    const ry = (y1 - y0) / 2, rx = Math.min(ry, xR - xL), cx = xR - rx, cy = (y0 + y1) / 2;
+    const make = (xl, RX, RY) => {
+      const arc = arcPts(cx, cy, RX, RY, -90, 90);
+      const nodes = [];
+      if (cx - xl > 1) nodes.push(mkNode(xl, cy - RY));
+      arc.forEach((p, k) => nodes.push(fromPt(p, k === 0 || k === arc.length - 1 ? 'corner' : 'smooth')));
+      if (cx - xl > 1) nodes.push(mkNode(xl, cy + RY));
+      return mkContour(nodes);
+    };
+    return [ccw(make(xL, rx, ry)), cw(make(xL + stemW, rx - tx, ry - ty))];
+  }
+  const dot = (cx, cy, d = 96) => ellipse(cx, cy, d / 2, d / 2);
+  function fit(cs, lsb, rsb) {
+    const bb = bboxOfContours(cs);
+    return { contours: translate(cs, r(lsb - bb.xMin), 0), advance: r(bb.xMax - bb.xMin + lsb + rsb) };
+  }
+  function fitTab(cs, width = 560) {
+    const bb = bboxOfContours(cs);
+    const lsb = r((width - (bb.xMax - bb.xMin)) / 2);
+    return { contours: translate(cs, r(lsb - bb.xMin), 0), advance: width };
+  }
+
+  // ----- the "Sans" skeleton ------------------------------------------------------
+  // Geometric sans built from stems, bars, rings and diagonals.
+  const CAP = 700, XH = 500, ASC = 740, DSC = -200;
+  const ST = 80, RST = 86, BAR = 70, LST = 78, LRST = 84, LBAR = 66;
+  const SB = { S: 70, R: 45, D: 12 }, sb = { S: 60, R: 40, D: 10 };
+  const nShape = () => [rect(0, 0, LST, XH), arcBand(222, 300, 222, 212, LST, LBAR, 0, 180), rect(366, 0, 444, 310)];
+  const sixShape = () => [...ring(255, 235, 225, 247, RST, BAR), diag(85, 300, 345, 700, 95)];
+  const comma = () => [dot(48, 48), diag(64, 30, 20, -130, 52)];
+  const parenL = () => [arcBand(380, 275, 300, 530, ST + 5, ST + 5, 118, 242)];
+  const SANS = {
+    A: () => fit([diag(44, 0, 320, 700, 88), diag(596, 0, 320, 700, 88), rect(140, 200, 500, 268)], SB.D, SB.D),
+    B: () => fit([rect(0, 0, ST, CAP), ...bowl(0, 355, 700, 440, RST, BAR, ST), ...bowl(0, 0, 425, 480, RST, BAR, ST)], SB.S, SB.R),
+    C: () => fit([arcBand(320, 350, 320, 362, RST, 72, 45, 315)], SB.R, 30),
+    D: () => fit(bowl(0, 0, 700, 620, RST, BAR, ST), SB.S, SB.R),
+    E: () => fit([rect(0, 0, ST, CAP), rect(0, 0, 500, BAR), rect(0, 315, 450, 385), rect(0, 630, 490, 700)], SB.S, 40),
+    F: () => fit([rect(0, 0, ST, CAP), rect(0, 630, 480, 700), rect(0, 300, 430, 370)], SB.S, 30),
+    G: () => fit([arcBand(330, 350, 330, 362, RST, 72, 40, 360), rect(370, 280, 660, 350)], SB.R, 50),
+    H: () => fit([rect(0, 0, ST, CAP), rect(480, 0, 560, CAP), rect(0, 322, 560, 392)], SB.S, SB.S),
+    I: () => fit([rect(0, 0, ST, CAP)], SB.S, SB.S),
+    J: () => fit([rect(300, 195, 380, 700), arcBand(190, 200, 190, 212, ST, 70, 200, 360)], 30, SB.S),
+    K: () => fit([rect(0, 0, ST, CAP), diag(110, 300, 500, 700, 100), diag(230, 420, 520, 0, 100)], SB.S, SB.D),
+    L: () => fit([rect(0, 0, ST, CAP), rect(0, 0, 460, BAR)], SB.S, 20),
+    M: () => fit([rect(0, 0, ST, CAP), rect(640, 0, 720, CAP), diag(50, 700, 360, 0, 95), diag(670, 700, 360, 0, 95)], SB.S, SB.S),
+    N: () => fit([rect(0, 0, ST, CAP), rect(520, 0, 600, CAP), diag(50, 700, 550, 0, 100)], SB.S, SB.S),
+    O: () => fit(ring(360, 350, 345, 362, RST, 72), SB.R, SB.R),
+    P: () => fit([rect(0, 0, ST, CAP), ...bowl(0, 300, 700, 470, RST, BAR, ST)], SB.S, 40),
+    Q: () => fit([...ring(360, 350, 345, 362, RST, 72), diag(520, 130, 640, -60, 92)], SB.R, 30),
+    R: () => fit([rect(0, 0, ST, CAP), ...bowl(0, 320, 700, 460, RST, BAR, ST), diag(250, 330, 490, 0, 100)], SB.S, SB.D),
+    S: () => fit([arcBand(260, 513.5, 220, 198.5, 84, 70, 30, 280), arcBand(260, 186.5, 240, 198.5, 84, 70, 100, -150)], 40, 40),
+    T: () => fit([rect(0, 630, 560, 700), rect(240, 0, 320, 700)], 15, 15),
+    U: () => fit([rect(0, 255, ST, CAP), rect(460, 255, 540, CAP), arcBand(270, 260, 270, 272, ST, 72, 180, 360)], 65, 65),
+    V: () => fit([diag(40, 700, 300, 0, 92), diag(560, 700, 300, 0, 92)], SB.D, SB.D),
+    W: () => fit([diag(30, 700, 200, 0, 86), diag(370, 700, 200, 0, 86), diag(370, 700, 540, 0, 86), diag(710, 700, 540, 0, 86)], 8, 8),
+    X: () => fit([diag(40, 700, 540, 0, 96), diag(540, 700, 40, 0, 96)], SB.D, SB.D),
+    Y: () => fit([diag(40, 700, 300, 340, 92), diag(560, 700, 300, 340, 92), rect(260, 0, 340, 360)], SB.D, SB.D),
+    Z: () => fit([rect(20, 630, 520, 700), rect(0, 0, 540, 70), diag(75, 35, 465, 665, 110)], 30, 30),
+
+    a: () => fit([...ring(230, 250, 230, 262, LRST, 68), rect(382, 0, 460, 500)], sb.R, sb.S),
+    b: () => fit([rect(0, 0, LST, ASC), ...ring(235, 250, 235, 262, LRST, 68)], sb.S, sb.R),
+    c: () => fit([arcBand(235, 250, 235, 262, LRST, 68, 45, 315)], sb.R, 25),
+    d: () => fit([...ring(235, 250, 235, 262, LRST, 68), rect(392, 0, 470, ASC)], sb.R, sb.S),
+    e: () => fit([arcBand(240, 250, 240, 262, LRST, 68, 0, 320), rect(60, 250, 480, 316)], sb.R, sb.R),
+    f: () => fit([rect(60, 0, 138, 600), arcBand(218, 600, 158, 140, LST, LBAR, 180, 40), rect(0, 434, 290, 500)], 15, 0),
+    g: () => fit([...ring(230, 250, 230, 262, LRST, 68), rect(382, -60, 460, 500), arcBand(230, -60, 230, 140, LST, LBAR, 0, -160)], sb.R, sb.S),
+    h: () => fit([rect(0, 0, LST, ASC), arcBand(222, 300, 222, 212, LST, LBAR, 0, 180), rect(366, 0, 444, 310)], sb.S, sb.S),
+    i: () => fit([rect(0, 0, LST, XH), dot(39, 640)], sb.S, sb.S),
+    j: () => fit([rect(120, -70, 198, XH), arcBand(78, -70, 120, 130, LST, LBAR, 0, -150), dot(159, 640)], 10, sb.S),
+    k: () => fit([rect(0, 0, LST, ASC), diag(90, 190, 420, 500, 94), diag(190, 290, 440, 0, 94)], sb.S, sb.D),
+    l: () => fit([rect(0, 0, LST, ASC)], sb.S, sb.S),
+    m: () => fit([rect(0, 0, LST, XH), arcBand(180, 300, 180, 212, LST, LBAR, 0, 180), rect(282, 0, 360, 310),
+      arcBand(462, 300, 180, 212, LST, LBAR, 0, 180), rect(564, 0, 642, 310)], sb.S, sb.S),
+    n: () => fit(nShape(), sb.S, sb.S),
+    o: () => fit(ring(240, 250, 240, 262, LRST, 68), sb.R, sb.R),
+    p: () => fit([rect(0, DSC, LST, XH), ...ring(235, 250, 235, 262, LRST, 68)], sb.S, sb.R),
+    q: () => fit([...ring(235, 250, 235, 262, LRST, 68), rect(392, DSC, 470, XH)], sb.R, sb.S),
+    r: () => fit([rect(0, 0, LST, XH), arcBand(200, 300, 200, 212, LST, LBAR, 180, 45)], sb.S, 5),
+    s: () => fit([arcBand(200, 364.5, 175, 147.5, 78, 66, 35, 280), arcBand(200, 135.5, 190, 147.5, 78, 66, 100, -145)], 35, 35),
+    t: () => fit([rect(60, 0, 138, 640), rect(0, 434, 280, 500)], 10, 10),
+    u: () => fit(rotate180(nShape(), 222, 250), sb.S, sb.S),
+    v: () => fit([diag(30, 500, 230, 0, 90), diag(430, 500, 230, 0, 90)], sb.D, sb.D),
+    w: () => fit([diag(20, 500, 160, 0, 84), diag(300, 500, 160, 0, 84), diag(300, 500, 440, 0, 84), diag(580, 500, 440, 0, 84)], 8, 8),
+    x: () => fit([diag(30, 500, 420, 0, 92), diag(420, 500, 30, 0, 92)], sb.D, sb.D),
+    y: () => fit([diag(30, 500, 225, 0, 90), diag(440, 500, 120, -200, 90)], sb.D, sb.D),
+    z: () => fit([rect(20, 434, 400, 500), rect(0, 0, 420, 66), diag(60, 33, 360, 467, 100)], 25, 25),
+
+    zero: () => fitTab(ring(230, 350, 230, 362, RST - 4, 70)),
+    one: () => fitTab([rect(0, 0, ST, CAP), diag(-85, 545, 25, 690, 90)]),
+    two: () => fitTab([arcBand(240, 480, 220, 232, ST, BAR, 160, -40), diag(45, 35, 378, 353, 115), rect(0, 0, 470, BAR)]),
+    three: () => fitTab([arcBand(250, 516, 200, 196, RST, BAR, 150, -95), arcBand(250, 189, 225, 201, RST, BAR, 95, -150), rect(150, 320, 260, 390)]),
+    four: () => fitTab([rect(330, 0, 410, 700), diag(45, 205, 365, 690, 105), rect(0, 170, 500, 240)]),
+    five: () => fitTab([rect(70, 630, 450, 700), rect(70, 370, 150, 700), arcBand(250, 230, 225, 242, RST, BAR, 145, -150)]),
+    six: () => fitTab(sixShape()),
+    seven: () => fitTab([rect(0, 630, 480, 700), diag(130, 0, 440, 665, 100)]),
+    eight: () => fitTab([...ring(250, 526, 195, 186, RST - 4, 70), ...ring(250, 199, 225, 211, RST, 70)]),
+    nine: () => fitTab(rotate180(sixShape(), 255, 350)),
+
+    period: () => fit([dot(48, 48)], 60, 60),
+    comma: () => fit(comma(), 60, 60),
+    colon: () => fit([dot(48, 48), dot(48, 452)], 60, 60),
+    semicolon: () => fit([dot(48, 452), ...comma()], 60, 60),
+    exclam: () => fit([rect(0, 200, ST, CAP), dot(40, 48)], 70, 70),
+    question: () => fit([arcBand(220, 520, 190, 192, RST, BAR, 160, -90), rect(180, 200, 260, 340), dot(220, 48)], 40, 40),
+    hyphen: () => fit([rect(0, 230, 240, 300)], 40, 40),
+    quotesingle: () => fit([rect(0, 480, ST, 720)], 70, 70),
+    quotedbl: () => fit([rect(0, 480, ST, 720), rect(150, 480, 230, 720)], 70, 70),
+    parenleft: () => fit(parenL(), 60, 30),
+    parenright: () => fit(mirrorX(parenL(), 0), 30, 60),
+    slash: () => fit([diag(0, -120, 320, 740, 92)], 10, 10),
+    ampersand: () => fit([...ring(220, 560, 135, 152, 74, 64), arcBand(250, 215, 235, 227, RST, 70, 30, 300), diag(150, 470, 520, 0, 100)], 40, 20),
+    at: () => fit([arcBand(400, 280, 390, 400, 62, 58, -20, 310), ...ring(400, 280, 150, 160, 70, 66), rect(480, 120, 550, 440), rect(480, 110, 730, 170)], 40, 40),
+  };
+  const SANS_KERNING = [
+    ['A', 'V', -60], ['A', 'W', -40], ['A', 'Y', -70], ['A', 'T', -60], ['A', 'quotesingle', -60],
+    ['L', 'T', -70], ['L', 'V', -60], ['L', 'Y', -70], ['L', 'quotesingle', -80],
+    ['T', 'A', -60], ['T', 'o', -70], ['T', 'a', -70], ['T', 'e', -70], ['T', 'y', -40], ['T', 'r', -40],
+    ['T', 'period', -90], ['T', 'comma', -90],
+    ['V', 'A', -60], ['V', 'a', -50], ['V', 'o', -50], ['V', 'e', -50], ['V', 'period', -80],
+    ['W', 'A', -40], ['W', 'a', -30], ['W', 'o', -30],
+    ['Y', 'A', -70], ['Y', 'a', -70], ['Y', 'o', -70], ['Y', 'period', -90],
+    ['F', 'A', -50], ['P', 'A', -50], ['P', 'period', -90], ['F', 'period', -80],
+    ['r', 'period', -40], ['v', 'period', -40], ['y', 'period', -40],
+  ];
+
+  function notdefGlyph() {
+    return mkGlyph({ name: '.notdef', advance: 500, contours: [rect(50, 0, 450, 700), cw(rect(100, 50, 400, 650))] });
+  }
+  function spaceGlyph() { return mkGlyph({ name: 'space', unicodes: [0x20, 0xa0], advance: 260 }); }
+  function sansProject(familyName = 'Studio Sans') {
+    const glyphs = [notdefGlyph()];
+    for (const cp of BASIC_SET) {
+      if (cp === 0x20) { glyphs.push(spaceGlyph()); continue; }
+      const name = nameForCodepoint(cp);
+      const recipe = SANS[name];
+      if (!recipe) continue;
+      const { contours, advance } = recipe();
+      glyphs.push(mkGlyph({ name, unicodes: [cp], advance, contours }));
+    }
+    return mkProject(defaultInfo(familyName), glyphs, SANS_KERNING);
+  }
+  function blankProject(familyName = 'Untitled Sans') {
+    return mkProject(defaultInfo(familyName), [notdefGlyph(), spaceGlyph()]);
+  }
+  function newGlyphFor(cp, advance = 500) {
+    return mkGlyph({ name: nameForCodepoint(cp), unicodes: [cp], advance });
+  }
+
+  // ----- text layout (model-based, used for previews) -------------------------------
+  const cmapCache = new WeakMap();
+  function cmapOf(project) {
+    let m = cmapCache.get(project.glyphs);
+    if (!m) {
+      m = new Map();
+      for (const id of project.glyphOrder) {
+        const g = project.glyphs[id];
+        if (g) for (const cp of g.unicodes) if (!m.has(cp)) m.set(cp, g);
+      }
+      cmapCache.set(project.glyphs, m);
+    }
+    return m;
+  }
+  function kernValue(project, a, b) { return (a && b && project.kerning[a.id + '|' + b.id]) || 0; }
+  /** items: [{glyph|null, ch, x}] — glyphs may be passed directly via {glyph}. */
+  function layoutRun(project, seq, kern = true) {
+    const items = [];
+    let x = 0, prev = null;
+    for (const it of seq) {
+      const g = it.glyph || null;
+      if (!g) { items.push({ ...it, x, missing: true }); x += 280; prev = null; continue; }
+      if (kern && prev) x += kernValue(project, prev, g);
+      items.push({ ...it, x });
+      x += g.advance;
+      prev = g;
+    }
+    return { items, width: x };
+  }
+  function textToSeq(project, text) {
+    const m = cmapOf(project);
+    return Array.from(text).map((ch) => ({ ch, glyph: m.get(ch.codePointAt(0)) || null }));
+  }
+
+  // ----- binary helpers -------------------------------------------------------------
+  class Bytes {
+    constructor() { this.a = []; }
+    u8(v) { this.a.push(v & 255); }
+    u16(v) { this.a.push((v >> 8) & 255, v & 255); }
+    i16(v) { v = Math.max(-32768, Math.min(32767, r(v))); this.u16(v < 0 ? v + 65536 : v); }
+    u32(v) { this.a.push((v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255); }
+    tag(s) { for (let i = 0; i < 4; i++) this.a.push(s.charCodeAt(i)); }
+    bytes(b) { for (const x of b) this.a.push(x); }
+    pad(n = 4) { while (this.a.length % n) this.a.push(0); }
+    get length() { return this.a.length; }
+    out() { return Uint8Array.from(this.a); }
+  }
+  function checksum(b) {
+    let sum = 0;
+    for (let i = 0; i < b.length; i += 4) {
+      const w = ((b[i] << 24) | ((b[i + 1] || 0) << 16) | ((b[i + 2] || 0) << 8) | (b[i + 3] || 0)) >>> 0;
+      sum = (sum + w) >>> 0;
+    }
+    return sum;
+  }
+  function readSfnt(buf) {
+    const u8 = new Uint8Array(buf);
+    const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+    const n = dv.getUint16(4);
+    const tables = {};
+    for (let i = 0; i < n; i++) {
+      const rec = 12 + 16 * i;
+      const tag = String.fromCharCode(u8[rec], u8[rec + 1], u8[rec + 2], u8[rec + 3]);
+      const off = dv.getUint32(rec + 8), length = dv.getUint32(rec + 12);
+      tables[tag] = u8.slice(off, off + length);
+    }
+    return { version: dv.getUint32(0), tables };
+  }
+  function writeSfnt(version, tables) {
+    const tags = Object.keys(tables).sort();
+    const N = tags.length;
+    const es = Math.floor(Math.log2(N)), sr = 16 * 2 ** es;
+    const head = tables.head;
+    if (head) { head[8] = head[9] = head[10] = head[11] = 0; }
+    let offset = 12 + 16 * N;
+    const recs = tags.map((tag) => {
+      const t = tables[tag];
+      const rec = { tag, sum: checksum(t), offset, length: t.length };
+      offset += Math.ceil(t.length / 4) * 4;
+      return rec;
+    });
+    const out = new Uint8Array(offset);
+    const dv = new DataView(out.buffer);
+    dv.setUint32(0, version); dv.setUint16(4, N); dv.setUint16(6, sr); dv.setUint16(8, es); dv.setUint16(10, 16 * N - sr);
+    recs.forEach((rc, i) => {
+      const p = 12 + 16 * i;
+      for (let k = 0; k < 4; k++) out[p + k] = rc.tag.charCodeAt(k);
+      dv.setUint32(p + 4, rc.sum); dv.setUint32(p + 8, rc.offset); dv.setUint32(p + 12, rc.length);
+      out.set(tables[rc.tag], rc.offset);
+    });
+    const headRec = recs.find((x) => x.tag === 'head');
+    if (headRec) dv.setUint32(headRec.offset + 8, (0xb1b0afba - checksum(out)) >>> 0);
+    return out;
+  }
+
+  /** GPOS with one 'kern' feature (DFLT + latn), lookup type 2, PairPos format 1.
+   *  pairs: [{l, r, v}] in glyph indices. Coverage and PairSets sorted by glyph id. */
+  function buildGpos(pairs) {
+    const byFirst = new Map();
+    for (const p of pairs) { if (!byFirst.has(p.l)) byFirst.set(p.l, []); byFirst.get(p.l).push(p); }
+    const firsts = [...byFirst.keys()].sort((a, b) => a - b);
+    const groups = [];
+    let cur = [], size = 14;
+    for (const f of firsts) {
+      const addSz = 2 + 2 + 4 * byFirst.get(f).length + 2;
+      if (cur.length && size + addSz > 60000) { groups.push(cur); cur = []; size = 14; }
+      cur.push(f); size += addSz;
+    }
+    if (cur.length) groups.push(cur);
+    const subs = groups.map((fs) => {
+      const F = fs.length, b = new Bytes();
+      const sets = fs.map((f) => byFirst.get(f).slice().sort((a, c) => a.r - c.r));
+      let off = 10 + 2 * F;
+      const offs = sets.map((s) => { const o = off; off += 2 + 4 * s.length; return o; });
+      b.u16(1); b.u16(off); b.u16(0x0004); b.u16(0); b.u16(F);
+      offs.forEach((o) => b.u16(o));
+      sets.forEach((s) => { b.u16(s.length); s.forEach((p) => { b.u16(p.r); b.i16(p.v); }); });
+      b.u16(1); b.u16(F); fs.forEach((f) => b.u16(f));
+      return b.out();
+    });
+    const g = new Bytes();
+    g.u16(1); g.u16(0); g.u16(10); g.u16(48); g.u16(62);
+    g.u16(2); g.tag('DFLT'); g.u16(14); g.tag('latn'); g.u16(26);
+    for (let k = 0; k < 2; k++) { g.u16(4); g.u16(0); g.u16(0); g.u16(0xffff); g.u16(1); g.u16(0); }
+    g.u16(1); g.tag('kern'); g.u16(8);
+    g.u16(0); g.u16(1); g.u16(0);
+    g.u16(1); g.u16(4);
+    g.u16(2); g.u16(0); g.u16(subs.length);
+    let o = 6 + 2 * subs.length;
+    for (const s of subs) { if (o > 0xffff) throw new Error('Too many kerning pairs for one lookup.'); g.u16(o); o += s.length; }
+    subs.forEach((s) => g.bytes(s));
+    return g.out();
+  }
+
+  // ----- TrueType outlines ------------------------------------------------------------
+  function cubicToQuads(p0, p1, p2, p3, tol = 0.6) {
+    let res = [];
+    for (let n = 1; n <= 12; n++) {
+      res = [];
+      let ok = true;
+      for (let i = 0; i < n; i++) {
+        const [a, b, c, d] = subCubic(p0, p1, p2, p3, i / n, (i + 1) / n);
+        const q = { x: (3 * (b.x + c.x) - (a.x + d.x)) / 4, y: (3 * (b.y + c.y) - (a.y + d.y)) / 4 };
+        for (const s of [0.2, 0.4, 0.5, 0.6, 0.8]) {
+          if (dist(cubicAt(a, b, c, d, s), quadAt(a, q, d, s)) > tol) { ok = false; break; }
+        }
+        res.push({ c: q, end: d });
+        if (!ok) break;
+      }
+      if (ok) return res;
+    }
+    return res;
+  }
+  /** Closed contour (already in TrueType direction) → [{x, y, on}] */
+  function ttContour(c) {
+    const pts = [];
+    for (const s of segmentsOf(c)) {
+      pts.push({ x: r(s.p0.x), y: r(s.p0.y), on: true });
+      if (s.type !== 'C') continue;
+      const straight = dist(s.p0, s.p1) < 0.5 && dist(s.p2, s.p3) < 0.5;
+      if (straight) continue;
+      const qs = cubicToQuads(s.p0, s.p1, s.p2, s.p3);
+      qs.forEach((q, k) => {
+        pts.push({ x: r(q.c.x), y: r(q.c.y), on: false });
+        if (k < qs.length - 1) pts.push({ x: r(q.end.x), y: r(q.end.y), on: true });
+      });
+    }
+    const out = [];
+    for (const p of pts) {
+      const l = out[out.length - 1];
+      if (l && l.on && p.on && l.x === p.x && l.y === p.y) continue;
+      out.push(p);
+    }
+    while (out.length > 1) {
+      const l = out[out.length - 1], f = out[0];
+      if (l.on && f.on && l.x === f.x && l.y === f.y) out.pop(); else break;
+    }
+    return out;
+  }
+  function encodeGlyph(contourPts) {
+    const all = contourPts.flat();
+    const b = new Bytes();
+    let xMin = Infinity, yMin = Infinity, xMax = -Infinity, yMax = -Infinity;
+    for (const p of all) { xMin = Math.min(xMin, p.x); xMax = Math.max(xMax, p.x); yMin = Math.min(yMin, p.y); yMax = Math.max(yMax, p.y); }
+    b.i16(contourPts.length); b.i16(xMin); b.i16(yMin); b.i16(xMax); b.i16(yMax);
+    let end = -1;
+    for (const c of contourPts) { end += c.length; b.u16(end); }
+    b.u16(0);
+    const flags = [], xs = new Bytes(), ys = new Bytes();
+    let px = 0, py = 0;
+    for (const p of all) {
+      let f = p.on ? 1 : 0;
+      const dx = p.x - px, dy = p.y - py;
+      if (dx === 0) f |= 0x10;
+      else if (Math.abs(dx) <= 255) { f |= 0x02; if (dx > 0) f |= 0x10; xs.u8(Math.abs(dx)); }
+      else xs.i16(dx);
+      if (dy === 0) f |= 0x20;
+      else if (Math.abs(dy) <= 255) { f |= 0x04; if (dy > 0) f |= 0x20; ys.u8(Math.abs(dy)); }
+      else ys.i16(dy);
+      flags.push(f);
+      px = p.x; py = p.y;
+    }
+    flags.forEach((f) => b.u8(f));
+    b.bytes(xs.a); b.bytes(ys.a);
+    b.pad(4);
+    return { bytes: b.a, xMin, yMin, xMax, yMax, points: all.length, contours: contourPts.length };
+  }
+
+  // ----- names ---------------------------------------------------------------------------
+  const WEIGHT_NAMES = { 100: 'Thin', 200: 'ExtraLight', 300: 'Light', 400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold', 800: 'ExtraBold', 900: 'Black' };
+  function styleNames(info) {
+    const fam = (info.familyName || '').trim() || 'Untitled';
+    const w = info.weight || 400, it = !!info.italic;
+    const wName = WEIGHT_NAMES[w] || 'Regular';
+    const ribbi = w === 400 || w === 700;
+    const style = ribbi ? (w === 700 ? (it ? 'Bold Italic' : 'Bold') : (it ? 'Italic' : 'Regular')) : (it ? 'Italic' : 'Regular');
+    const family = ribbi ? fam : fam + ' ' + wName;
+    const typoStyle = ribbi ? style : wName + (it ? ' Italic' : '');
+    const ascii = (s) => s.normalize('NFKD').replace(/[^A-Za-z0-9]/g, '');
+    const psStyle = (w === 400 && !it) ? 'Regular' : ((w === 400 ? '' : wName) + (it ? 'Italic' : ''));
+    const psName = ((ascii(fam) || 'Untitled') + '-' + psStyle).slice(0, 63);
+    const fsSelection = (it ? 0x01 : 0) | (w === 700 ? 0x20 : 0) | (!it && w !== 700 ? 0x40 : 0);
+    const macStyle = (w === 700 ? 1 : 0) | (it ? 2 : 0);
+    return { fam, family, style, typoFamily: fam, typoStyle, psName, fsSelection, macStyle, ribbi, fullName: fam + ' ' + typoStyle };
+  }
+
+  // ----- compile ---------------------------------------------------------------------------
+  /** Model → TrueType-flavoured OpenType (.ttf) with GPOS kerning. */
+  function compileFont(project, opts = {}) {
+    const ot = opts.opentype || globalThis.opentype;
+    if (!ot) throw new Error('Font library did not load.');
+    const t0 = (globalThis.performance || Date).now();
+    const diags = [];
+    const info = project.info;
+    const names = styleNames(info);
+    if (!(info.familyName || '').trim()) diags.push({ level: 'warn', msg: 'Family name is empty, so the font is named “Untitled”.' });
+
+    const ordered = project.glyphOrder.map((id) => project.glyphs[id]).filter(Boolean);
+    let notdef = ordered.find((g) => g.name === '.notdef');
+    const list = [notdef || notdefGlyph(), ...ordered.filter((g) => g !== notdef)];
+    const seenNames = new Set(), seenCp = new Map();
+    const prepared = [];
+    let openClosed = 0;
+    list.forEach((g, idx) => {
+      let name = isValidGlyphName(g.name) ? g.name : 'glyph' + idx;
+      if (!isValidGlyphName(g.name)) diags.push({ level: 'warn', msg: `“${g.name}” isn’t a valid glyph name, exported as ${name}.`, glyphId: g.id });
+      if (seenNames.has(name)) { name = name + '.alt' + idx; diags.push({ level: 'warn', msg: `Two glyphs are named “${g.name}”. One was renamed to ${name}.`, glyphId: g.id }); }
+      seenNames.add(name);
+      const unicodes = [];
+      for (const cp of g.unicodes) {
+        if (seenCp.has(cp)) diags.push({ level: 'warn', msg: `U+${cp.toString(16).toUpperCase().padStart(4, '0')} is used by two glyphs. Only “${seenCp.get(cp)}” keeps it.`, glyphId: g.id });
+        else { seenCp.set(cp, name); unicodes.push(cp); }
+      }
+      let cs = [];
+      for (const c of g.contours) {
+        if (c.closed && c.nodes.length >= 2) cs.push(c);
+        else if (!c.closed && c.nodes.length >= 3) { cs.push({ ...c, closed: true }); openClosed++; }
+      }
+      cs = cs.map((c) => ({ ...c, nodes: c.nodes.map((n) => ({ ...n, x: Math.max(-16000, Math.min(16000, n.x)), y: Math.max(-16000, Math.min(16000, n.y)) })) }));
+      cs = normalizeDirections(cs).contours;
+      const tt = cs.map((c) => ttContour(reverseContour(c))).filter((p) => p.length >= 3);
+      prepared.push({ src: g, name, unicodes, advance: Math.max(0, Math.min(65535, r(g.advance))), cubic: cs, tt });
+    });
+    if (openClosed) diags.push({ level: 'info', msg: `${openClosed} open path${openClosed > 1 ? 's were' : ' was'} closed for export.` });
+    if (!seenCp.has(0x20)) diags.push({ level: 'warn', msg: 'There is no space glyph. Add one so words separate.' });
+
+    // glyf / loca / hmtx
+    const glyf = new Bytes();
+    const loca = [0];
+    const metrics = [];
+    let maxPoints = 0, maxContours = 0;
+    let gx0 = Infinity, gy0 = Infinity, gx1 = -Infinity, gy1 = -Infinity;
+    for (const p of prepared) {
+      if (!p.tt.length) { loca.push(glyf.length); metrics.push({ adv: p.advance, lsb: 0, empty: true }); continue; }
+      const e = encodeGlyph(p.tt);
+      glyf.bytes(e.bytes);
+      loca.push(glyf.length);
+      maxPoints = Math.max(maxPoints, e.points); maxContours = Math.max(maxContours, e.contours);
+      gx0 = Math.min(gx0, e.xMin); gy0 = Math.min(gy0, e.yMin); gx1 = Math.max(gx1, e.xMax); gy1 = Math.max(gy1, e.yMax);
+      metrics.push({ adv: p.advance, lsb: e.xMin, xMin: e.xMin, xMax: e.xMax, empty: false });
+    }
+    if (gx0 === Infinity) { gx0 = gy0 = gx1 = gy1 = 0; }
+    const ascent = Math.max(info.ascender, Math.ceil(gy1));
+    const descent = Math.min(info.descender, Math.floor(gy0));
+
+    // kerning → glyph indices
+    const indexById = new Map(prepared.map((p, i) => [p.src.id, i]));
+    const pairs = [];
+    for (const [key, v] of Object.entries(project.kerning || {})) {
+      const [a, b] = key.split('|');
+      const l = indexById.get(a), rr = indexById.get(b);
+      const val = Math.max(-32768, Math.min(32767, r(v)));
+      if (l === undefined || rr === undefined || !val) continue;
+      pairs.push({ l, r: rr, v: val });
+    }
+
+    // opentype.js builds name / cmap / OS/2 / post / head / hhea
+    // opentype.js only needs each glyph's bounds here (its CFF output is discarded),
+    // so give it a box instead of the real outline to keep live rebuilds fast.
+    const otGlyphs = prepared.map((p, i) => {
+      const path = new ot.Path();
+      const m = metrics[i];
+      if (!m.empty) { path.moveTo(m.xMin, gy0); path.lineTo(m.xMax, gy0); path.lineTo(m.xMax, gy1); path.close(); }
+      const g = new ot.Glyph({ name: p.name, advanceWidth: p.advance, path });
+      g.index = i;
+      g.unicodes = p.unicodes.slice();
+      g.unicode = p.unicodes[0];
+      return g;
+    });
+    const verStr = 'Version ' + (info.versionMajor | 0) + '.' + String(info.versionMinor | 0).padStart(3, '0');
+    const font = new ot.Font({
+      familyName: names.family, styleName: names.style, unitsPerEm: 1000, ascender: ascent, descender: descent,
+      designer: info.designer || ' ', manufacturer: info.designer || ' ', version: verStr, postScriptName: names.psName,
+      fullName: names.fullName, weightClass: info.weight || 400, widthClass: 5, fsSelection: names.fsSelection,
+      glyphs: otGlyphs,
+      tables: { os2: { usWinAscent: ascent, usWinDescent: -descent, sTypoAscender: ascent, sTypoDescender: descent, sTypoLineGap: 0, sxHeight: info.xHeight, sCapHeight: info.capHeight, usMaxContext: pairs.length ? 2 : 0, fsType: 0 } },
+    });
+    font.names.uniqueID = { en: verStr.replace('Version ', '') + ';NONE;' + names.psName };
+    if (!names.ribbi) {
+      font.names.preferredFamily = { en: names.typoFamily };
+      font.names.preferredSubfamily = { en: names.typoStyle };
+    }
+    const base = readSfnt(font.toArrayBuffer());
+    const T = base.tables;
+    delete T['CFF '];
+
+    // glyf + loca (long) + maxp v1.0 + hmtx
+    T.glyf = glyf.out();
+    const lb = new Bytes(); loca.forEach((o) => lb.u32(o)); T.loca = lb.out();
+    const mp = new Bytes();
+    mp.u32(0x00010000); mp.u16(prepared.length); mp.u16(maxPoints); mp.u16(maxContours);
+    mp.u16(0); mp.u16(0); mp.u16(1); for (let k = 0; k < 9; k++) mp.u16(0);
+    T.maxp = mp.out();
+    const hm = new Bytes(); metrics.forEach((m) => { hm.u16(m.adv); hm.i16(m.lsb); }); T.hmtx = hm.out();
+
+    // patch head
+    const head = T.head, hdv = new DataView(head.buffer, head.byteOffset, head.byteLength);
+    hdv.setInt32(4, r(((info.versionMajor | 0) + (info.versionMinor | 0) / 1000) * 65536));
+    hdv.setInt16(36, gx0); hdv.setInt16(38, gy0); hdv.setInt16(40, gx1); hdv.setInt16(42, gy1);
+    hdv.setUint16(44, names.macStyle);
+    hdv.setInt16(50, 1); hdv.setInt16(52, 0);
+    // patch hhea
+    const hh = T.hhea, hhdv = new DataView(hh.buffer, hh.byteOffset, hh.byteLength);
+    const filled = metrics.filter((m) => !m.empty);
+    hhdv.setInt16(4, ascent); hhdv.setInt16(6, descent); hhdv.setInt16(8, 0);
+    hhdv.setUint16(10, Math.max(0, ...metrics.map((m) => m.adv)));
+    hhdv.setInt16(12, filled.length ? Math.min(...filled.map((m) => m.lsb)) : 0);
+    hhdv.setInt16(14, filled.length ? Math.min(...filled.map((m) => m.adv - m.xMax)) : 0);
+    hhdv.setInt16(16, filled.length ? Math.max(...filled.map((m) => m.xMax)) : 0);
+    hhdv.setUint16(34, prepared.length);
+    // patch post underline
+    const pt = T.post, pdv = new DataView(pt.buffer, pt.byteOffset, pt.byteLength);
+    pdv.setInt16(8, -100); pdv.setInt16(10, 50);
+
+    if (pairs.length) T.GPOS = buildGpos(pairs);
+    const bytes = writeSfnt(0x00010000, T);
+    const ms = (globalThis.performance || Date).now() - t0;
+    return {
+      bytes, diagnostics: diags, fileName: names.psName + '.ttf',
+      stats: { glyphs: prepared.length, drawn: filled.length, pairs: pairs.length, size: bytes.length, ms },
+    };
+  }
+
+  // ----- project files ------------------------------------------------------------------------
+  function exportProjectJSON(project) {
+    return JSON.stringify({ format: 'typeface-studio', schemaVersion: 1, exportedAt: new Date().toISOString(), project }, null, 0);
+  }
+  const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
+  function validateProject(p) {
+    if (!p || typeof p !== 'object') throw new Error('The file has no project in it.');
+    if (!p.info || typeof p.info.familyName !== 'string') throw new Error('The project is missing its font info.');
+    if (!p.glyphs || typeof p.glyphs !== 'object' || !Array.isArray(p.glyphOrder)) throw new Error('The project is missing its glyphs.');
+    const glyphs = {};
+    const order = [];
+    for (const id of p.glyphOrder) {
+      const g = p.glyphs[id];
+      if (!g || typeof g.name !== 'string' || !Array.isArray(g.contours)) continue;
+      const contours = g.contours.filter((c) => c && Array.isArray(c.nodes)).map((c) => ({
+        id: String(c.id || uid(8)), closed: !!c.closed,
+        nodes: c.nodes.filter((n) => n && isNum(n.x) && isNum(n.y)).map((n) => ({
+          id: String(n.id || uid(8)), x: r(n.x), y: r(n.y),
+          in: n.in && isNum(n.in.x) && isNum(n.in.y) ? vec(n.in) : null,
+          out: n.out && isNum(n.out.x) && isNum(n.out.y) ? vec(n.out) : null,
+          type: n.type === 'smooth' ? 'smooth' : 'corner',
+        })),
+      }));
+      glyphs[id] = {
+        id: String(id), name: g.name, unicodes: (Array.isArray(g.unicodes) ? g.unicodes : []).filter((u) => Number.isInteger(u) && u >= 0 && u <= 0x10ffff),
+        advance: isNum(g.advance) ? r(g.advance) : 500, contours,
+      };
+      order.push(String(id));
+    }
+    const kerning = {};
+    for (const [k, v] of Object.entries(p.kerning || {})) {
+      const [a, b] = k.split('|');
+      if (glyphs[a] && glyphs[b] && isNum(v)) kerning[k] = r(v);
+    }
+    const d = defaultInfo(p.info.familyName);
+    const info = { ...d };
+    for (const k of Object.keys(d)) if (typeof p.info[k] === typeof d[k]) info[k] = p.info[k];
+    const now = new Date().toISOString();
+    return { schemaVersion: 1, id: typeof p.id === 'string' ? p.id : uid(12), createdAt: p.createdAt || now, updatedAt: p.updatedAt || now, info, glyphs, glyphOrder: order, kerning };
+  }
+  function importProjectJSON(text) {
+    let raw;
+    try { raw = JSON.parse(text); } catch { throw new Error('That file isn’t valid JSON.'); }
+    if (raw && raw.format === 'typeface-studio') {
+      if ((raw.schemaVersion | 0) > 1) throw new Error('This project was made by a newer version of Typeface Studio.');
+      raw = raw.project;
+    }
+    const p = validateProject(raw);
+    return { ...p, id: uid(12) };
+  }
+
+  return {
+    uid, nameForCodepoint, isValidGlyphName, categoryOf, categoryOfCodepoint, BASIC_SET, WEIGHT_NAMES,
+    mkNode, mkContour, mkGlyph, defaultInfo, mkProject, newGlyphFor,
+    segmentsOf, nearestOnSegment, bboxOfContours, glyphBBox, sidebearings, isEmpty, flatten, signedArea, pointInPoly,
+    reverseContour, normalizeDirections, normalized, contoursToD, glyphD, translate, splitCubic,
+    moveNodes, updateNode, setHandle, toggleSmooth, deleteNodes, deleteContours, reverseContours,
+    correctDirections, insertNodeOnSegment, setLsb, setRsb, mirrorContours,
+    sansProject, blankProject, cmapOf, kernValue, layoutRun, textToSeq, styleNames,
+    compileFont, buildGpos, readSfnt, checksum, exportProjectJSON, importProjectJSON, validateProject,
+  };
+})();
+/*@core-end*/
+</script>
+<script>
+if (!window.React || !window.ReactDOM || !window.htm || !window.opentype) {
+  document.getElementById('root').innerHTML = '<p style="padding:24px;font:14px system-ui">Typeface Studio couldn’t load its scripts. Check your connection and reload the page.</p>';
+} else {
+/*@app-begin*/
+const { useState, useEffect, useRef, useMemo, useCallback, useLayoutEffect, memo } = React;
+const html = htm.bind(React.createElement);
+const cls = (...a) => a.filter(Boolean).join(' ');
+const fmtU = (cp) => 'U+' + cp.toString(16).toUpperCase().padStart(4, '0');
+const isTyping = (el) => !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
+const CATS = [['all', 'All'], ['upper', 'Uppercase'], ['lower', 'Lowercase'], ['figure', 'Figures'], ['punct', 'Punctuation'], ['other', 'Other']];
+const clampZ = (z) => Math.max(0.02, Math.min(24, z));
+const glyphChar = (g) => (g && g.unicodes.length ? String.fromCodePoint(g.unicodes[0]) : '');
+const timeAgo = (iso) => {
+  if (!iso) return '';
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.round(s / 60) + ' min ago';
+  if (s < 86400) return Math.round(s / 3600) + ' h ago';
+  return new Date(iso).toLocaleDateString();
+};
+
+// ---------- icons (stroke icons, 24px grid) ----------
+const ICONS = {
+  select: '<path d="M5 3.5 18.5 10l-5.8 1.9L10 18z"/>',
+  pen: '<path d="M12 20.5 19.5 13l-3-3L9 17.5"/><path d="M16.5 10 15 4.5 3.5 3.5l1 11.5 5.5 1.5"/><path d="M3.5 3.5l6.3 6.3"/><circle cx="11" cy="11" r="1.8"/>',
+  hand: '<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11m0-6.5a1.5 1.5 0 0 1 3 0V11m0-5a1.5 1.5 0 0 1 3 0v5"/><path d="M17 8.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-1.5a6 6 0 0 1-4.6-2.2L3.6 14.9a1.6 1.6 0 0 1 2.4-2.1L8 15"/>',
+  eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>',
+  fit: '<path d="M8 3.5H5A1.5 1.5 0 0 0 3.5 5v3M16 3.5h3A1.5 1.5 0 0 1 20.5 5v3M3.5 16v3A1.5 1.5 0 0 0 5 20.5h3M20.5 16v3a1.5 1.5 0 0 1-1.5 1.5h-3"/>',
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+  redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>',
+  left: '<path d="m15 18-6-6 6-6"/>',
+  right: '<path d="m9 18 6-6-6-6"/>',
+  down: '<path d="m6 9 6 6 6-6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  minus: '<path d="M5 12h14"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  trash: '<path d="M4 6.5h16M9 6.5V4.5h6v2M6.5 6.5l1 13h9l1-13"/>',
+  save: '<path d="M12 3.5v11m0 0-4.5-4.5m4.5 4.5 4.5-4.5M4.5 20.5h15"/>',
+  upload: '<path d="M12 15.5v-11m0 0L7.5 9M12 4.5 16.5 9M4.5 20.5h15"/>',
+  reverse: '<path d="M4 9.5a8 8 0 0 1 14-3.7L20 8M20 3.5V8h-4.5"/><path d="M20 14.5a8 8 0 0 1-14 3.7L4 16m0 4.5V16h4.5"/>',
+  flipH: '<path d="M12 3v18"/><path d="M8.5 7 3.5 12l5 5zM15.5 7l5 5-5 5z"/>',
+  flipV: '<path d="M3 12h18"/><path d="M7 8.5 12 3.5l5 5zM7 15.5l5 5 5-5z"/>',
+  glyphs: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
+  spacing: '<path d="M4 4v16M20 4v16"/><path d="M8 12h8m-8 0 2.5-2.5M8 12l2.5 2.5M16 12l-2.5-2.5M16 12l-2.5 2.5"/>',
+  type: '<path d="M4.5 7V4.5h15V7M12 4.5v15M9 19.5h6"/>',
+  box: '<path d="M12 3.5 20 8v8l-8 4.5L4 16V8z"/><path d="M4 8l8 4.5L20 8M12 12.5v8"/>',
+  sliders: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
+};
+const Icon = ({ name, size = 18, sw = 1.6 }) => html`<svg width=${size} height=${size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=${sw} stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" dangerouslySetInnerHTML=${{ __html: ICONS[name] }}></svg>`;
+
+// ---------- persistence: claude.ai db (private per viewer) → localStorage → memory ----------
+const Persist = (() => {
+  const LS_INDEX = 'typeface-studio:index';
+  const lsKey = (id) => 'typeface-studio:project:' + id;
+  let mode = 'pending', db = null, userId = null, state = 'idle', message = null;
+  const subs = new Set();
+  const notify = () => subs.forEach((f) => f({ mode, state, message }));
+  const setState = (s, msg = null) => { state = s; message = msg; notify(); };
+  const lsGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch { return false; } };
+  const lsDel = (k) => { try { localStorage.removeItem(k); } catch {} };
+  const lsOK = () => lsSet('typeface-studio:probe', '1') && (lsDel('typeface-studio:probe'), true);
+
+  async function init() {
+    try {
+      if (window.claude && typeof window.claude.use === 'function') {
+        const [d, u] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+        const id = u ? await u.id() : null;
+        if (d && id) { db = d; userId = id; mode = 'db'; }
+      }
+    } catch {}
+    if (mode !== 'db') mode = lsOK() ? 'local' : 'memory';
+    notify();
+    return mode;
+  }
+  const projCol = () => db.collection('data/users/' + userId);
+  const projDoc = (pid) => projCol().doc(pid);
+  const glyphDoc = (pid, gid) => projDoc(pid).collection('glyphs').doc(gid);
+
+  // Debounced, coalescing write queue: one write in flight per document, at most 4 overall.
+  const pending = new Map(), timers = new Map(), active = new Set(), ready = [], retried = new Set();
+  function schedule(key, fn, delay = 600) {
+    pending.set(key, fn);
+    clearTimeout(timers.get(key));
+    timers.set(key, setTimeout(() => { timers.delete(key); enqueue(key); }, delay));
+    if (state !== 'saving') setState('saving');
+  }
+  function enqueue(key) { if (!ready.includes(key)) ready.push(key); pump(); }
+  function pump() {
+    let i = 0;
+    while (i < ready.length && active.size < 4) {
+      const key = ready[i];
+      if (active.has(key)) { i++; continue; }
+      ready.splice(i, 1);
+      const fn = pending.get(key);
+      pending.delete(key);
+      if (!fn) continue;
+      active.add(key);
+      Promise.resolve().then(fn).then(() => retried.delete(key), (e) => onError(e, key, fn)).finally(() => {
+        active.delete(key);
+        if (pending.has(key) && !timers.has(key)) ready.push(key);
+        pump();
+        settle();
+      });
+    }
+  }
+  function settle() {
+    if (!active.size && !ready.length && !timers.size && !pending.size && state === 'saving') setState('saved');
+  }
+  let fallbackHook = null;
+  function onError(e, key, fn) {
+    const code = e && e.code;
+    if ((code === 'unavailable' || code === 'resource_exhausted') && !retried.has(key)) {
+      retried.add(key);
+      schedule(key, fn, 1500 + Math.random() * 1500);
+      return;
+    }
+    retried.delete(key);
+    if (mode === 'db' && ['invalid_argument', 'not_granted', 'revoked', 'capability_disabled', 'capability_removed'].includes(code)) {
+      mode = lsOK() ? 'local' : 'memory';
+      pending.clear(); timers.forEach(clearTimeout); timers.clear(); ready.length = 0;
+      setState('saving', 'Saving to your Claude account isn’t available in this view, so work is kept in this browser.');
+      if (fallbackHook) fallbackHook();
+      return;
+    }
+    if (code === 'local_full') setState('error', 'This browser’s storage is full. Save the project file from Export to keep your work.');
+    else if (code === 'quota_exceeded') setState('error', 'Your saved space is full. Delete an old typeface to keep saving.');
+    else setState('error', 'The last change didn’t save. It will try again with your next edit.');
+  }
+  function flush() { for (const [k, t] of timers) { clearTimeout(t); timers.delete(k); enqueue(k); } }
+
+  const localIndex = () => { try { return JSON.parse(lsGet(LS_INDEX) || '[]'); } catch { return []; } };
+  const summaryOf = (p) => ({ id: p.id, familyName: p.info.familyName, glyphCount: p.glyphOrder.length, updatedAt: new Date().toISOString() });
+  const metaOf = (p) => ({ kind: 'project', schemaVersion: 1, info: p.info, glyphOrder: p.glyphOrder, kerning: p.kerning, createdAt: p.createdAt, updatedAt: new Date().toISOString(), glyphCount: p.glyphOrder.length });
+  function saveLocal(p) {
+    schedule('local:' + p.id, async () => {
+      if (!lsSet(lsKey(p.id), JSON.stringify(p))) throw { code: 'local_full' };
+      const idx = localIndex().filter((s) => s.id !== p.id);
+      idx.unshift(summaryOf(p));
+      lsSet(LS_INDEX, JSON.stringify(idx));
+    }, 500);
+  }
+  function saveAll(p) {
+    if (mode === 'db') {
+      schedule('m:' + p.id, () => projDoc(p.id).set(metaOf(p)), 0);
+      for (const id of p.glyphOrder) { const g = p.glyphs[id]; schedule('g:' + p.id + ':' + id, () => glyphDoc(p.id, id).set(g), 0); }
+    } else if (mode === 'local') saveLocal(p);
+  }
+  function saveDiff(prev, next) {
+    if (!prev || prev.id !== next.id) return saveAll(next);
+    if (mode === 'local') return saveLocal(next);
+    if (mode !== 'db') return;
+    let changed = false;
+    for (const id of next.glyphOrder) {
+      const g = next.glyphs[id];
+      if (prev.glyphs[id] !== g) { changed = true; schedule('g:' + next.id + ':' + id, () => glyphDoc(next.id, id).set(g)); }
+    }
+    for (const id of Object.keys(prev.glyphs)) {
+      if (!next.glyphs[id]) { changed = true; schedule('g:' + next.id + ':' + id, () => glyphDoc(next.id, id).delete()); }
+    }
+    if (changed || prev.info !== next.info || prev.glyphOrder !== next.glyphOrder || prev.kerning !== next.kerning) {
+      schedule('m:' + next.id, () => projDoc(next.id).set(metaOf(next)));
+    }
+  }
+  async function list() {
+    if (mode === 'db') {
+      const snap = await projCol().limit(200).get();
+      return snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((d) => d.kind === 'project')
+        .map((d) => ({ id: d.id, familyName: (d.info && d.info.familyName) || 'Untitled', glyphCount: d.glyphCount || (d.glyphOrder || []).length, updatedAt: d.updatedAt || '' }))
+        .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
+    }
+    if (mode === 'local') return localIndex();
+    return [];
+  }
+  async function load(id) {
+    if (mode === 'db') {
+      const [m, gs] = await Promise.all([projDoc(id).get(), projDoc(id).collection('glyphs').limit(1000).get()]);
+      if (!m.exists) throw new Error('That typeface no longer exists.');
+      const meta = m.data();
+      const glyphs = {};
+      gs.docs.forEach((d) => { glyphs[d.id] = d.data(); });
+      const order = (meta.glyphOrder || []).filter((g) => glyphs[g]);
+      for (const g of Object.keys(glyphs)) if (!order.includes(g)) order.push(g);
+      return Core.validateProject({ id, info: meta.info, glyphs, glyphOrder: order, kerning: meta.kerning || {}, createdAt: meta.createdAt, updatedAt: meta.updatedAt });
+    }
+    if (mode === 'local') {
+      const raw = lsGet(lsKey(id));
+      if (!raw) throw new Error('That typeface no longer exists.');
+      return Core.validateProject(JSON.parse(raw));
+    }
+    throw new Error('Nothing is saved yet.');
+  }
+  async function remove(id) {
+    if (mode === 'db') {
+      const gs = await projDoc(id).collection('glyphs').limit(1000).get();
+      await projDoc(id).delete();
+      for (const d of gs.docs) schedule('g:' + id + ':' + d.id, () => glyphDoc(id, d.id).delete(), 0);
+    } else if (mode === 'local') {
+      lsDel(lsKey(id));
+      lsSet(LS_INDEX, JSON.stringify(localIndex().filter((s) => s.id !== id)));
+    }
+  }
+  return {
+    init, list, load, remove, saveAll, saveDiff, flush,
+    subscribe(f) { subs.add(f); f({ mode, state, message }); return () => subs.delete(f); },
+    setFallbackHook(f) { fallbackHook = f; },
+    get mode() { return mode; },
+  };
+})();
+
+// ---------- hooks ----------
+function useSize(ref) {
+  const [s, set] = useState({ w: 0, h: 0 });
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => set({ w: Math.round(e.contentRect.width), h: Math.round(e.contentRect.height) }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return s;
+}
+
+/** Compile the project to TrueType and register it as a FontFace (debounced, latest wins). */
+function useCompiledFont(project) {
+  const [st, setSt] = useState({ status: 'compiling', family: null, stats: null, diagnostics: [], error: null, fileName: '' });
+  const seq = useRef(0), face = useRef(null), timer = useRef(null), firstAt = useRef(0);
+  useEffect(() => {
+    const now = performance.now();
+    if (!firstAt.current) firstAt.current = now;
+    clearTimeout(timer.current);
+    const wait = Math.max(0, Math.min(320, 1100 - (now - firstAt.current)));
+    timer.current = setTimeout(async () => {
+      firstAt.current = 0;
+      const my = ++seq.current;
+      let res;
+      try { res = Core.compileFont(project); }
+      catch (e) { setSt((s) => ({ ...s, status: 'error', error: e.message || String(e) })); return; }
+      const family = 'TSF' + my + '_' + project.id.slice(0, 6);
+      let ff;
+      try {
+        ff = new FontFace(family, res.bytes.buffer.slice(0));
+        await ff.load();
+      } catch (e) {
+        if (my === seq.current) setSt((s) => ({ ...s, status: 'error', error: 'The browser couldn’t load this font build.' }));
+        return;
+      }
+      if (my !== seq.current) return;
+      document.fonts.add(ff);
+      const prev = face.current;
+      face.current = ff;
+      setSt({ status: 'ready', family, stats: res.stats, diagnostics: res.diagnostics, error: null, fileName: res.fileName });
+      if (prev) requestAnimationFrame(() => requestAnimationFrame(() => document.fonts.delete(prev)));
+    }, wait);
+    return () => clearTimeout(timer.current);
+  }, [project]);
+  useEffect(() => () => { if (face.current) document.fonts.delete(face.current); }, []);
+  return st;
+}
+const fontStack = (font) => (font && font.family ? `"${font.family}", var(--f-ui)` : 'var(--f-ui)');
+
+// ---------- shared pieces ----------
+function NumField({ value, onCommit, step = 1, disabled, label, id, min, max, mono = true }) {
+  const [txt, setTxt] = useState(value == null ? '' : String(value));
+  const focused = useRef(false);
+  useEffect(() => { if (!focused.current) setTxt(value == null ? '' : String(value)); }, [value]);
+  const clamp = (v) => Math.max(min ?? -Infinity, Math.min(max ?? Infinity, v));
+  const commit = (t) => {
+    const v = Number(t);
+    if (t.trim() === '' || !Number.isFinite(v)) { setTxt(value == null ? '' : String(value)); return; }
+    const c = clamp(Math.round(v));
+    setTxt(String(c));
+    if (c !== value) onCommit(c);
+  };
+  return html`<input id=${id} class=${cls('input', mono && 'mono')} inputmode="numeric" aria-label=${label} disabled=${disabled}
+    value=${txt} onChange=${(e) => setTxt(e.target.value)}
+    onFocus=${(e) => { focused.current = true; e.target.select(); }}
+    onBlur=${(e) => { focused.current = false; commit(e.target.value); }}
+    onKeyDown=${(e) => {
+      if (e.key === 'Enter') { commit(e.target.value); e.target.blur(); }
+      else if (e.key === 'Escape') { setTxt(value == null ? '' : String(value)); e.target.blur(); }
+      else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const v = clamp((Number(txt) || 0) + (e.key === 'ArrowUp' ? 1 : -1) * (e.shiftKey ? 10 : step));
+        setTxt(String(v)); onCommit(v);
+      }
+    }} />`;
+}
+function TextField({ value, onCommit, label, id, validate, mono, placeholder }) {
+  const [txt, setTxt] = useState(value);
+  const [err, setErr] = useState(null);
+  const focused = useRef(false);
+  useEffect(() => { if (!focused.current) { setTxt(value); setErr(null); } }, [value]);
+  const commit = () => {
+    if (txt === value) { setErr(null); return; }
+    const e = validate ? validate(txt) : null;
+    if (e) { setErr(e); return; }
+    setErr(null);
+    onCommit(txt);
+  };
+  return html`<div class="field">
+    <label class="label" for=${id}>${label}</label>
+    <input id=${id} class=${cls('input', mono && 'mono')} value=${txt} placeholder=${placeholder} aria-invalid=${err ? 'true' : 'false'}
+      aria-describedby=${err ? id + '-err' : undefined}
+      onChange=${(e) => setTxt(e.target.value)} onFocus=${() => { focused.current = true; }}
+      onBlur=${() => { focused.current = false; commit(); }}
+      onKeyDown=${(e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') { setTxt(value); setErr(null); } }} />
+    ${err && html`<span class="err" id=${id + '-err'}>${err}</span>`}
+  </div>`;
+}
+
+/** One glyph drawn from the model on a fixed em box (shared scale across tiles). */
+const GlyphSvg = memo(function GlyphSvg({ glyph, info, pad = 60, baseline = true, className }) {
+  const asc = info.ascender + pad, desc = info.descender - pad;
+  const w = 1000;
+  const x0 = (glyph.advance - w) / 2;
+  return html`<svg class=${className} viewBox=${`${x0} ${-asc} ${w} ${asc - desc}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    ${baseline && html`<line class="baseline-line" x1=${x0} x2=${x0 + w} y1="0" y2="0" />`}
+    <path d=${Core.glyphD(glyph)} fill="currentColor" />
+  </svg>`;
+});
+
+/** A run of glyphs from the model (live while editing, no compile needed). */
+function GlyphRun({ project, seq, height = 72, highlightId, onPick, kern = true, className }) {
+  const { items, width } = Core.layoutRun(project, seq, kern);
+  const asc = project.info.ascender + 40, desc = project.info.descender - 40;
+  const H = asc - desc;
+  const W = Math.max(width, 1);
+  return html`<svg class=${className} width=${(W / H) * height} height=${height} viewBox=${`0 ${-asc} ${W} ${H}`} role="img" aria-label=${seq.map((s) => s.ch || s.glyph?.name || '').join('')}>
+    ${items.map((it, i) => it.missing
+      ? html`<rect key=${i} class="run-missing" x=${it.x + 30} y=${-project.info.capHeight} width="220" height=${project.info.capHeight} rx="20" />`
+      : html`<path key=${i} class=${cls('run-glyph', it.glyph.id === highlightId && 'hl')} d=${Core.glyphD(it.glyph)}
+          transform=${`translate(${it.x} 0)`} onClick=${onPick ? () => onPick(it.glyph.id) : undefined} />`)}
+  </svg>`;
+}
+
+// ---------- projects dialog ----------
+function ProjectsDialog({ open, onClose, projects, current, isDraft, persist, onOpen, onNew, onImport, onDelete }) {
+  const ref = useRef(null);
+  const [name, setName] = useState('');
+  const [confirm, setConfirm] = useState(null);
+  const fileRef = useRef(null);
+  const sansPreview = useMemo(() => Core.sansProject('Preview'), []);
+  useEffect(() => {
+    const d = ref.current;
+    if (!d) return;
+    if (open && !d.open) { d.showModal(); setConfirm(null); }
+    if (!open && d.open) d.close();
+  }, [open]);
+  const note = persist.mode === 'db' ? 'Saved to your Claude account. Only you can see these.'
+    : persist.mode === 'local' ? 'Saved in this browser only. Save a project file from Export to keep a copy.'
+    : persist.mode === 'memory' ? 'This view can’t save. Save a project file from Export to keep your work.'
+    : 'Connecting to storage…';
+  const rows = useMemo(() => {
+    const list = projects.filter((p) => p.id !== current.id);
+    if (!isDraft) list.unshift({ id: current.id, familyName: current.info.familyName, glyphCount: current.glyphOrder.length, updatedAt: new Date().toISOString() });
+    return list;
+  }, [projects, current, isDraft]);
+  const fam = name.trim() || 'Untitled Sans';
+  return html`<dialog ref=${ref} class="drawer" aria-labelledby="proj-title" onClose=${onClose}
+      onClick=${(e) => { if (e.target === ref.current) onClose(); }}>
+    <div class="drawer-body">
+      <div class="drawer-head">
+        <div style=${{ display: 'grid', gap: '6px' }}>
+          <span class="eyebrow">Typefaces</span>
+          <h2 class="h2" id="proj-title">Your typefaces</h2>
+          <p class="hint">${note}</p>
+        </div>
+        <button class="btn btn-ghost icon-btn" aria-label="Close" onClick=${onClose}><${Icon} name="x" /></button>
+      </div>
+      ${rows.length > 0 ? html`<ul class="proj-list">
+        ${rows.map((p) => html`<li key=${p.id} class="proj-item" aria-current=${p.id === current.id ? 'true' : 'false'}>
+          <button class="proj-open" onClick=${() => onOpen(p.id)}>
+            <b>${p.familyName || 'Untitled'}</b>
+            <span>${p.glyphCount} glyphs · ${p.id === current.id ? 'open now' : 'edited ' + timeAgo(p.updatedAt)}</span>
+          </button>
+          ${confirm === p.id
+            ? html`<span class="row"><button class="btn btn-sm btn-danger" onClick=${() => { setConfirm(null); onDelete(p.id); }}>Delete</button>
+                <button class="btn btn-sm btn-ghost" onClick=${() => setConfirm(null)}>Keep</button></span>`
+            : html`<button class="btn btn-ghost icon-btn btn-sm" aria-label=${'Delete ' + p.familyName} onClick=${() => setConfirm(p.id)}><${Icon} name="trash" size=${16} /></button>`}
+        </li>`)}
+      </ul>` : html`<p class="empty-note">${isDraft ? 'You’re editing the example typeface. It saves as soon as you change something.' : 'No saved typefaces yet.'}</p>`}
+      <div style=${{ display: 'grid', gap: '12px' }}>
+        <div class="field">
+          <label class="label" for="new-name">New typeface</label>
+          <input id="new-name" class="input" placeholder="Family name, e.g. Harbor Grotesk" value=${name} onChange=${(e) => setName(e.target.value)} />
+        </div>
+        <div class="starts">
+          <button class="start-card" onClick=${() => { onNew('sans', fam); setName(''); }}>
+            <${GlyphRun} project=${sansPreview} seq=${Core.textToSeq(sansPreview, 'Aag')} height=${58} />
+            <b>Start from Sans</b><span>78 glyphs, A–Z, a–z, figures, punctuation and starter kerning.</span>
+          </button>
+          <button class="start-card" onClick=${() => { onNew('blank', fam); setName(''); }}>
+            <svg viewBox="0 0 300 100" aria-hidden="true"><line x1="0" x2="300" y1="78" y2="78" stroke="var(--line-strong)" /><line x1="0" x2="300" y1="30" y2="30" stroke="var(--line)" stroke-dasharray="4 4" /></svg>
+            <b>Start blank</b><span>Metrics, a space and empty slots for every basic character.</span>
+          </button>
+        </div>
+        <div class="row" style=${{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <span class="hint">Have a .typeface.json file from Export?</span>
+          <button class="btn" onClick=${() => fileRef.current.click()}><${Icon} name="upload" size=${16} /> Import project</button>
+          <input ref=${fileRef} type="file" accept=".json,application/json" hidden onChange=${(e) => { const f = e.target.files[0]; e.target.value = ''; if (f) onImport(f); }} />
+        </div>
+      </div>
+    </div>
+  </dialog>`;
+}
+
+// ---------- glyph overview ----------
+const GlyphTile = memo(function GlyphTile({ glyph, info, onOpen }) {
+  const empty = Core.isEmpty(glyph);
+  const u = glyph.unicodes[0];
+  return html`<button class=${cls('tile', empty && 'empty')} onClick=${() => onOpen(glyph.id)} aria-label=${`Edit ${glyph.name}${u !== undefined ? ' ' + fmtU(u) : ''}${empty ? ', empty' : ''}`}>
+    ${empty ? html`<span class="ghost" aria-hidden="true">${glyph.name === 'space' ? '␣' : glyphChar(glyph)}</span><svg></svg>` : html`<${GlyphSvg} glyph=${glyph} info=${info} />`}
+    <span class="tile-foot"><span>${glyph.name}</span><span>${u !== undefined ? u.toString(16).toUpperCase().padStart(4, '0') : '—'}</span></span>
+  </button>`;
+});
+
+function GlyphsView({ project, font, onOpen, onCreate, api }) {
+  const [cat, setCat] = useState('all');
+  const [q, setQ] = useState('');
+  const [addTxt, setAddTxt] = useState('');
+  const [addErr, setAddErr] = useState(null);
+  const info = project.info;
+  const glyphs = project.glyphOrder.map((id) => project.glyphs[id]).filter((g) => g && g.name !== '.notdef');
+  const cmap = Core.cmapOf(project);
+  const missing = Core.BASIC_SET.filter((cp) => !cmap.has(cp));
+  const counts = useMemo(() => {
+    const c = { all: glyphs.length };
+    for (const g of glyphs) { const k = Core.categoryOf(g); c[k] = (c[k] || 0) + 1; }
+    for (const cp of missing) { const k = Core.categoryOfCodepoint(cp); c[k] = (c[k] || 0) + 1; c.all++; }
+    return c;
+  }, [project.glyphs, project.glyphOrder]);
+  const match = (name, cp) => {
+    if (!q) return true;
+    const s = q.trim();
+    return name.toLowerCase().includes(s.toLowerCase()) || (cp !== undefined && (String.fromCodePoint(cp) === s || fmtU(cp).toLowerCase() === s.toLowerCase()));
+  };
+  const shown = glyphs.filter((g) => (cat === 'all' || Core.categoryOf(g) === cat) && match(g.name, g.unicodes[0]));
+  const shownMissing = missing.filter((cp) => (cat === 'all' || Core.categoryOfCodepoint(cp) === cat) && match(Core.nameForCodepoint(cp), cp));
+  const drawn = glyphs.filter((g) => !Core.isEmpty(g)).length;
+  const addGlyph = () => {
+    const t = addTxt.trim();
+    if (!t) return;
+    let cp;
+    const m = t.match(/^(?:U\+|u\+|0x)?([0-9A-Fa-f]{4,6})$/);
+    if (m && t.length >= 4) cp = parseInt(m[1], 16);
+    else if (Array.from(t).length === 1) cp = t.codePointAt(0);
+    else { setAddErr('Type one character, like ß, or a code like U+00DF.'); return; }
+    if (cp > 0x10ffff) { setAddErr('That code point is out of range.'); return; }
+    if (cmap.has(cp)) { onOpen(cmap.get(cp).id); return; }
+    setAddErr(null); setAddTxt('');
+    onCreate(cp);
+  };
+  return html`<div class="page">
+    <header class="hero">
+      <span class="eyebrow">Glyph set</span>
+      <div class="hero-row">
+        <h1 class="display uf" style=${{ fontFamily: fontStack(font) }}>${info.familyName || 'Untitled'}</h1>
+      </div>
+      <div class="meta">
+        <span><b>${drawn}</b> of ${glyphs.length} glyphs drawn</span>
+        <span><b>${Object.keys(project.kerning).length}</b> kerning pairs</span>
+        <span>UPM <b>1000</b></span><span>x-height <b>${info.xHeight}</b></span><span>cap height <b>${info.capHeight}</b></span>
+      </div>
+    </header>
+    <div class="toolbar-row">
+      <div class="chips" role="group" aria-label="Filter glyphs">
+        ${CATS.filter(([k]) => k === 'all' || counts[k]).map(([k, label]) => html`<button key=${k} class="chip" aria-pressed=${cat === k ? 'true' : 'false'} onClick=${() => setCat(k)}>
+          ${label}<span class="count">${counts[k] || 0}</span></button>`)}
+      </div>
+      <div class="row" style=${{ flexWrap: 'wrap' }}>
+        <input class="input" style=${{ width: '170px' }} aria-label="Search glyphs" placeholder="Search name or char" value=${q} onChange=${(e) => setQ(e.target.value)} />
+        <form class="row" onSubmit=${(e) => { e.preventDefault(); addGlyph(); }}>
+          <input class="input" style=${{ width: '120px' }} aria-label="Character to add" placeholder="Add: ß or U+00DF" value=${addTxt}
+            aria-invalid=${addErr ? 'true' : 'false'} onChange=${(e) => { setAddTxt(e.target.value); setAddErr(null); }} />
+          <button class="btn" type="submit"><${Icon} name="plus" size=${16} /> Add</button>
+        </form>
+      </div>
+    </div>
+    ${addErr && html`<p class="err" role="alert">${addErr}</p>`}
+    <div class="ggrid">
+      ${shown.map((g) => html`<${GlyphTile} key=${g.id} glyph=${g} info=${info} onOpen=${onOpen} />`)}
+      ${shownMissing.map((cp) => html`<button key=${'m' + cp} class="tile missing" onClick=${() => onCreate(cp)} aria-label=${`Create ${Core.nameForCodepoint(cp)} ${fmtU(cp)}`}>
+        <span class="ghost" aria-hidden="true">${String.fromCodePoint(cp)}</span><svg></svg>
+        <span class="tile-foot"><span>${Core.nameForCodepoint(cp)}</span><span>new</span></span></button>`)}
+    </div>
+    ${shown.length + shownMissing.length === 0 && html`<p class="empty-note">No glyphs match “${q}”.</p>`}
+  </div>`;
+}
+
+// ---------- editor ----------
+const METRIC_LINES = (info) => [
+  [info.ascender, 'ascender'], [info.capHeight, 'cap height'], [info.xHeight, 'x-height'], [0, 'baseline'], [info.descender, 'descender'],
+];
+function findNode(g, id) {
+  for (const c of g.contours) { const i = c.nodes.findIndex((n) => n.id === id); if (i >= 0) return { c, i, n: c.nodes[i] }; }
+  return null;
+}
+function constrain45(h) {
+  const a = Math.round(Math.atan2(h.y, h.x) / (Math.PI / 4)) * (Math.PI / 4), l = Math.hypot(h.x, h.y);
+  return { x: Math.round(Math.cos(a) * l), y: Math.round(Math.sin(a) * l) };
+}
+function windingAt(polys, p) {
+  let w = 0;
+  for (const pts of polys) {
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[i], b = pts[(i + 1) % pts.length];
+      const cr = (b.x - a.x) * (p.y - a.y) - (p.x - a.x) * (b.y - a.y);
+      if (a.y <= p.y) { if (b.y > p.y && cr > 0) w++; } else if (b.y <= p.y && cr < 0) w--;
+    }
+  }
+  return w;
+}
+function contourAt(g, p) {
+  const norm = Core.normalized(g.contours).filter((c) => c.closed && c.nodes.length > 1);
+  const polys = norm.map((c) => Core.flatten(c));
+  if (!windingAt(polys, p)) return null;
+  let best = null, bestA = Infinity;
+  norm.forEach((c, i) => {
+    if (!Core.pointInPoly(p, polys[i])) return;
+    const a = Math.abs(Core.signedArea(polys[i]));
+    if (a < bestA) { bestA = a; best = c; }
+  });
+  return best ? g.contours.find((c) => c.id === best.id) : null;
+}
+function segPathD(s, f = -1) {
+  return s.type === 'L'
+    ? `M${s.p0.x} ${f * s.p0.y}L${s.p3.x} ${f * s.p3.y}`
+    : `M${s.p0.x} ${f * s.p0.y}C${s.p1.x} ${f * s.p1.y} ${s.p2.x} ${f * s.p2.y} ${s.p3.x} ${f * s.p3.y}`;
+}
+
+function EditorView({ project, glyphId, api, onNav, onPick, announce }) {
+  const glyph = project.glyphs[glyphId];
+  const info = project.info;
+  const svgRef = useRef(null), wrapRef = useRef(null);
+  const size = useSize(wrapRef);
+  const [vp, setVp] = useState(null);
+  const vpRef = useRef(vp); vpRef.current = vp;
+  const [tool, setTool] = useState('select');
+  const [sel, setSel] = useState(() => new Set());
+  const selRef = useRef(sel); selRef.current = sel;
+  const [preview, setPreview] = useState(false);
+  const [hover, setHover] = useState(null);
+  const [marquee, setMarquee] = useState(null);
+  const [penId, setPenId] = useState(null);
+  const penRef = useRef(penId); penRef.current = penId;
+  const [space, setSpace] = useState(false);
+  const [coarse, setCoarse] = useState(() => window.matchMedia && matchMedia('(pointer: coarse)').matches);
+  const [sheet, setSheet] = useState(false);
+  const [ctxText, setCtxText] = useState(null);
+  const [panning, setPanning] = useState(false);
+  const drag = useRef(null), pointers = useRef(new Map()), pinch = useRef(null), lastDown = useRef({ t: 0, key: '' });
+  const glyphRef = useRef(glyph); glyphRef.current = glyph;
+
+  const fit = useCallback(() => {
+    if (!size.w || !size.h) return;
+    const g = glyphRef.current;
+    if (!g) return;
+    const w = Math.max(g.advance, 360);
+    const y0 = info.descender, y1 = info.ascender;
+    const narrow = size.w < 600;
+    const z = Math.min((size.w * (narrow ? 0.7 : 0.72)) / w, (size.h * (narrow ? 0.62 : 0.74)) / (y1 - y0));
+    setVp({ z, tx: size.w / 2 - (g.advance / 2) * z, ty: size.h / 2 + ((y0 + y1) / 2) * z });
+  }, [size.w, size.h, info.ascender, info.descender]);
+  useLayoutEffect(() => { fit(); }, [glyphId, size.w, size.h]);
+  useEffect(() => { setSel(new Set()); setPenId(null); setHover(null); }, [glyphId]);
+
+  const zoomBy = (k, sx, sy) => {
+    const v = vpRef.current;
+    if (!v) return;
+    sx = sx ?? size.w / 2; sy = sy ?? size.h / 2;
+    const z = clampZ(v.z * k), r = z / v.z;
+    setVp({ z, tx: sx - (sx - v.tx) * r, ty: sy - (sy - v.ty) * r });
+  };
+  // native wheel listener (React's is passive)
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      e.preventDefault();
+      const v = vpRef.current;
+      if (!v) return;
+      const r = el.getBoundingClientRect();
+      let dx = e.deltaX, dy = e.deltaY;
+      if (e.deltaMode === 1) { dx *= 16; dy *= 16; }
+      if (e.ctrlKey || e.metaKey) {
+        const z = clampZ(v.z * Math.exp(-dy * 0.01)), k = z / v.z;
+        const sx = e.clientX - r.left, sy = e.clientY - r.top;
+        setVp({ z, tx: sx - (sx - v.tx) * k, ty: sy - (sy - v.ty) * k });
+      } else setVp({ ...v, tx: v.tx - dx, ty: v.ty - dy });
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
+  const evtFont = (e) => {
+    const r = svgRef.current.getBoundingClientRect(), v = vpRef.current;
+    const sx = e.clientX - r.left, sy = e.clientY - r.top;
+    return { sx, sy, x: (sx - v.tx) / v.z, y: (v.ty - sy) / v.z };
+  };
+  const snapPt = (p, e) => {
+    if (e && (e.metaKey || e.ctrlKey)) return { x: Math.round(p.x), y: Math.round(p.y) };
+    const th = 7 / vpRef.current.z;
+    let { x, y } = p;
+    for (const [m] of METRIC_LINES(info)) if (Math.abs(y - m) < th) { y = m; break; }
+    if (Math.abs(x) < th) x = 0;
+    else if (Math.abs(x - glyphRef.current.advance) < th) x = glyphRef.current.advance;
+    return { x: Math.round(x), y: Math.round(y) };
+  };
+  const finishPen = () => {
+    const id = penRef.current;
+    if (!id) return;
+    const g = glyphRef.current, c = g.contours.find((k) => k.id === id);
+    if (c && c.nodes.length < 2) api.setGlyph({ ...g, contours: g.contours.filter((k) => k.id !== id) }, false);
+    setPenId(null); setHover(null);
+  };
+  const chooseTool = (t) => { if (t !== 'pen') finishPen(); setTool(t); };
+
+  function onPointerDown(e) {
+    if (!vpRef.current) return;
+    setCoarse(e.pointerType === 'touch');
+    try { svgRef.current.setPointerCapture(e.pointerId); } catch {}
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.current.size === 2) {
+      if (drag.current && drag.current.gesture) api.cancel();
+      drag.current = null; setMarquee(null);
+      const [a, b] = [...pointers.current.values()];
+      pinch.current = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2, vp: vpRef.current };
+      return;
+    }
+    if (pointers.current.size > 2) return;
+    const f = evtFont(e);
+    const el = e.target.closest && e.target.closest('[data-hit]');
+    const hit = el ? { ...el.dataset } : { hit: 'empty' };
+    const g = glyphRef.current;
+    const key = hit.hit + ':' + (hit.node || hit.contour || '') + ':' + (hit.seg || '');
+    const now = performance.now();
+    const dbl = key === lastDown.current.key && now - lastDown.current.t < 380;
+    lastDown.current = { t: dbl ? 0 : now, key };
+    if (e.button === 1 || tool === 'hand' || space) {
+      drag.current = { kind: 'pan', sx: e.clientX, sy: e.clientY, vp: vpRef.current };
+      setPanning(true);
+      return;
+    }
+    if (tool === 'pen') penDown(e, f, hit, g); else selectDown(e, f, hit, g, dbl);
+  }
+  function startNodeDrag(g, ids, f, anchor) {
+    drag.current = { kind: 'nodes', origin: g, ids, start: f, anchor, sx: f.sx, sy: f.sy, moved: false };
+  }
+  function selectDown(e, f, hit, g, dbl) {
+    if (hit.hit === 'handle') { api.begin(); drag.current = { kind: 'handle', id: hit.node, which: hit.which, gesture: true }; return; }
+    if (hit.hit === 'node') {
+      if (e.altKey || dbl) { api.setGlyph(Core.toggleSmooth(g, hit.node)); setSel(new Set([hit.node])); return; }
+      let s = selRef.current;
+      if (e.shiftKey) { s = new Set(s); if (s.has(hit.node)) s.delete(hit.node); else s.add(hit.node); }
+      else if (!s.has(hit.node)) s = new Set([hit.node]);
+      setSel(s);
+      const fn = findNode(g, hit.node);
+      startNodeDrag(g, s, f, { x: fn.n.x, y: fn.n.y });
+      return;
+    }
+    if (hit.hit === 'seg') {
+      const c = g.contours.find((k) => k.id === hit.contour);
+      const sg = Core.segmentsOf(c)[+hit.seg];
+      if (!sg) return;
+      const ids = dbl ? c.nodes.map((n) => n.id) : [c.nodes[sg.i].id, c.nodes[sg.j].id];
+      const s = e.shiftKey ? new Set([...selRef.current, ...ids]) : new Set(ids);
+      setSel(s);
+      startNodeDrag(g, s, f, { x: c.nodes[sg.i].x, y: c.nodes[sg.i].y });
+      return;
+    }
+    if (hit.hit === 'advance') { api.begin(); drag.current = { kind: 'advance', origin: g, start: f, gesture: true }; return; }
+    const c = contourAt(g, f);
+    if (c && !e.shiftKey) {
+      const s = new Set(c.nodes.map((n) => n.id));
+      setSel(s);
+      startNodeDrag(g, s, f, { x: c.nodes[0].x, y: c.nodes[0].y });
+      return;
+    }
+    if (e.pointerType === 'touch') { drag.current = { kind: 'pan', sx: e.clientX, sy: e.clientY, vp: vpRef.current, tapClears: true }; return; }
+    const base = e.shiftKey ? selRef.current : new Set();
+    if (!e.shiftKey) setSel(base);
+    drag.current = { kind: 'marquee', x0: f.sx, y0: f.sy, base };
+  }
+  function penDown(e, f, hit, g) {
+    let open = penRef.current ? g.contours.find((c) => c.id === penRef.current && !c.closed) : null;
+    if (penRef.current && !open) { setPenId(null); open = null; }
+    if (hit.hit === 'handle') { api.begin(); drag.current = { kind: 'handle', id: hit.node, which: hit.which, gesture: true }; return; }
+    if (hit.hit === 'node') {
+      const { c, i } = findNode(g, hit.node);
+      if (open && c.id === open.id) {
+        if (i === 0 && c.nodes.length >= 2) {
+          api.begin();
+          api.setGlyph({ ...g, contours: g.contours.map((k) => (k.id === c.id ? { ...k, closed: true } : k)) }, false);
+          drag.current = { kind: 'pen', node: c.nodes[0].id, closing: true, sx: f.sx, sy: f.sy, moved: false, gesture: true };
+          return;
+        }
+        if (i === c.nodes.length - 1) { api.setGlyph(Core.updateNode(g, hit.node, (n) => ({ ...n, out: null, type: 'corner' }))); return; }
+      }
+      if (!open && !c.closed && (i === 0 || i === c.nodes.length - 1)) {
+        if (i === 0 && c.nodes.length > 1) api.setGlyph({ ...g, contours: g.contours.map((k) => (k.id === c.id ? Core.reverseContour(k) : k)) });
+        setPenId(c.id); setSel(new Set([hit.node]));
+        announce('Continuing path');
+        return;
+      }
+      setSel(new Set([hit.node]));
+      return;
+    }
+    if (hit.hit === 'seg' && !open) {
+      const c = g.contours.find((k) => k.id === hit.contour);
+      const sg = Core.segmentsOf(c)[+hit.seg];
+      const { t } = Core.nearestOnSegment(sg, f);
+      const res = Core.insertNodeOnSegment(g, c.id, +hit.seg, t);
+      api.setGlyph(res.glyph);
+      setSel(new Set([res.nodeId]));
+      return;
+    }
+    api.begin();
+    const p = snapPt(f, e);
+    const node = Core.mkNode(p.x, p.y);
+    let next, cid;
+    if (open) { cid = open.id; next = { ...g, contours: g.contours.map((k) => (k.id === cid ? { ...k, nodes: [...k.nodes, node] } : k)) }; }
+    else { const c = Core.mkContour([node], false); cid = c.id; next = { ...g, contours: [...g.contours, c] }; }
+    api.setGlyph(next, false);
+    setPenId(cid); setSel(new Set([node.id]));
+    drag.current = { kind: 'pen', node: node.id, closing: false, sx: f.sx, sy: f.sy, moved: false, gesture: true };
+  }
+  function onPointerMove(e) {
+    if (pointers.current.has(e.pointerId)) pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch.current && pointers.current.size >= 2) {
+      const [a, b] = [...pointers.current.values()];
+      const P = pinch.current, r = svgRef.current.getBoundingClientRect();
+      const z = clampZ(P.vp.z * (Math.hypot(a.x - b.x, a.y - b.y) / P.d)), k = z / P.vp.z;
+      const sx0 = P.cx - r.left, sy0 = P.cy - r.top, mx = (a.x + b.x) / 2 - P.cx, my = (a.y + b.y) / 2 - P.cy;
+      setVp({ z, tx: sx0 - (sx0 - P.vp.tx) * k + mx, ty: sy0 - (sy0 - P.vp.ty) * k + my });
+      return;
+    }
+    if (!vpRef.current) return;
+    const f = evtFont(e);
+    const d = drag.current;
+    if (!d) { if (tool === 'pen' && penRef.current) setHover(f); return; }
+    if (d.kind === 'pan') {
+      if (Math.hypot(e.clientX - d.sx, e.clientY - d.sy) > 3) d.moved = true;
+      setVp({ ...d.vp, tx: d.vp.tx + e.clientX - d.sx, ty: d.vp.ty + e.clientY - d.sy });
+    } else if (d.kind === 'nodes') {
+      if (!d.moved) { if (Math.hypot(f.sx - d.sx, f.sy - d.sy) < 3) return; d.moved = true; api.begin(); }
+      let dx = f.x - d.start.x, dy = f.y - d.start.y;
+      if (e.shiftKey) { if (Math.abs(dx) > Math.abs(dy)) dy = 0; else dx = 0; }
+      const a = snapPt({ x: d.anchor.x + dx, y: d.anchor.y + dy }, e);
+      api.setGlyph(Core.moveNodes(d.origin, d.ids, a.x - d.anchor.x, a.y - d.anchor.y), false);
+    } else if (d.kind === 'handle') {
+      const g = glyphRef.current, fn = findNode(g, d.id);
+      if (!fn) return;
+      const p = snapPt(f, e);
+      let h = { x: p.x - fn.n.x, y: p.y - fn.n.y };
+      if (e.shiftKey) h = constrain45(h);
+      api.setGlyph(Core.setHandle(g, d.id, d.which, h, e.altKey), false);
+    } else if (d.kind === 'advance') {
+      api.setGlyph({ ...glyphRef.current, advance: Math.max(0, Math.round(d.origin.advance + f.x - d.start.x)) }, false);
+    } else if (d.kind === 'marquee') {
+      setMarquee({ x0: d.x0, y0: d.y0, x1: f.sx, y1: f.sy });
+    } else if (d.kind === 'pen') {
+      if (!d.moved) { if (Math.hypot(f.sx - d.sx, f.sy - d.sy) < 3) return; d.moved = true; }
+      const g = glyphRef.current, fn = findNode(g, d.node);
+      if (!fn) return;
+      let h = { x: Math.round(f.x - fn.n.x), y: Math.round(f.y - fn.n.y) };
+      if (e.shiftKey) h = constrain45(h);
+      const neg = { x: -h.x, y: -h.y };
+      api.setGlyph(Core.updateNode(g, d.node, (m) => (d.closing
+        ? { ...m, in: neg, out: e.altKey ? m.out : h, type: e.altKey ? 'corner' : 'smooth' }
+        : { ...m, out: h, in: e.altKey ? m.in : neg, type: e.altKey ? 'corner' : 'smooth' })), false);
+    }
+  }
+  function onPointerUp(e, cancelled = false) {
+    pointers.current.delete(e.pointerId);
+    if (pinch.current) { if (pointers.current.size < 2) pinch.current = null; drag.current = null; return; }
+    const d = drag.current;
+    drag.current = null;
+    setPanning(false);
+    if (!d) return;
+    if (cancelled && (d.gesture || d.moved)) { api.cancel(); setMarquee(null); return; }
+    if (d.gesture || (d.kind === 'nodes' && d.moved)) api.end();
+    if (d.kind === 'pen' && d.closing) { setPenId(null); setHover(null); announce('Path closed'); }
+    if (d.kind === 'pan' && d.tapClears && !d.moved) setSel(new Set());
+    if (d.kind === 'marquee') {
+      const m = marqueeRef.current;
+      setMarquee(null);
+      if (!m) return;
+      const v = vpRef.current;
+      const [x0, x1] = [Math.min(m.x0, m.x1), Math.max(m.x0, m.x1)], [y0, y1] = [Math.min(m.y0, m.y1), Math.max(m.y0, m.y1)];
+      const s = new Set(d.base);
+      for (const c of glyphRef.current.contours) for (const n of c.nodes) {
+        const sx = v.tx + n.x * v.z, sy = v.ty - n.y * v.z;
+        if (sx >= x0 && sx <= x1 && sy >= y0 && sy <= y1) s.add(n.id);
+      }
+      setSel(s);
+    }
+  }
+  const marqueeRef = useRef(null); marqueeRef.current = marquee;
+
+  const deleteSelection = () => {
+    const g = glyphRef.current, s = selRef.current;
+    if (!s.size) return;
+    const full = new Set(g.contours.filter((c) => c.nodes.every((n) => s.has(n.id))).map((c) => c.id));
+    api.setGlyph(Core.deleteNodes(Core.deleteContours(g, full), s));
+    setSel(new Set());
+    announce('Deleted');
+  };
+  const selectedContours = () => {
+    const g = glyphRef.current, s = selRef.current;
+    const ids = g.contours.filter((c) => c.nodes.some((n) => s.has(n.id))).map((c) => c.id);
+    return new Set(ids.length ? ids : g.contours.map((c) => c.id));
+  };
+  const reverseSel = () => { api.setGlyph(Core.reverseContours(glyphRef.current, selectedContours())); announce('Direction reversed'); };
+  const fixDirections = () => { api.setGlyph(Core.correctDirections(glyphRef.current)); announce('Directions corrected'); };
+  const mirror = (axis) => api.setGlyph(Core.mirrorContours(glyphRef.current, selectedContours(), axis));
+
+  useEffect(() => {
+    const down = (e) => {
+      if (isTyping(e.target)) return;
+      const mod = e.metaKey || e.ctrlKey, k = e.key, g = glyphRef.current, s = selRef.current;
+      if (k === ' ' && (e.target === document.body || e.target === svgRef.current)) { e.preventDefault(); if (!e.repeat) setSpace(true); return; }
+      if (mod && k === '0') { e.preventDefault(); fit(); return; }
+      if (mod && (k === '=' || k === '+')) { e.preventDefault(); zoomBy(1.25); return; }
+      if (mod && k === '-') { e.preventDefault(); zoomBy(0.8); return; }
+      if (mod && k.toLowerCase() === 'a') { e.preventDefault(); setSel(new Set(g.contours.flatMap((c) => c.nodes.map((n) => n.id)))); return; }
+      if (mod || e.altKey) return;
+      if (k === 'v' || k === 'V') chooseTool('select');
+      else if (k === 'p' || k === 'P') chooseTool('pen');
+      else if (k === 'h' || k === 'H') chooseTool('hand');
+      else if (k === 'f' || k === 'F') setPreview((x) => !x);
+      else if (k === '[') onNav(-1);
+      else if (k === ']') onNav(1);
+      else if (k === 'Escape' || k === 'Enter') { if (penRef.current) finishPen(); else if (k === 'Escape') setSel(new Set()); }
+      else if (k === 'Backspace' || k === 'Delete') { if (s.size) { e.preventDefault(); deleteSelection(); } }
+      else if (k.startsWith('Arrow') && s.size) {
+        e.preventDefault();
+        const st = e.shiftKey ? 10 : 1;
+        const dx = k === 'ArrowLeft' ? -st : k === 'ArrowRight' ? st : 0, dy = k === 'ArrowUp' ? st : k === 'ArrowDown' ? -st : 0;
+        api.setGlyph(Core.moveNodes(g, s, dx, dy));
+      } else if (k === 'r') reverseSel();
+      else if (k === 'R') fixDirections();
+    };
+    const up = (e) => { if (e.key === ' ') setSpace(false); };
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
+  }, [fit, onNav, tool]);
+
+  if (!glyph) return html`<div class="page"><p class="empty-note">Pick a glyph to edit from the Glyphs tab.</p></div>`;
+
+  // ----- render -----
+  const v = vp || { z: 0.5, tx: 0, ty: 0 };
+  const S = (x, y) => [v.tx + x * v.z, v.ty - y * v.z];
+  const hitR = coarse ? 22 : 9;
+  const W = size.w, H = size.h;
+  const bb = Core.glyphBBox(glyph);
+  const { lsb, rsb } = Core.sidebearings(glyph);
+  const showPoints = !preview;
+  const open = penId ? glyph.contours.find((c) => c.id === penId) : null;
+  const cursor = panning ? 'grabbing' : (tool === 'hand' || space) ? 'grab' : tool === 'pen' ? 'crosshair' : 'default';
+  const nodesSel = [];
+  for (const c of glyph.contours) for (const n of c.nodes) if (sel.has(n.id)) nodesSel.push(n);
+  const selBox = nodesSel.length > 1 ? {
+    xMin: Math.min(...nodesSel.map((n) => n.x)), xMax: Math.max(...nodesSel.map((n) => n.x)),
+    yMin: Math.min(...nodesSel.map((n) => n.y)), yMax: Math.max(...nodesSel.map((n) => n.y)) } : null;
+  const one = nodesSel.length === 1 ? nodesSel[0] : null;
+  const cat = Core.categoryOf(glyph);
+  const defaultCtx = cat === 'lower' ? 'nn•nn oo•oo' : cat === 'figure' ? '00•11 •0•1•' : cat === 'punct' ? 'HH•HH nn•nn' : 'HH•HH OO•OO';
+  const ctx = ctxText ?? defaultCtx;
+  const ctxSeq = Array.from(ctx).map((ch) => (ch === '•' ? { ch, glyph } : { ch, glyph: Core.cmapOf(project).get(ch.codePointAt(0)) || null }));
+  const validateName = (n) => {
+    if (!Core.isValidGlyphName(n)) return 'Use letters, digits, “.” or “_”, starting with a letter.';
+    if (Object.values(project.glyphs).some((g) => g.id !== glyph.id && g.name === n)) return 'Another glyph already has this name.';
+    return null;
+  };
+  const parseUni = (t) => {
+    const out = [];
+    for (const part of t.split(/[,\s]+/).filter(Boolean)) {
+      const m = part.match(/^(?:U\+|u\+|0x)?([0-9A-Fa-f]{4,6})$/);
+      if (m) out.push(parseInt(m[1], 16));
+      else if (Array.from(part).length === 1) out.push(part.codePointAt(0));
+      else return null;
+    }
+    return out;
+  };
+  const uniStr = glyph.unicodes.map(fmtU).join(', ');
+  const validateUni = (t) => {
+    const cps = parseUni(t);
+    if (!cps) return 'Use codes like U+0041, separated by commas.';
+    for (const cp of cps) {
+      const owner = Object.values(project.glyphs).find((g) => g.id !== glyph.id && g.unicodes.includes(cp));
+      if (owner) return `${fmtU(cp)} already belongs to ${owner.name}.`;
+    }
+    return null;
+  };
+
+  return html`<div class="editor">
+    <div class="canvas-wrap" ref=${wrapRef}>
+      <svg ref=${svgRef} class="canvas" style=${{ cursor }} role="application" tabIndex="0"
+        aria-label=${`Glyph editor for ${glyph.name}. ${tool} tool.`}
+        onPointerDown=${onPointerDown} onPointerMove=${onPointerMove}
+        onPointerUp=${(e) => onPointerUp(e)} onPointerCancel=${(e) => onPointerUp(e, true)}
+        onPointerLeave=${() => setHover(null)}>
+        ${vp && html`<g>
+          ${METRIC_LINES(info).map(([y, label]) => {
+            const sy = Math.round(S(0, y)[1]) + 0.5;
+            return html`<g key=${label}>
+              <line class=${cls('c-metric', y === 0 && 'base')} x1="0" x2=${W} y1=${sy} y2=${sy} />
+              <text class="c-label" x=${W - 12} y=${sy - 5} text-anchor="end">${label} ${y}</text>
+            </g>`;
+          })}
+          ${(() => {
+            const [x0] = S(0, 0), [x1] = S(glyph.advance, 0);
+            const [, top] = S(0, info.ascender + 40), [, bot] = S(0, info.descender - 40);
+            return html`<g>
+              <line class="c-metric" x1=${Math.round(x0) + 0.5} x2=${Math.round(x0) + 0.5} y1=${top} y2=${bot} />
+              <line class="c-adv-hit" data-hit="advance" x1=${x1} x2=${x1} y1=${top} y2=${bot} />
+              <line class=${cls('c-adv', drag.current && drag.current.kind === 'advance' && 'active')} x1=${Math.round(x1) + 0.5} x2=${Math.round(x1) + 0.5} y1=${top} y2=${bot} pointer-events="none" />
+              <text class="c-label" x=${x1 + 6} y=${bot - 4}>width ${glyph.advance}</text>
+              ${bb && lsb !== null && html`<text class="c-label sb" x=${(x0 + S(bb.xMin, 0)[0]) / 2} y=${S(0, 0)[1] + 16} text-anchor="middle">${lsb}</text>`}
+              ${bb && rsb !== null && html`<text class="c-label sb" x=${(x1 + S(bb.xMax, 0)[0]) / 2} y=${S(0, 0)[1] + 16} text-anchor="middle">${rsb}</text>`}
+            </g>`;
+          })()}
+          <g transform=${`matrix(${v.z} 0 0 ${v.z} ${v.tx} ${v.ty})`}>
+            <path class=${cls('c-fill', preview && 'solid')} d=${Core.glyphD(glyph)} pointer-events="none" />
+            ${showPoints && html`<path class="c-stroke" d=${Core.contoursToD(glyph.contours)} pointer-events="none" />`}
+            ${showPoints && glyph.contours.map((c) => Core.segmentsOf(c).map((s, si) => html`<path key=${c.id + si} class="c-seg" data-hit="seg" data-contour=${c.id} data-seg=${si} d=${segPathD(s)} />`))}
+          </g>
+          ${showPoints && glyph.contours.map((c) => {
+            if (c.nodes.length < 2) return null;
+            const s0 = Core.segmentsOf(c)[0];
+            if (!s0) return null;
+            const tgt = s0.type === 'C' && (s0.p1.x !== s0.p0.x || s0.p1.y !== s0.p0.y) ? s0.p1 : s0.type === 'C' ? s0.p2 : s0.p3;
+            const [ax, ay] = S(s0.p0.x, s0.p0.y), [bx, by] = S(tgt.x, tgt.y);
+            const ang = (Math.atan2(by - ay, bx - ax) * 180) / Math.PI;
+            return html`<path key=${'arr' + c.id} class="c-arrow" d="M14 0 L7 -4 L7 4 Z" transform=${`translate(${ax} ${ay}) rotate(${ang})`} pointer-events="none" />`;
+          })}
+          ${showPoints && glyph.contours.map((c) => c.nodes.map((n) => {
+            if (coarse && !sel.has(n.id)) return null;
+            const [x, y] = S(n.x, n.y);
+            return ['in', 'out'].map((w) => {
+              const h = n[w];
+              if (!h || (h.x === 0 && h.y === 0)) return null;
+              const [hx, hy] = S(n.x + h.x, n.y + h.y);
+              return html`<g key=${n.id + w}>
+                <line class="c-handle-line" x1=${x} y1=${y} x2=${hx} y2=${hy} />
+                <circle class="c-handle" cx=${hx} cy=${hy} r="3.5" />
+                <circle class="c-hit" data-hit="handle" data-node=${n.id} data-which=${w} cx=${hx} cy=${hy} r=${hitR - 1} />
+              </g>`;
+            });
+          }))}
+          ${showPoints && glyph.contours.map((c) => c.nodes.map((n, i) => {
+            const [x, y] = S(n.x, n.y);
+            const s = sel.has(n.id);
+            const k = cls('c-node', s && 'sel', i === 0 && !s && 'start');
+            return html`<g key=${n.id}>
+              ${n.type === 'smooth' ? html`<circle class=${k} cx=${x} cy=${y} r="4.2" />` : html`<rect class=${k} x=${x - 4} y=${y - 4} width="8" height="8" />`}
+              <circle class="c-hit" data-hit="node" data-node=${n.id} cx=${x} cy=${y} r=${hitR} />
+            </g>`;
+          }))}
+          ${tool === 'pen' && open && hover && (() => {
+            const t = open.nodes[open.nodes.length - 1];
+            const [ax, ay] = S(t.x, t.y), [hx, hy] = S(hover.x, hover.y);
+            const d = t.out ? (() => { const [cx1, cy1] = S(t.x + t.out.x, t.y + t.out.y); return `M${ax} ${ay}C${cx1} ${cy1} ${hx} ${hy} ${hx} ${hy}`; })() : `M${ax} ${ay}L${hx} ${hy}`;
+            const f0 = open.nodes[0], [fx, fy] = S(f0.x, f0.y);
+            const near = open.nodes.length >= 2 && Math.hypot(hx - fx, hy - fy) < hitR + 2;
+            return html`<g pointer-events="none"><path class="c-pen" d=${d} />${near && html`<circle class="c-close" cx=${fx} cy=${fy} r="9" />`}</g>`;
+          })()}
+          ${marquee && html`<rect class="c-marquee" x=${Math.min(marquee.x0, marquee.x1)} y=${Math.min(marquee.y0, marquee.y1)} width=${Math.abs(marquee.x1 - marquee.x0)} height=${Math.abs(marquee.y1 - marquee.y0)} />`}
+        </g>`}
+      </svg>
+
+      <div class="toolrail glass" role="toolbar" aria-label="Tools" aria-orientation="vertical">
+        ${[['select', 'Select', 'V'], ['pen', 'Pen', 'P'], ['hand', 'Hand', 'H']].map(([t, label, key]) => html`<button key=${t} class="tool"
+          aria-pressed=${tool === t ? 'true' : 'false'} aria-keyshortcuts=${key} title=${`${label} (${key})`} aria-label=${label} onClick=${() => chooseTool(t)}>
+          <${Icon} name=${t} size=${19} /></button>`)}
+        <div class="rule"></div>
+        <button class="tool" aria-pressed=${preview ? 'true' : 'false'} title="Preview filled (F)" aria-label="Preview filled" onClick=${() => setPreview((x) => !x)}><${Icon} name="eye" size=${19} /></button>
+        <button class="tool" title="Fit to window (⌘0)" aria-label="Fit to window" onClick=${fit}><${Icon} name="fit" size=${19} /></button>
+      </div>
+      <div class="glyph-head glass">
+        <button class="btn btn-ghost icon-btn btn-sm" aria-label="Previous glyph" title="Previous glyph ([)" onClick=${() => onNav(-1)}><${Icon} name="left" size=${16} /></button>
+        <span class="gname"><b>${glyph.name}</b><span>${glyph.unicodes.length ? fmtU(glyph.unicodes[0]) : 'unencoded'}</span></span>
+        <button class="btn btn-ghost icon-btn btn-sm" aria-label="Next glyph" title="Next glyph (])" onClick=${() => onNav(1)}><${Icon} name="right" size=${16} /></button>
+      </div>
+      <button class="btn glass sheet-btn" onClick=${() => setSheet((x) => !x)} aria-expanded=${sheet ? 'true' : 'false'} aria-controls="inspector"><${Icon} name="sliders" size=${16} /> Details</button>
+      <div class="zoom-pill glass">
+        <button class="btn btn-ghost icon-btn btn-sm" aria-label="Zoom out" onClick=${() => zoomBy(0.8)}><${Icon} name="minus" size=${15} /></button>
+        <output aria-live="off">${Math.round(v.z * 100)}%</output>
+        <button class="btn btn-ghost icon-btn btn-sm" aria-label="Zoom in" onClick=${() => zoomBy(1.25)}><${Icon} name="plus" size=${15} /></button>
+      </div>
+    </div>
+
+    <aside class=${cls('inspector', sheet && 'open')} id="inspector" aria-label="Glyph details">
+      <section class="insp-sec">
+        <header><span class="label">Glyph</span>${sheet && html`<button class="btn btn-ghost icon-btn btn-sm" aria-label="Close details" onClick=${() => setSheet(false)}><${Icon} name="x" size=${15} /></button>`}</header>
+        <div class="grid2">
+          <${TextField} id="g-name" label="Name" mono value=${glyph.name} validate=${validateName}
+            onCommit=${(n) => { api.setGlyph({ ...glyph, name: n }); }} />
+          <${TextField} id="g-uni" label="Unicode" mono value=${uniStr} validate=${validateUni} placeholder="none"
+            onCommit=${(t) => api.setGlyph({ ...glyph, unicodes: parseUni(t) || [] })} />
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="label" for="g-adv">Width</label>
+            <${NumField} id="g-adv" label="Advance width" value=${glyph.advance} min=${0} max=${4000} onCommit=${(a) => api.setGlyph({ ...glyph, advance: a })} /></div>
+          <div class="field"><span class="label">Bounds</span><span class="input mono" style=${{ display: 'flex', alignItems: 'center', color: 'var(--muted)' }}>${bb ? `${Math.round(bb.xMax - bb.xMin)} × ${Math.round(bb.yMax - bb.yMin)}` : 'empty'}</span></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="label" for="g-lsb">Left side</label>
+            <${NumField} id="g-lsb" label="Left side bearing" value=${lsb} disabled=${lsb === null} onCommit=${(x) => api.setGlyph(Core.setLsb(glyph, x))} /></div>
+          <div class="field"><label class="label" for="g-rsb">Right side</label>
+            <${NumField} id="g-rsb" label="Right side bearing" value=${rsb} disabled=${rsb === null} onCommit=${(x) => api.setGlyph(Core.setRsb(glyph, x))} /></div>
+        </div>
+      </section>
+      <section class="insp-sec">
+        <header><span class="label">${one ? 'Point' : selBox ? nodesSel.length + ' points' : 'Selection'}</span></header>
+        ${one ? html`<div class="grid2">
+            <div class="field"><label class="label" for="p-x">X</label><${NumField} id="p-x" label="Point X" value=${one.x} onCommit=${(x) => api.setGlyph(Core.moveNodes(glyph, sel, x - one.x, 0))} /></div>
+            <div class="field"><label class="label" for="p-y">Y</label><${NumField} id="p-y" label="Point Y" value=${one.y} onCommit=${(y) => api.setGlyph(Core.moveNodes(glyph, sel, 0, y - one.y))} /></div>
+          </div>
+          <div class="seg" role="group" aria-label="Point type">
+            <button aria-pressed=${one.type === 'corner' ? 'true' : 'false'} onClick=${() => one.type !== 'corner' && api.setGlyph(Core.toggleSmooth(glyph, one.id))}>Corner</button>
+            <button aria-pressed=${one.type === 'smooth' ? 'true' : 'false'} onClick=${() => one.type !== 'smooth' && api.setGlyph(Core.toggleSmooth(glyph, one.id))}>Smooth</button>
+          </div>`
+        : selBox ? html`<div class="grid2">
+            <div class="field"><label class="label" for="s-x">X</label><${NumField} id="s-x" label="Selection left" value=${Math.round(selBox.xMin)} onCommit=${(x) => api.setGlyph(Core.moveNodes(glyph, sel, x - Math.round(selBox.xMin), 0))} /></div>
+            <div class="field"><label class="label" for="s-y">Y</label><${NumField} id="s-y" label="Selection bottom" value=${Math.round(selBox.yMin)} onCommit=${(y) => api.setGlyph(Core.moveNodes(glyph, sel, 0, y - Math.round(selBox.yMin)))} /></div>
+          </div>`
+        : html`<p class="hint">${tool === 'pen' ? 'Click to place points. Drag to pull out curve handles. Click the first point to close the shape.' : 'Click a point or a shape to select it. Drag on empty space to select several.'}</p>`}
+      </section>
+      <section class="insp-sec">
+        <header><span class="label">Contours</span><span class="hint mono">${glyph.contours.length}</span></header>
+        <div class="actions">
+          <button class="btn btn-sm" onClick=${reverseSel} title="Reverse direction (R)"><${Icon} name="reverse" size=${15} /> Reverse</button>
+          <button class="btn btn-sm" onClick=${fixDirections} title="Correct all directions (Shift R)"><${Icon} name="reverse" size=${15} /> Fix all</button>
+          <button class="btn btn-sm" onClick=${() => mirror('x')}><${Icon} name="flipH" size=${15} /> Flip ↔</button>
+          <button class="btn btn-sm" onClick=${() => mirror('y')}><${Icon} name="flipV" size=${15} /> Flip ↕</button>
+          <button class="btn btn-sm btn-danger" disabled=${!sel.size} onClick=${deleteSelection}><${Icon} name="trash" size=${15} /> Delete</button>
+        </div>
+      </section>
+      <section class="insp-sec">
+        <header><span class="label">Keys</span></header>
+        <dl class="keys">
+          <dt><span class="kbd">V</span> <span class="kbd">P</span> <span class="kbd">H</span></dt><dd>Select, pen, hand</dd>
+          <dt><span class="kbd">Alt</span> click</dt><dd>Corner ↔ smooth point</dd>
+          <dt><span class="kbd">←</span> <span class="kbd">→</span></dt><dd>Nudge 1, with Shift 10</dd>
+          <dt><span class="kbd">⌘Z</span></dt><dd>Undo, with Shift redo</dd>
+          <dt><span class="kbd">[</span> <span class="kbd">]</span></dt><dd>Previous / next glyph</dd>
+          <dt><span class="kbd">F</span></dt><dd>Filled preview</dd>
+          <dt><span class="kbd">Space</span></dt><dd>Hold and drag to pan</dd>
+          <dt><span class="kbd">⌘</span> scroll</dt><dd>Zoom</dd>
+        </dl>
+      </section>
+    </aside>
+
+    <div class="strip">
+      <input class="input mono" aria-label="Context text, • is this glyph" value=${ctx} onChange=${(e) => setCtxText(e.target.value)} title="Type around the glyph. • stands for the glyph you’re editing." />
+      <div class="run-scroll"><${GlyphRun} project=${project} seq=${ctxSeq} height=${68} highlightId=${glyph.id} onPick=${onPick} /></div>
+    </div>
+  </div>`;
+}
+
+// ---------- spacing & kerning ----------
+const COMMON_PAIRS = ['AV', 'AW', 'AY', 'AT', 'AO', 'AC', 'AU', 'FA', 'FO', 'LT', 'LV', 'LW', 'LY', 'LO', 'PA', 'RT', 'RV', 'RY', 'TA', 'TO', 'Ta', 'Tc', 'Te', 'To', 'Tr', 'Ts', 'Tu', 'Tw', 'Ty', 'VA', 'Va', 'Ve', 'Vo', 'WA', 'Wa', 'We', 'Wo', 'YA', 'Ya', 'Ye', 'Yo', 'Yu', 'av', 'aw', 'ay', 'kc', 'ke', 'ko', 'rc', 're', 'ro', 'r.', 'r,', 'v.', 'w.', 'y.', 'y,', 'T.', 'T,', 'V.', 'W.', 'Y.', 'P.', 'F.', "L'", 'f.'];
+
+function KerningPanel({ project, api, font }) {
+  const cmap = Core.cmapOf(project);
+  const [selKey, setSelKey] = useState(() => Object.keys(project.kerning)[0] || null);
+  const [addTxt, setAddTxt] = useState('');
+  const [addErr, setAddErr] = useState(null);
+  const [filter, setFilter] = useState('');
+  const stageRef = useRef(null);
+  const dragRef = useRef(null);
+  const g = (id) => project.glyphs[id];
+  const pairs = Object.entries(project.kerning)
+    .map(([k, v]) => { const [a, b] = k.split('|'); return { k, a: g(a), b: g(b), v }; })
+    .filter((p) => p.a && p.b)
+    .sort((x, y) => (x.a.name + ' ' + x.b.name).localeCompare(y.a.name + ' ' + y.b.name));
+  const label = (gl) => glyphChar(gl) && gl.name !== 'space' ? glyphChar(gl) : '/' + gl.name;
+  const shown = pairs.filter((p) => !filter || (label(p.a) + label(p.b)).includes(filter) || (p.a.name + ' ' + p.b.name).toLowerCase().includes(filter.toLowerCase()));
+  const cur = selKey && project.kerning[selKey] !== undefined ? pairs.find((p) => p.k === selKey) : null;
+  const setKern = (k, v, record = true) => {
+    const kerning = { ...project.kerning };
+    if (v === null) delete kerning[k]; else kerning[k] = Math.max(-1000, Math.min(1000, Math.round(v)));
+    api.commit({ ...api.get(), kerning }, record);
+  };
+  const resolve = (txt) => {
+    const t = txt.trim();
+    const names = t.startsWith('/') ? t.split('/').filter(Boolean) : null;
+    if (names && names.length === 2) {
+      const find = (n) => Object.values(project.glyphs).find((x) => x.name === n);
+      return [find(names[0]), find(names[1])];
+    }
+    const chars = Array.from(t);
+    if (chars.length === 2) return chars.map((c) => cmap.get(c.codePointAt(0)));
+    return null;
+  };
+  const addPair = (txt) => {
+    const r = resolve(txt);
+    if (!r) { setAddErr('Type two characters, like AV, or two names, like /T/period.'); return; }
+    if (!r[0] || !r[1]) { setAddErr('One of those characters isn’t in the font yet.'); return; }
+    const k = r[0].id + '|' + r[1].id;
+    if (project.kerning[k] === undefined) setKern(k, 0);
+    setSelKey(k); setAddTxt(''); setAddErr(null);
+  };
+  const suggestions = COMMON_PAIRS.map((s) => {
+    const [a, b] = Array.from(s).map((c) => cmap.get(c.codePointAt(0)));
+    return a && b && !Core.isEmpty(a) && !Core.isEmpty(b) && project.kerning[a.id + '|' + b.id] === undefined ? { s, k: a.id + '|' + b.id } : null;
+  }).filter(Boolean).slice(0, 12);
+
+  // preview geometry
+  const lowerCtx = cur && Core.categoryOf(cur.b) === 'lower';
+  const ctxG = (ch) => cmap.get(ch.codePointAt(0));
+  const pad = lowerCtx ? 'n' : 'H';
+  const seq = cur ? [{ glyph: ctxG(pad) }, { glyph: ctxG(pad) }, { glyph: cur.a, mark: 'a' }, { glyph: cur.b, mark: 'b' }, { glyph: ctxG(pad) }, { glyph: ctxG(pad) }].map((s) => ({ ...s, glyph: s.glyph || null })) : [];
+  const run = cur ? Core.layoutRun(project, seq) : null;
+  const asc = project.info.ascender + 60, desc = project.info.descender - 60;
+  const onStageDown = (e) => {
+    if (!cur) return;
+    const el = e.target.closest('[data-kern-drag]');
+    if (!el) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const svg = stageRef.current, r = svg.getBoundingClientRect();
+    const unitsPerPx = (run.width + 200) / r.width;
+    const scale = Math.max(unitsPerPx, (asc - desc) / r.height);
+    api.begin();
+    dragRef.current = { x: e.clientX, v0: cur.v, scale };
+  };
+  const onStageMove = (e) => {
+    const d = dragRef.current;
+    if (!d) return;
+    let v = d.v0 + (e.clientX - d.x) * d.scale;
+    v = e.shiftKey ? Math.round(v) : Math.round(v / 5) * 5;
+    setKern(cur.k, v, false);
+  };
+  const onStageUp = () => { if (dragRef.current) { dragRef.current = null; api.end(); } };
+
+  return html`<div class="split">
+    <section class="card pairs" aria-label="Kerning pairs">
+      <form class="field" onSubmit=${(e) => { e.preventDefault(); addPair(addTxt); }}>
+        <label class="label" for="kern-add">Add a pair</label>
+        <div class="row">
+          <input id="kern-add" class="input mono" placeholder="AV or /T/period" value=${addTxt} aria-invalid=${addErr ? 'true' : 'false'} onChange=${(e) => { setAddTxt(e.target.value); setAddErr(null); }} />
+          <button class="btn" type="submit"><${Icon} name="plus" size=${16} /> Add</button>
+        </div>
+        ${addErr && html`<span class="err" role="alert">${addErr}</span>`}
+      </form>
+      ${suggestions.length > 0 && html`<div class="field"><span class="label">Often needed</span>
+        <div class="chips">${suggestions.map((s) => html`<button key=${s.s} class="chip mono" onClick=${() => addPair(s.s)}>${s.s}</button>`)}</div></div>`}
+      <div class="field">
+        <div class="row" style=${{ justifyContent: 'space-between' }}><span class="label">${pairs.length} pairs</span>
+          <input class="input" style=${{ width: '120px', height: '28px', fontSize: '12px' }} aria-label="Filter pairs" placeholder="Filter" value=${filter} onChange=${(e) => setFilter(e.target.value)} /></div>
+        ${pairs.length === 0 ? html`<p class="empty-note">No kerning pairs yet. Type two letters above, like AV, to add one.</p>` : html`<div class="pair-list" role="listbox" aria-label="Kerning pairs">
+          ${shown.map((p) => html`<div key=${p.k} class="pair-row" role="option" aria-selected=${p.k === selKey ? 'true' : 'false'}>
+            <button class="pair-name" onClick=${() => setSelKey(p.k)}>${label(p.a)}${label(p.b)} <span style=${{ color: 'var(--faint)' }}>${p.a.name} ${p.b.name}</span></button>
+            <${NumField} label=${`Kerning ${p.a.name} ${p.b.name}`} value=${p.v} step=${5} onCommit=${(v) => { setSelKey(p.k); setKern(p.k, v); }} />
+            <button class="btn btn-ghost icon-btn btn-sm" aria-label=${`Remove ${p.a.name} ${p.b.name}`} onClick=${() => setKern(p.k, null)}><${Icon} name="x" size=${14} /></button>
+          </div>`)}
+        </div>`}
+      </div>
+    </section>
+    <section class="card preview-card" aria-label="Kerning preview">
+      ${cur ? html`
+        <div class="toolbar-row">
+          <div style=${{ display: 'grid', gap: '6px' }}>
+            <span class="eyebrow">${cur.a.name} + ${cur.b.name}</span>
+            <span class="kern-value" aria-live="polite">${cur.v > 0 ? '+' : ''}${cur.v}</span>
+          </div>
+          <div class="row" role="group" aria-label="Adjust kerning">
+            <button class="btn btn-sm mono" onClick=${() => setKern(cur.k, cur.v - 10)}>−10</button>
+            <button class="btn btn-sm mono" onClick=${() => setKern(cur.k, cur.v - 1)}>−1</button>
+            <button class="btn btn-sm mono" onClick=${() => setKern(cur.k, cur.v + 1)}>+1</button>
+            <button class="btn btn-sm mono" onClick=${() => setKern(cur.k, cur.v + 10)}>+10</button>
+            <button class="btn btn-sm btn-ghost btn-danger" onClick=${() => setKern(cur.k, null)}>Remove</button>
+          </div>
+        </div>
+        <div class="kern-stage" tabIndex="0" aria-label="Drag the right letter, or use the arrow keys, to kern"
+          onKeyDown=${(e) => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); setKern(cur.k, cur.v + (e.key === 'ArrowLeft' ? -1 : 1) * (e.shiftKey ? 1 : 5)); } }}
+          onPointerDown=${onStageDown} onPointerMove=${onStageMove} onPointerUp=${onStageUp} onPointerCancel=${onStageUp}>
+          <svg ref=${stageRef} viewBox=${`-100 ${-asc} ${run.width + 200} ${asc - desc}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label=${`${cur.a.name} ${cur.b.name} kerned ${cur.v}`}>
+            <line x1="-100" x2=${run.width + 100} y1="0" y2="0" stroke="var(--metric)" vector-effect="non-scaling-stroke" />
+            ${run.items.map((it, i) => it.missing ? null : html`<path key=${i} d=${Core.glyphD(it.glyph)} transform=${`translate(${it.x} 0)`}
+              class=${it.mark === 'b' ? 'drag-glyph' : ''} data-kern-drag=${it.mark === 'b' ? '1' : undefined}
+              fill=${it.mark ? 'var(--accent)' : 'var(--ink)'} />`)}
+          </svg>
+        </div>
+        <p class="hint">Drag the right letter or use ← → (5 units, Shift for 1). The line below uses the compiled font.</p>`
+      : html`<p class="empty-note">Pick a pair from the list, or add one, to see it here.</p>`}
+      <div class="proof uf" style=${{ fontFamily: fontStack(font) }}>AVATAR Toyota WAVE. LYNX Type, Py.</div>
+    </section>
+  </div>`;
+}
+
+function SpacingPanel({ project, api }) {
+  const [q, setQ] = useState('');
+  const [focus, setFocus] = useState(null);
+  const glyphs = project.glyphOrder.map((id) => project.glyphs[id]).filter((g) => g && g.name !== '.notdef' && (!q || g.name.toLowerCase().includes(q.toLowerCase()) || glyphChar(g) === q));
+  const cmap = Core.cmapOf(project);
+  const fg = focus && project.glyphs[focus];
+  const ctx = fg ? (Core.categoryOf(fg) === 'lower' ? 'nn•nn oo•oo' : 'HH•HH OO•OO') : 'HHOHH nnonn';
+  const seq = Array.from(ctx).map((ch) => (ch === '•' ? { ch, glyph: fg } : { ch, glyph: cmap.get(ch.codePointAt(0)) || null }));
+  const set = (g, next) => { setFocus(g.id); api.setGlyph(next); };
+  return html`<section class="card" style=${{ display: 'grid', gap: '14px', padding: '18px', minWidth: 0 }}>
+    <div class="toolbar-row">
+      <div class="run-scroll" style=${{ minHeight: '80px' }}><${GlyphRun} project=${project} seq=${seq} height=${80} highlightId=${fg && fg.id} /></div>
+      <input class="input" style=${{ width: '170px' }} aria-label="Filter glyphs" placeholder="Filter glyphs" value=${q} onChange=${(e) => setQ(e.target.value)} />
+    </div>
+    <div style=${{ overflow: 'auto', maxHeight: '520px' }}>
+      <table class="sp-table">
+        <thead><tr><th>Glyph</th><th>Left</th><th>Right</th><th>Width</th></tr></thead>
+        <tbody>${glyphs.map((g) => {
+          const { lsb, rsb } = Core.sidebearings(g);
+          return html`<tr key=${g.id} onFocus=${() => setFocus(g.id)}>
+            <td><span class="sp-glyph"><${GlyphSvg} glyph=${g} info=${project.info} baseline=${false} /><span class="mono">${g.name}</span></span></td>
+            <td><${NumField} label=${'Left side of ' + g.name} value=${lsb} disabled=${lsb === null} onCommit=${(x) => set(g, Core.setLsb(g, x))} /></td>
+            <td><${NumField} label=${'Right side of ' + g.name} value=${rsb} disabled=${rsb === null} onCommit=${(x) => set(g, Core.setRsb(g, x))} /></td>
+            <td><${NumField} label=${'Width of ' + g.name} value=${g.advance} min=${0} onCommit=${(x) => set(g, { ...g, advance: x })} /></td>
+          </tr>`;
+        })}</tbody>
+      </table>
+    </div>
+  </section>`;
+}
+
+function SpacingView({ project, api, font }) {
+  const [tab, setTab] = useState('kerning');
+  return html`<div class="page">
+    <header class="hero">
+      <span class="eyebrow">Spacing</span>
+      <div class="hero-row">
+        <h1 class="h2" style=${{ fontSize: '28px' }}>Space and kern</h1>
+        <div class="seg" role="group" aria-label="Spacing mode">
+          <button aria-pressed=${tab === 'kerning' ? 'true' : 'false'} onClick=${() => setTab('kerning')}>Kerning</button>
+          <button aria-pressed=${tab === 'spacing' ? 'true' : 'false'} onClick=${() => setTab('spacing')}>Side bearings</button>
+        </div>
+      </div>
+      <p class="hint" style=${{ maxWidth: '62ch' }}>${tab === 'kerning'
+        ? 'Kerning nudges specific pairs closer or apart, like the gap in “AV”. Negative values pull letters together. Values are in font units; 1000 is the full em.'
+        : 'Side bearings are the space built into each glyph. Set these first, then kern the pairs that still look uneven.'}</p>
+    </header>
+    ${tab === 'kerning' ? html`<${KerningPanel} project=${project} api=${api} font=${font} />` : html`<${SpacingPanel} project=${project} api=${api} />`}
+  </div>`;
+}
+
+// ---------- tester ----------
+const PRESETS = [
+  ['Pangram', 'Sphinx of black quartz, judge my vow. The five boxing wizards jump quickly!'],
+  ['Spacing', 'Hamburgefontsiv HHOHHOOH nnonnoon'],
+  ['Kerning', 'AVATAR WAVE Toyota LYNX Type. Pay Yo! Fly away, Tom.'],
+  ['Alphabet', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz'],
+  ['Figures', '0123456789 (2024/25) 3:45 & 6,780.90?'],
+];
+function TestView({ project, font }) {
+  const [text, setText] = useState(PRESETS[0][1]);
+  const [size, setSize] = useState(72);
+  const [lead, setLead] = useState(1.15);
+  const [track, setTrack] = useState(0);
+  const [kern, setKern] = useState(true);
+  const [align, setAlign] = useState('left');
+  const cmap = Core.cmapOf(project);
+  const missing = [...new Set(Array.from(text).filter((ch) => ch !== '\n' && !cmap.has(ch.codePointAt(0))))];
+  const firstLine = text.split('\n')[0] || 'Hamburgefontsiv';
+  const fam = fontStack(font);
+  const style = { fontFamily: fam, fontKerning: kern ? 'normal' : 'none', letterSpacing: track / 1000 + 'em' };
+  return html`<div class="page" data-font-status=${font.status} data-font-family=${font.family || ''}>
+    <header class="hero">
+      <span class="eyebrow">Type tester</span>
+      <div class="hero-row">
+        <h1 class="h2" style=${{ fontSize: '28px' }}>Test the real font</h1>
+        <span class="status-pill" aria-live="polite">${font.status === 'ready'
+          ? `Live · ${font.stats.glyphs} glyphs · ${font.stats.pairs} pairs · ${(font.stats.size / 1024).toFixed(1)} KB`
+          : font.status === 'error' ? font.error : 'Building font…'}</span>
+      </div>
+      <p class="hint" style=${{ maxWidth: '62ch' }}>Everything here is set in the TrueType file you’d download, rebuilt each time you edit. Click the text to type your own.</p>
+    </header>
+    <section class="card tester-controls" aria-label="Tester settings">
+      <div class="field" style=${{ width: 'auto', flex: '1 1 300px' }}><span class="label">Sample</span>
+        <div class="chips">${PRESETS.map(([k, t]) => html`<button key=${k} class="chip" aria-pressed=${text === t ? 'true' : 'false'} onClick=${() => setText(t)}>${k}</button>`)}</div></div>
+      <div class="field"><label class="label" for="t-size">Size <span class="mono">${size}px</span></label><input id="t-size" type="range" min="12" max="200" value=${size} onInput=${(e) => setSize(+e.target.value)} /></div>
+      <div class="field"><label class="label" for="t-lead">Line height <span class="mono">${lead.toFixed(2)}</span></label><input id="t-lead" type="range" min="0.8" max="2" step="0.05" value=${lead} onInput=${(e) => setLead(+e.target.value)} /></div>
+      <div class="field"><label class="label" for="t-track">Tracking <span class="mono">${track}</span></label><input id="t-track" type="range" min="-100" max="300" step="5" value=${track} onInput=${(e) => setTrack(+e.target.value)} /></div>
+      <div class="row" style=${{ gap: '16px', flexWrap: 'wrap' }}>
+        <label class="switch"><input type="checkbox" checked=${kern} onChange=${(e) => setKern(e.target.checked)} /> Kerning</label>
+        <div class="seg" role="group" aria-label="Alignment">
+          <button aria-pressed=${align === 'left' ? 'true' : 'false'} onClick=${() => setAlign('left')}>Left</button>
+          <button aria-pressed=${align === 'center' ? 'true' : 'false'} onClick=${() => setAlign('center')}>Center</button>
+        </div>
+      </div>
+    </section>
+    <textarea class="specimen uf" aria-label="Sample text, set in your font" spellcheck="false" value=${text}
+      onChange=${(e) => setText(e.target.value)}
+      style=${{ ...style, fontSize: size + 'px', lineHeight: lead, textAlign: align }}></textarea>
+    ${missing.length > 0 && html`<p class="hint">Not in the font yet, shown in a fallback face: <span class="mono" style=${{ color: 'var(--ink)' }}>${missing.join(' ')}</span></p>`}
+    <section class="waterfall" aria-label="Size waterfall">
+      <span class="eyebrow">Waterfall</span>
+      ${[12, 14, 16, 20, 24, 32, 40, 48, 64, 80, 96].map((s) => html`<div key=${s} class="wf-row"><span>${s}</span><div class="uf" style=${{ ...style, fontSize: s + 'px' }}>${firstLine}</div></div>`)}
+    </section>
+  </div>`;
+}
+
+// ---------- font info & export ----------
+function ExportView({ project, api, font, downloads, toast, persistMode }) {
+  const info = project.info;
+  const names = Core.styleNames(info);
+  const setInfo = (patch) => api.commit({ ...api.get(), info: { ...api.get().info, ...patch } });
+  const [busy, setBusy] = useState(false);
+  const save = async (filename, data) => {
+    if (!downloads) { toast('Saving files works when this page is open on claude.ai.'); return; }
+    setBusy(true);
+    try {
+      await downloads.save({ filename, data });
+      toast('Saved ' + filename);
+    } catch (e) {
+      const code = e && e.code;
+      toast(code === 'declined' ? 'Save cancelled.' : code === 'rate_limited' ? 'A save is already waiting for you to confirm.' : 'The file didn’t save (' + (code || 'error') + ').');
+    } finally { setBusy(false); }
+  };
+  const saveFont = () => {
+    let res;
+    try { res = Core.compileFont(api.get()); } catch (e) { toast('The font didn’t build: ' + e.message); return; }
+    save(res.fileName, new Blob([res.bytes], { type: 'font/ttf' }));
+  };
+  const saveProject = () => {
+    const p = api.get();
+    const slug = (p.info.familyName || 'typeface').trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'typeface';
+    save(slug + '.typeface.json', Core.exportProjectJSON(p));
+  };
+  const diags = font.diagnostics || [];
+  const m = [[info.ascender, 'ascender'], [info.capHeight, 'cap'], [info.xHeight, 'x-height'], [0, 'baseline'], [info.descender, 'descender']];
+  const cmap = Core.cmapOf(project);
+  const H = cmap.get(72), x = cmap.get(120);
+  return html`<div class="page">
+    <header class="hero">
+      <span class="eyebrow">Font info & export</span>
+      <div class="hero-row"><h1 class="h2" style=${{ fontSize: '28px' }}>Name it and take it with you</h1></div>
+    </header>
+    <div class="export-grid">
+      <section class="card form-card" aria-label="Font info">
+        <div class="grid2">
+          <${TextField} id="i-family" label="Family name" value=${info.familyName} validate=${(t) => (t.trim() ? null : 'Give the family a name.')} onCommit=${(t) => setInfo({ familyName: t.trim() })} />
+          <${TextField} id="i-designer" label="Designer" value=${info.designer} placeholder="Your name" onCommit=${(t) => setInfo({ designer: t })} />
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="label" for="i-weight">Weight</label>
+            <select id="i-weight" class="input" value=${info.weight} onChange=${(e) => setInfo({ weight: +e.target.value })}>
+              ${Object.entries(Core.WEIGHT_NAMES).map(([w, n]) => html`<option key=${w} value=${w}>${w} · ${n}</option>`)}
+            </select></div>
+          <div class="field"><span class="label">Style</span>
+            <label class="switch" style=${{ height: '34px' }}><input type="checkbox" checked=${info.italic} onChange=${(e) => setInfo({ italic: e.target.checked })} /> Italic</label></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="label" for="i-vmaj">Version</label>
+            <div class="row"><${NumField} id="i-vmaj" label="Major version" value=${info.versionMajor} min=${0} max=${999} onCommit=${(v) => setInfo({ versionMajor: v })} />
+            <span class="mono" aria-hidden="true">.</span>
+            <${NumField} label="Minor version" value=${info.versionMinor} min=${0} max=${999} onCommit=${(v) => setInfo({ versionMinor: v })} /></div>
+            <span class="hint">Raise this before reinstalling, so your computer picks up the new build.</span></div>
+          <div class="field"><span class="label">Style name</span><span class="input mono" style=${{ display: 'flex', alignItems: 'center', color: 'var(--muted)' }}>${names.typoStyle}</span></div>
+        </div>
+        <div style=${{ display: 'grid', gap: '12px' }}>
+          <span class="label">Vertical metrics (font units)</span>
+          <div class="grid2">
+            <div class="field"><label class="label" for="i-asc">Ascender</label><${NumField} id="i-asc" label="Ascender" value=${info.ascender} min=${1} max=${2000} onCommit=${(v) => setInfo({ ascender: v })} /></div>
+            <div class="field"><label class="label" for="i-cap">Cap height</label><${NumField} id="i-cap" label="Cap height" value=${info.capHeight} min=${1} max=${2000} onCommit=${(v) => setInfo({ capHeight: v })} /></div>
+            <div class="field"><label class="label" for="i-xh">x-height</label><${NumField} id="i-xh" label="x-height" value=${info.xHeight} min=${1} max=${2000} onCommit=${(v) => setInfo({ xHeight: v })} /></div>
+            <div class="field"><label class="label" for="i-desc">Descender</label><${NumField} id="i-desc" label="Descender" value=${info.descender} min=${-2000} max=${0} onCommit=${(v) => setInfo({ descender: v })} /></div>
+          </div>
+          <svg class="metrics-diagram" viewBox=${`-40 ${-(info.ascender + 60)} 2800 ${info.ascender - info.descender + 120}`} role="img" aria-label="Metric lines over H and x">
+            ${m.map(([y, l]) => html`<g key=${l}><line x1="-40" x2="2760" y1=${-y} y2=${-y} stroke=${y === 0 ? 'var(--line-strong)' : 'var(--metric)'} vector-effect="non-scaling-stroke" />
+              <text x="2740" y=${-y - 16} text-anchor="end" font-size="52" fill="var(--metric-label)" font-family="Geist Mono, monospace">${l} ${y}</text></g>`)}
+            ${H && html`<path d=${Core.glyphD(H)} fill="var(--ink)" transform="translate(40 0)" />`}
+            ${x && html`<path d=${Core.glyphD(x)} fill="var(--ink)" transform=${`translate(${80 + (H ? H.advance : 600)} 0)`} />`}
+          </svg>
+        </div>
+      </section>
+      <section class="card export-card" aria-label="Export">
+        <span class="eyebrow">TrueType font</span>
+        <div class="uf" style=${{ fontFamily: fontStack(font), fontSize: '56px', lineHeight: 1 }}>${info.familyName ? 'Aa Gg' : 'Aa'}</div>
+        <div style=${{ display: 'grid', gap: '4px' }}>
+          <span class="file-name">${names.psName}.ttf</span>
+          <span class="meta">${font.stats ? html`<span><b>${font.stats.drawn}</b> drawn glyphs</span><span><b>${font.stats.pairs}</b> kerning pairs</span><span><b>${(font.stats.size / 1024).toFixed(1)}</b> KB</span>` : 'Building…'}</span>
+        </div>
+        <button class="btn btn-accent" style=${{ height: '42px' }} disabled=${busy || downloads === undefined} onClick=${saveFont}><${Icon} name="save" size=${17} /> Save font (.ttf)</button>
+        <button class="btn" disabled=${busy || downloads === undefined} onClick=${saveProject}><${Icon} name="box" size=${16} /> Save project file (.json)</button>
+        ${downloads === null && html`<p class="hint">Saving files works when this page is open on claude.ai.</p>`}
+        ${persistMode !== 'db' && html`<p class="hint">Projects on this device live in browser storage, which can be cleared. Save the project file to keep a copy.</p>`}
+        <div style=${{ display: 'grid', gap: '8px' }}>
+          <span class="label">Checks</span>
+          <ul class="diag">
+            ${diags.length === 0 && html`<li class="ok">No problems found.</li>`}
+            ${diags.map((d, i) => html`<li key=${i} class=${d.level === 'info' ? 'info' : ''}>${d.msg}</li>`)}
+          </ul>
+        </div>
+        <details class="install">
+          <summary>How to install it</summary>
+          <ol>
+            <li>macOS: double-click the .ttf and choose Install Font in Font Book.</li>
+            <li>Windows: right-click the .ttf and choose Install.</li>
+            <li>Updating? Raise the version number, remove the old install, then install the new file.</li>
+            <li>On the web, use it with @font-face. TrueType works in every current browser.</li>
+          </ol>
+        </details>
+      </section>
+    </div>
+  </div>`;
+}
+
+// ---------- app shell ----------
+const TABS = [['glyphs', 'Glyphs', 'glyphs'], ['edit', 'Edit', 'pen'], ['spacing', 'Spacing', 'spacing'], ['test', 'Test', 'type'], ['export', 'Export', 'save']];
+
+function App() {
+  const initial = useMemo(() => Core.sansProject('Studio Sans'), []);
+  const [project, setProject] = useState(initial);
+  const projectRef = useRef(project);
+  const draftRef = useRef(true), draftBase = useRef(initial);
+  const [isDraft, setIsDraft] = useState(true);
+  const savedRef = useRef(null);
+  const hist = useRef({ past: [], future: [] });
+  const gesture = useRef(null);
+  const [, setHistVer] = useState(0);
+  const [view, setView] = useState('glyphs');
+  const [glyphId, setGlyphId] = useState(null);
+  const [persist, setPersist] = useState({ mode: 'pending', state: 'idle', message: null });
+  const [projects, setProjects] = useState([]);
+  const [drawer, setDrawer] = useState(false);
+  const [toastMsg, setToastMsg] = useState(null);
+  const [live, setLive] = useState('');
+  const [downloads, setDownloads] = useState(undefined);
+  const font = useCompiledFont(project);
+  const toastTimer = useRef(null);
+  const toast = useCallback((msg) => { setToastMsg(msg); setLive(msg); clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToastMsg(null), 2800); }, []);
+  const announce = useCallback((msg) => setLive(msg), []);
+
+  const resetHistory = () => { hist.current = { past: [], future: [] }; gesture.current = null; setHistVer((v) => v + 1); };
+  const commit = useCallback((next, record = true) => {
+    const prev = projectRef.current;
+    if (next === prev) return;
+    if (record && !gesture.current) {
+      const h = hist.current;
+      h.past.push(prev); if (h.past.length > 100) h.past.shift();
+      h.future = [];
+      setHistVer((v) => v + 1);
+    }
+    projectRef.current = next;
+    setProject(next);
+  }, []);
+  const api = useMemo(() => ({
+    get: () => projectRef.current,
+    commit,
+    setGlyph: (g, record = true) => { const p = projectRef.current; commit({ ...p, glyphs: { ...p.glyphs, [g.id]: g } }, record); },
+    begin: () => { if (!gesture.current) gesture.current = { base: projectRef.current }; },
+    end: () => {
+      const g = gesture.current;
+      gesture.current = null;
+      if (g && projectRef.current !== g.base) {
+        const h = hist.current;
+        h.past.push(g.base); if (h.past.length > 100) h.past.shift();
+        h.future = [];
+        setHistVer((v) => v + 1);
+      }
+    },
+    cancel: () => { const g = gesture.current; gesture.current = null; if (g) { projectRef.current = g.base; setProject(g.base); } },
+  }), [commit]);
+  const undo = useCallback(() => {
+    const h = hist.current;
+    if (gesture.current || !h.past.length) return;
+    const prev = h.past.pop();
+    h.future.push(projectRef.current);
+    projectRef.current = prev; setProject(prev); setHistVer((v) => v + 1);
+    setLive('Undone');
+  }, []);
+  const redo = useCallback(() => {
+    const h = hist.current;
+    if (gesture.current || !h.future.length) return;
+    const next = h.future.pop();
+    h.past.push(projectRef.current);
+    projectRef.current = next; setProject(next); setHistVer((v) => v + 1);
+    setLive('Redone');
+  }, []);
+
+  // persistence
+  useEffect(() => {
+    if (draftRef.current) {
+      if (project === draftBase.current) return;
+      draftRef.current = false; setIsDraft(false);
+      savedRef.current = project;
+      Persist.saveAll(project);
+      return;
+    }
+    if (savedRef.current !== project) { Persist.saveDiff(savedRef.current, project); savedRef.current = project; }
+  }, [project]);
+  const openProject = useCallback(async (id) => {
+    Persist.flush();
+    try {
+      const p = await Persist.load(id);
+      draftRef.current = false; setIsDraft(false);
+      savedRef.current = p; projectRef.current = p; setProject(p);
+      resetHistory(); setGlyphId(null); setView('glyphs'); setDrawer(false);
+    } catch (e) { toast(e.message || 'That typeface didn’t open.'); }
+  }, []);
+  const refreshList = useCallback(() => Persist.list().then(setProjects, () => {}), []);
+  useEffect(() => {
+    const un = Persist.subscribe(setPersist);
+    Persist.setFallbackHook(() => { if (!draftRef.current) Persist.saveAll(projectRef.current); });
+    Persist.init().then(async () => {
+      if (!draftRef.current) Persist.saveAll(projectRef.current);
+      let list = [];
+      try { list = await Persist.list(); } catch {}
+      setProjects(list);
+      if (list.length && draftRef.current && projectRef.current === draftBase.current) openProject(list[0].id);
+    });
+    (async () => {
+      try { setDownloads(window.claude && window.claude.use ? await window.claude.use('downloads') : null); }
+      catch { setDownloads(null); }
+    })();
+    const flush = () => { if (document.visibilityState === 'hidden') Persist.flush(); };
+    document.addEventListener('visibilitychange', flush);
+    window.addEventListener('pagehide', Persist.flush);
+    return () => { un(); document.removeEventListener('visibilitychange', flush); window.removeEventListener('pagehide', Persist.flush); };
+  }, []);
+  useEffect(() => {
+    const onKey = (e) => {
+      if (isTyping(e.target)) return;
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+      else if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [undo, redo]);
+
+  const startNew = (kind, name) => {
+    const p = kind === 'sans' ? Core.sansProject(name) : Core.blankProject(name);
+    Persist.flush();
+    draftRef.current = false; setIsDraft(false);
+    savedRef.current = p; projectRef.current = p; setProject(p);
+    Persist.saveAll(p);
+    resetHistory(); setGlyphId(null); setView('glyphs'); setDrawer(false);
+    toast(`Started ${name}`);
+  };
+  const importFile = async (file) => {
+    try {
+      const p = Core.importProjectJSON(await file.text());
+      Persist.flush();
+      draftRef.current = false; setIsDraft(false);
+      savedRef.current = p; projectRef.current = p; setProject(p);
+      Persist.saveAll(p);
+      resetHistory(); setGlyphId(null); setView('glyphs'); setDrawer(false);
+      toast(`Imported ${p.info.familyName}`);
+    } catch (e) { toast(e.message || 'That file didn’t import.'); }
+  };
+  const deleteProject = async (id) => {
+    try { await Persist.remove(id); } catch { toast('Couldn’t delete that typeface.'); return; }
+    const rest = projects.filter((p) => p.id !== id);
+    setProjects(rest);
+    if (id === projectRef.current.id) {
+      if (rest.length) openProject(rest[0].id);
+      else {
+        const p = Core.sansProject('Studio Sans');
+        draftRef.current = true; setIsDraft(true); draftBase.current = p;
+        savedRef.current = null; projectRef.current = p; setProject(p); resetHistory();
+      }
+    }
+    toast('Deleted');
+  };
+
+  const openGlyph = useCallback((id) => { setGlyphId(id); setView('edit'); }, []);
+  const createGlyph = useCallback((cp) => {
+    const p = projectRef.current;
+    const g = Core.newGlyphFor(cp, Core.categoryOfCodepoint(cp) === 'lower' ? 520 : 600);
+    if (Object.values(p.glyphs).some((x) => x.name === g.name)) g.name = g.name + '.' + Core.uid(3);
+    commit({ ...p, glyphs: { ...p.glyphs, [g.id]: g }, glyphOrder: [...p.glyphOrder, g.id] });
+    openGlyph(g.id);
+  }, [commit, openGlyph]);
+  const order = project.glyphOrder.filter((id) => project.glyphs[id] && project.glyphs[id].name !== '.notdef');
+  const editId = glyphId && project.glyphs[glyphId] ? glyphId
+    : (order.find((id) => project.glyphs[id].name === 'A') || order[0]);
+  const nav = useCallback((d) => {
+    setGlyphId((cur) => {
+      const p = projectRef.current;
+      const ord = p.glyphOrder.filter((id) => p.glyphs[id] && p.glyphs[id].name !== '.notdef');
+      const i = Math.max(0, ord.indexOf(cur && p.glyphs[cur] ? cur : editId));
+      return ord[(i + d + ord.length) % ord.length];
+    });
+  }, [editId]);
+
+  const saveLabel = persist.mode === 'pending' ? 'Connecting'
+    : isDraft ? 'Example'
+    : persist.mode === 'memory' ? 'Not saved'
+    : persist.state === 'saving' ? 'Saving' : persist.state === 'error' ? 'Not saved' : persist.mode === 'local' ? 'Saved locally' : 'Saved';
+  const dotCls = isDraft || persist.mode === 'pending' ? '' : persist.state === 'saving' ? 'saving' : persist.state === 'error' || persist.mode === 'memory' ? 'error' : 'saved';
+  const banner = persist.message ? { text: persist.message, error: persist.state === 'error' }
+    : isDraft && persist.mode !== 'pending' ? { text: 'This is an example typeface. Your first edit saves it as yours. To start fresh, click its name at the top left.' }
+    : null;
+
+  return html`<div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark"><${Icon} name="pen" size=${14} sw=${2} /></span><span class="brand-text">Typeface Studio</span></div>
+      <span class="sep"></span>
+      <button class="project-btn" onClick=${() => { refreshList(); setDrawer(true); }} aria-haspopup="dialog" title="Your typefaces">
+        <span class="name uf" style=${{ fontFamily: fontStack(font) }}>${project.info.familyName || 'Untitled'}</span><${Icon} name="down" size=${15} />
+      </button>
+      <nav class="tabs" aria-label="Sections">
+        ${TABS.map(([k, label]) => html`<button key=${k} class="tab" aria-current=${view === k ? 'page' : undefined} onClick=${() => setView(k)}>${label}</button>`)}
+      </nav>
+      <span class="spacer"></span>
+      <button class="btn btn-ghost icon-btn" aria-label="Undo" title="Undo (⌘Z)" disabled=${!hist.current.past.length} onClick=${undo}><${Icon} name="undo" /></button>
+      <button class="btn btn-ghost icon-btn" aria-label="Redo" title="Redo (⇧⌘Z)" disabled=${!hist.current.future.length} onClick=${redo}><${Icon} name="redo" /></button>
+      <span class="save-state" title=${persist.mode === 'db' ? 'Saved privately to your Claude account' : persist.mode === 'local' ? 'Saved in this browser' : ''}><span class=${cls('save-dot', dotCls)}></span><span class="txt">${saveLabel}</span></span>
+    </header>
+    ${banner ? html`<div class=${cls('banner', banner.error && 'error')} role="status">${banner.text}</div>` : html`<div></div>`}
+    <main class="main" style=${view === 'edit' ? { overflow: 'hidden' } : null}>
+      ${view === 'glyphs' && html`<${GlyphsView} project=${project} font=${font} onOpen=${openGlyph} onCreate=${createGlyph} api=${api} />`}
+      ${view === 'edit' && html`<${EditorView} project=${project} glyphId=${editId} api=${api} onNav=${nav} onPick=${setGlyphId} announce=${announce} />`}
+      ${view === 'spacing' && html`<${SpacingView} project=${project} api=${api} font=${font} />`}
+      ${view === 'test' && html`<${TestView} project=${project} font=${font} />`}
+      ${view === 'export' && html`<${ExportView} project=${project} api=${api} font=${font} downloads=${downloads} toast=${toast} persistMode=${persist.mode} />`}
+    </main>
+    <nav class="tabbar" aria-label="Sections">
+      ${TABS.map(([k, label, icon]) => html`<button key=${k} aria-current=${view === k ? 'page' : undefined} onClick=${() => setView(k)}><${Icon} name=${icon} size=${20} />${label}</button>`)}
+    </nav>
+    <${ProjectsDialog} open=${drawer} onClose=${() => setDrawer(false)} projects=${projects} current=${project} isDraft=${isDraft}
+      persist=${persist} onOpen=${openProject} onNew=${startNew} onImport=${importFile} onDelete=${deleteProject} />
+    ${toastMsg && html`<div class="toast" role="status">${toastMsg}</div>`}
+    <div class="sr-only" aria-live="polite">${live}</div>
+  </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
+/*@app-end*/
+}
+</script>
