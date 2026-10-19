@@ -21,3 +21,18 @@ Follows litt.md PR 19. Proposed setup: Hanken Grotesk for display and h1–h4, I
 Width is the advance of one sentence at 17px. Ink is the share of that line's area the glyphs cover.
 
 First measurements (Chromium): Inter at 400 is ink 107 and width 1.05× against Hanken Grotesk 400. Inter matches Hanken's darkness at about 370 and reads lighter at 350. The extra width stays at about 4% at every weight.
+
+### `split-test/`: the real litt.md gallery in four type versions
+
+`split-test/build.sh <litt.md checkout> <work dir>` builds the litt.md gallery from source with relative paths. It then injects the type lab (`typelab-head.html`, `typelab-body.html`) through `inject.mjs`, producing an artifact page plus `dist/assets`.
+
+The type lab overrides litt.md's type tokens, which the gallery's `text-*` utilities read, and a few shared layout gaps. A floating switcher (keys `1`–`4`, `H` to hide) flips between:
+
+| Version | Headings | Text | Hierarchy from |
+|---|---|---|---|
+| Today | Hanken Grotesk 40 / 32 / 28 / 24 / 20 | Hanken 17 / 15 / 13 / 12 | litt.md v0.5 as it ships |
+| Report | Hanken 40 / 30 / 22 | Inter 17 / 15 / 13 / 12, whole-pixel leading | size steps of about 1.33× and the spacing ladder |
+| One size | Inter 16 | Inter 16 / 16 / 14 / 12 | space and ink only (`references/emilkowal.ski.md`) |
+| Quartz | Hanken 40 / 32 / 24 / 20 | Inter 16 / 14 / 13 / 12 at 340 / 340 / 380 / 400 | weight by size and tight leading (`references/quartz.md`) |
+
+Verdicts per version are saved to the artifact's database (`versions/<id>`).

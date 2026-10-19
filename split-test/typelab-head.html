@@ -1,0 +1,218 @@
+<script>
+  /* Pick the type version before first paint, so the page never flashes the wrong one. */
+  (function () {
+    var v = "today";
+    try { v = localStorage.getItem("litt-typelab:version") || v; } catch (e) {}
+    if (["today", "report", "one", "quartz"].indexOf(v) < 0) v = "today";
+    document.documentElement.setAttribute("data-typelab", v);
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..400&display=swap">
+<style>
+/* ==========================================================================
+   litt.md type lab: four type versions of the real gallery.
+   Each version overrides litt.md's type tokens (the gallery's text-* utilities
+   read them) and a few gaps in the shared page layout. These rules are not in
+   a cascade layer, so they win over Tailwind's utilities. "today" changes
+   nothing.
+   ========================================================================== */
+
+/* ---------- Report: the research proposal ---------- */
+html[data-typelab="report"] {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --tl-head: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --type-display-size: 2.5rem;    --type-display-leading: 44px; --type-display-tracking: -0.025em;
+  --type-h1-size: 2.5rem;         --type-h1-leading: 44px;      --type-h1-tracking: -0.025em;
+  --type-h2-size: 1.875rem;       --type-h2-leading: 36px;      --type-h2-tracking: -0.02em;
+  --type-h3-size: 1.375rem;       --type-h3-leading: 28px;      --type-h3-tracking: -0.015em;
+  --type-h4-size: 1.375rem;       --type-h4-leading: 28px;      --type-h4-tracking: -0.015em;
+  --type-reading-size: 1.0625rem; --type-reading-leading: 28px; --type-reading-tracking: -0.006em;
+  --type-body-size: 0.9375rem;    --type-body-leading: 24px;    --type-body-tracking: -0.006em;
+  --type-small-size: 0.8125rem;   --type-small-leading: 20px;   --type-small-tracking: 0em;
+  --type-caption-size: 0.75rem;   --type-caption-leading: 16px; --type-caption-tracking: 0.01em;
+  --measure: 54ch;
+  --section-y: 96px;
+  --tl-page-gap: 64px;
+  --tl-header-gap: 16px;
+  --tl-title-below: 16px;
+  --tl-sec-gap: 24px;
+  --tl-head-below: 16px;
+  --tl-lockup: 4px;
+  --tl-docs-h-size: 1.875rem; --tl-docs-h-leading: 36px; --tl-docs-h-tracking: -0.02em;
+}
+@media (min-width: 40rem) { html[data-typelab="report"] { --section-y: 128px; } }
+@media (min-width: 64rem) { html[data-typelab="report"] { --section-y: 160px; } }
+/* The report's one weight change: reading and body text at 370 in dark mode. */
+@media (prefers-color-scheme: dark) { html[data-typelab="report"]:not([data-theme="light"]) body { font-weight: 370; } }
+html[data-typelab="report"][data-theme="dark"] body { font-weight: 370; }
+html[data-typelab="report"] :is(.text-small, .text-caption, button, label, th, [role="tab"], [role="menuitem"], [role="option"], .font-mono) { font-weight: 400; }
+
+/* ---------- One size: after emilkowal.ski ---------- */
+html[data-typelab="one"] {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --type-display-size: 1rem;      --type-display-leading: 24px; --type-display-tracking: 0em;
+  --type-h1-size: 1rem;           --type-h1-leading: 24px;      --type-h1-tracking: 0em;
+  --type-h2-size: 1rem;           --type-h2-leading: 24px;      --type-h2-tracking: 0em;
+  --type-h3-size: 1rem;           --type-h3-leading: 24px;      --type-h3-tracking: 0em;
+  --type-h4-size: 1rem;           --type-h4-leading: 24px;      --type-h4-tracking: 0em;
+  --type-reading-size: 1rem;      --type-reading-leading: 26px; --type-reading-tracking: 0em;
+  --type-body-size: 1rem;         --type-body-leading: 24px;    --type-body-tracking: 0em;
+  --type-small-size: 0.875rem;    --type-small-leading: 20px;   --type-small-tracking: 0em;
+  --type-caption-size: 0.75rem;   --type-caption-leading: 16px; --type-caption-tracking: 0em;
+  --control-text-sm: 0.875rem;
+  --control-text-md: 1rem;
+  --measure: 40.25rem;
+  --section-y: 128px;
+  --tl-page-gap: 56px;
+  --tl-header-gap: 24px;
+  --tl-title-below: 0px;
+  --tl-sec-gap: 24px;
+  --tl-head-below: 20px;
+  --tl-lockup: 0px;
+}
+
+/* ---------- Quartz: after design.how/systems/quartz ---------- */
+html[data-typelab="quartz"] {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --tl-head: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --type-display-size: 2.5rem;    --type-display-leading: 44px; --type-display-tracking: -0.025em;
+  --type-h1-size: 2rem;           --type-h1-leading: 36px;      --type-h1-tracking: -0.015em;
+  --type-h2-size: 1.5rem;         --type-h2-leading: 28px;      --type-h2-tracking: -0.015em;
+  --type-h3-size: 1.25rem;        --type-h3-leading: 24px;      --type-h3-tracking: -0.015em;
+  --type-h4-size: 1rem;           --type-h4-leading: 22px;      --type-h4-tracking: -0.01em;
+  --type-reading-size: 1rem;      --type-reading-leading: 22px; --type-reading-tracking: -0.01em;
+  --type-body-size: 0.875rem;     --type-body-leading: 20px;    --type-body-tracking: 0em;
+  --type-small-size: 0.8125rem;   --type-small-leading: 18px;   --type-small-tracking: 0em;
+  --type-caption-size: 0.75rem;   --type-caption-leading: 16px; --type-caption-tracking: 0em;
+  --control-text-sm: 0.875rem;
+  --control-text-md: 1rem;
+  --section-y: 80px;
+  --tl-page-gap: 32px;
+  --tl-header-gap: 12px;
+  --tl-title-below: 8px;
+  --tl-sec-gap: 12px;
+  --tl-head-below: 12px;
+  --tl-lockup: 2px;
+}
+@media (min-width: 40rem) { html[data-typelab="quartz"] { --section-y: 120px; } }
+/* Weight by size: body 340, small 380, labels, titles and captions 400. */
+html[data-typelab="quartz"] body { font-weight: 340; }
+html[data-typelab="quartz"] .text-small { font-weight: 380; }
+html[data-typelab="quartz"] :is(.text-caption, .text-fg, button, label, th, [role="tab"], [role="menuitem"], [role="option"], .font-mono) { font-weight: 400; }
+
+/* ---------- Shared by every version except today ---------- */
+html:is([data-typelab="report"], [data-typelab="quartz"]) :is(.text-display, .text-h1, .text-h2, .text-h3, .text-h4) { font-family: var(--tl-head); }
+html:not([data-typelab="today"]) article[aria-labelledby^="page-"] { gap: var(--tl-page-gap); }
+html:not([data-typelab="today"]) article[aria-labelledby^="page-"] > header { gap: var(--tl-header-gap); }
+html:not([data-typelab="today"]) article[aria-labelledby^="page-"] > header > h1 { margin-bottom: calc(var(--tl-title-below) - var(--tl-header-gap)); }
+html:not([data-typelab="today"]) article[aria-labelledby^="page-"] .border-t.pt-16.gap-16 { gap: var(--tl-page-gap); padding-top: var(--tl-page-gap); }
+html:not([data-typelab="today"]) article[aria-labelledby^="page-"] section[aria-labelledby] { gap: var(--tl-sec-gap); }
+html:not([data-typelab="today"]) article[aria-labelledby^="page-"] section[aria-labelledby] > h2:first-child { margin-bottom: calc(var(--tl-head-below) - var(--tl-sec-gap)); }
+html:not([data-typelab="today"]) article[aria-labelledby^="page-"] section.content-start[aria-labelledby] > h2.text-h3 {
+  font-size: var(--tl-docs-h-size, var(--type-h3-size));
+  line-height: var(--tl-docs-h-leading, var(--type-h3-leading));
+  letter-spacing: var(--tl-docs-h-tracking, var(--type-h3-tracking));
+}
+/* A title over its description: stage headings and overview cards. */
+html:not([data-typelab="today"]) .max-w-\[60ch\].gap-1 { gap: var(--tl-lockup); }
+html:not([data-typelab="today"]) .gap-3 > .text-body.text-fg + * { margin-top: calc(var(--tl-lockup) - 12px); }
+
+/* ---------- The switcher. Fixed sizes, so it stays put while the type changes. ---------- */
+.tl {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  width: max-content;
+  max-width: calc(100vw - 32px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+  transform: translateX(-50%);
+  isolation: isolate;
+  display: grid;
+  gap: 0;
+  padding: 4px;
+  border-radius: 8px;
+  font: 400 13px/1.4 "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+  color: var(--fg-muted);
+  font-stretch: 100%;
+}
+.tl::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: inset 0 0 0 1px var(--glass-border), var(--highlight), var(--shadow-float);
+}
+.tl[hidden], .tl-pill[hidden] { display: none !important; }
+.tl-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.tl-title { padding: 0 8px; color: var(--fg); }
+.tl-group { display: inline-flex; flex-wrap: wrap; gap: 0; }
+.tl-sep { width: 1px; height: 16px; margin: 0 4px; background: var(--line); }
+.tl button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--fg-subtle);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 100ms cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 100ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.tl button:hover { color: var(--fg); }
+.tl button[aria-pressed="true"] { color: var(--fg); background: var(--surface-1); box-shadow: inset 0 0 0 1px var(--line), var(--highlight); }
+.tl button:disabled { cursor: not-allowed; color: var(--fg-disabled); }
+.tl button:focus-visible, .tl-pill:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.tl kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font: 400 11px/1 "Geist Mono", ui-monospace, monospace;
+  color: var(--fg-subtle);
+}
+.tl-hide { margin-left: auto; }
+.tl-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.tl-note { margin: 0; max-width: 62ch; padding: 4px 8px 6px; font-size: 12px; line-height: 16px; color: var(--fg-subtle); }
+.tl-note b { font-weight: 400; color: var(--fg); }
+.tl-pill {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  transform: translateX(-50%);
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--glass-bg-solid);
+  box-shadow: inset 0 0 0 1px var(--glass-border), var(--highlight), var(--shadow-float);
+  font: 400 13px/1 "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  color: var(--fg);
+  cursor: pointer;
+}
+@media (pointer: coarse) { .tl kbd { display: none; } }
+@media (prefers-reduced-motion: reduce) { .tl button { transition: none; } }
+@media (max-width: 40rem) {
+  .tl-title, .tl-sep, .tl-note { display: none; }
+}
+/* The artifact frame gives body a 14px system font. The gallery sets its type on html,
+   so hand it back, or every page falls back to the system font. */
+html body { font: inherit; letter-spacing: inherit; }
+html { scroll-padding-bottom: 120px; }
+body { padding-bottom: 104px; }
+</style>

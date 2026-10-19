@@ -1,0 +1,158 @@
+<div class="tl" id="tl" role="region" aria-label="Type versions">
+  <div class="tl-row">
+    <span class="tl-title">Type</span>
+    <div class="tl-group" role="group" aria-label="Type version" id="tl-versions">
+      <button type="button" data-version="today" aria-pressed="false"><kbd>1</kbd>Today</button>
+      <button type="button" data-version="report" aria-pressed="false"><kbd>2</kbd>Report</button>
+      <button type="button" data-version="one" aria-pressed="false"><kbd>3</kbd>One size</button>
+      <button type="button" data-version="quartz" aria-pressed="false"><kbd>4</kbd>Quartz</button>
+    </div>
+    <span class="tl-sep" aria-hidden="true"></span>
+    <div class="tl-group" role="group" aria-labelledby="tl-verdict-label" id="tl-verdict">
+      <span class="tl-sr" id="tl-verdict-label">Your verdict on this version</span>
+      <button type="button" data-v="love" aria-pressed="false">Love</button>
+      <button type="button" data-v="maybe" aria-pressed="false">Maybe</button>
+      <button type="button" data-v="no" aria-pressed="false">No</button>
+    </div>
+    <button type="button" class="tl-hide" id="tl-hide" aria-keyshortcuts="h"><kbd>H</kbd>Hide</button>
+  </div>
+  <p class="tl-note" id="tl-note" aria-live="polite"></p>
+</div>
+<button type="button" class="tl-pill" id="tl-pill" hidden aria-keyshortcuts="h"></button>
+<script>
+(function () {
+  "use strict";
+  var VERSIONS = {
+    today: {
+      label: "Today",
+      note: "litt.md v0.5 as it ships. Hanken Grotesk for every line: 40 / 32 / 28 / 24 / 20 headings over 17 / 15 / 13 / 12 text."
+    },
+    report: {
+      label: "Report",
+      note: "The research proposal. Hanken headings at 40 / 30 / 22, Inter text at 17 / 15 / 13 / 12 on whole-pixel line heights, with more space above a heading than below it. Body text is 370 in dark mode."
+    },
+    one: {
+      label: "One size",
+      note: "After emilkowal.ski. Inter for everything at 16px, headings included. Rank comes from space and ink alone."
+    },
+    quartz: {
+      label: "Quartz",
+      note: "After Quartz on design.how. Hanken headings at 40 / 32 / 24 / 20, Inter text at 16 / 14 / 13 / 12 with tight line heights, and weight by size: body 340, small 380, titles and labels 400."
+    }
+  };
+  var ORDER = ["today", "report", "one", "quartz"];
+  var KEY = "litt-typelab:version";
+  var HIDE_KEY = "litt-typelab:hidden";
+  var PICKS_KEY = "litt-typelab:verdicts";
+  var root = document.documentElement;
+  var bar = document.getElementById("tl");
+  var pill = document.getElementById("tl-pill");
+  var note = document.getElementById("tl-note");
+
+  function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function write(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  var current = root.getAttribute("data-typelab");
+  if (!VERSIONS[current]) current = "today";
+  var hidden = read(HIDE_KEY) === "1";
+  var verdicts = {};
+  try { verdicts = JSON.parse(read(PICKS_KEY) || "{}") || {}; } catch (e) { verdicts = {}; }
+  var db = null;
+  var readOnly = false;
+  var status = "";
+
+  function render() {
+    root.setAttribute("data-typelab", current);
+    Array.prototype.forEach.call(document.querySelectorAll("#tl-versions [data-version]"), function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.version === current));
+    });
+    var v = (verdicts[current] || {}).verdict || "";
+    Array.prototype.forEach.call(document.querySelectorAll("#tl-verdict [data-v]"), function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.v === v));
+      b.disabled = readOnly;
+    });
+    document.getElementById("tl-verdict-label").textContent = "Your verdict on " + VERSIONS[current].label;
+    note.innerHTML = "<b>" + VERSIONS[current].label + ".</b> " + VERSIONS[current].note + (status ? " " + status : "");
+    bar.hidden = hidden;
+    pill.hidden = !hidden;
+    pill.textContent = "Type: " + VERSIONS[current].label;
+  }
+  function setVersion(id) {
+    if (!VERSIONS[id] || id === current) return;
+    current = id;
+    status = "";
+    write(KEY, id);
+    render();
+  }
+  function setHidden(h) {
+    hidden = h;
+    write(HIDE_KEY, h ? "1" : "0");
+    render();
+    (h ? pill : document.getElementById("tl-hide")).focus({ preventScroll: true });
+  }
+
+  /* Verdicts: in the page's database when this view has one, in this browser otherwise. */
+  function saveVerdict(id, verdict) {
+    if (readOnly) return;
+    if (verdict) verdicts[id] = { version: id, label: VERSIONS[id].label, verdict: verdict, updatedAt: new Date().toISOString() };
+    else delete verdicts[id];
+    write(PICKS_KEY, JSON.stringify(verdicts));
+    status = verdict ? "Marked " + (verdict === "love" ? "Love" : verdict === "maybe" ? "Maybe" : "No") + "." : "";
+    render();
+    if (!db) return;
+    var ref = db.doc("versions/" + id);
+    (verdict ? ref.set(verdicts[id]) : ref.delete()).catch(function (e) {
+      if (e && (e.code === "invalid_argument" || e.code === "transform_error")) {
+        readOnly = true;
+        status = "This page is view only for you, so verdicts can't be saved.";
+      } else {
+        status = "That verdict didn't save. Try again.";
+      }
+      render();
+    });
+  }
+  function connect() {
+    var c = window.claude;
+    if (!c || typeof c.use !== "function") return;
+    c.use("db").then(function (d) {
+      if (!d) return;
+      db = d;
+      return c.use("user").then(function (u) {
+        return u && typeof u.can === "function" ? u.can("data.write") : null;
+      }).catch(function () { return null; }).then(function (can) {
+        if (can === false) readOnly = true;
+        db.collection("versions").onSnapshot(function (snap) {
+          var next = {};
+          snap.docs.forEach(function (doc) { if (doc.exists) next[doc.id] = doc.data(); });
+          verdicts = next;
+          render();
+        }, function () {});
+      });
+    }).catch(function () {});
+  }
+
+  document.getElementById("tl-versions").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-version]");
+    if (b) setVersion(b.dataset.version);
+  });
+  document.getElementById("tl-verdict").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-v]");
+    if (!b || b.disabled) return;
+    var cur = (verdicts[current] || {}).verdict || null;
+    saveVerdict(current, cur === b.dataset.v ? null : b.dataset.v);
+  });
+  document.getElementById("tl-hide").addEventListener("click", function () { setHidden(true); });
+  pill.addEventListener("click", function () { setHidden(false); });
+  document.addEventListener("keydown", function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.repeat || e.defaultPrevented) return;
+    var t = e.target;
+    if (t && t.closest && t.closest("input, textarea, select, [contenteditable], [role='dialog'], [role='menu'], [role='listbox']")) return;
+    var i = ["1", "2", "3", "4"].indexOf(e.key);
+    if (i >= 0) { setVersion(ORDER[i]); return; }
+    if (e.key === "h" || e.key === "H") setHidden(!hidden);
+  });
+
+  render();
+  connect();
+})();
+</script>
